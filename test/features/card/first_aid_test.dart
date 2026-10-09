@@ -274,6 +274,41 @@ void main() {
       expect(find.text('Pasig City DRRMO Emergency Hotline'), findsOneWidget);
     });
 
+    testWidgets('the whole card holds up with large text on a narrow screen', (
+      tester,
+    ) async {
+      await models.load();
+      await location.refresh();
+      tester.platformDispatcher.textScaleFactorTestValue = 2;
+      addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+      tester.view.physicalSize = const Size(320, 8000);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      await tester.pumpWidget(
+        AppScope(
+          store: store,
+          resolver: Resolver(store),
+          location: location,
+          models: models,
+          checker: checker,
+          flagged: flagged,
+          watcher: watcher,
+          scanner: scanner,
+          child: MaterialApp(
+            theme: hudyatTheme(),
+            home: CardScreen(
+              intent: store.intent('injury')!,
+              firstAid: store.firstAidCards().first,
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('Change city'), findsOneWidget);
+      expect(find.text(tag), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+
     testWidgets('the section holds up with large text on a narrow screen', (
       tester,
     ) async {

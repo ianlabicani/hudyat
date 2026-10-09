@@ -1,7 +1,10 @@
+import 'dart:convert';
+
 import 'package:sqlite3/sqlite3.dart';
 
 import '../geo.dart';
 import 'pack_record.dart';
+import 'scam_records.dart';
 
 /// Which level a set of hotlines belongs to. Cards always label it.
 enum HotlineLevel { city, province, national }
@@ -40,6 +43,32 @@ class PackStore {
     for (final row in _db.select('SELECT * FROM intents'))
       IntentDef.fromRow(row),
   ];
+
+  /// Organisations the message check knows, companies first.
+  List<OfficialSender> officialSenders() => [
+    for (final row in _db.select('SELECT * FROM official_senders ORDER BY id'))
+      OfficialSender.fromRow(row),
+  ];
+
+  List<ScamExample> scamExamples() => [
+    for (final row in _db.select('SELECT * FROM scam_examples ORDER BY id'))
+      ScamExample.fromRow(row),
+  ];
+
+  /// Fixed reason wording by reason id.
+  Map<String, ScamReasonText> scamReasons() => {
+    for (final row in _db.select('SELECT * FROM scam_reasons'))
+      row['id'] as String: ScamReasonText.fromRow(row),
+  };
+
+  /// Link-shortening services, whose links hide where they lead.
+  List<String> linkShorteners() {
+    final rows = _db.select(
+      "SELECT value FROM meta WHERE key = 'link_shorteners'",
+    );
+    if (rows.isEmpty) return const [];
+    return (jsonDecode(rows.first['value'] as String) as List).cast<String>();
+  }
 
   IntentDef? intent(String id) {
     final rows = _db.select('SELECT * FROM intents WHERE id = ?', [id]);

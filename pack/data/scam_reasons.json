@@ -1,0 +1,32 @@
+[
+  {
+    "id": "link_lookalike",
+    "tl": "Ginagaya ng link na {domain} ang {org}, pero hindi ito ang opisyal na website nito.",
+    "en": "The link {domain} imitates {org} but is not its official website.",
+    "fact": "Opisyal: {official}"
+  },
+  {
+    "id": "link_not_official",
+    "tl": "Nagpapakilalang {org} ang mensahe, pero ang link na {domain} ay hindi opisyal na website nito.",
+    "en": "The message claims to be {org}, but the link {domain} is not its official website.",
+    "fact": "Opisyal: {official}"
+  },
+  {
+    "id": "sender_mobile",
+    "tl": "Nagpapakilalang {org} pero galing sa ordinaryong mobile number.",
+    "en": "It claims to be {org} but comes from an ordinary mobile number.",
+    "fact": "Galing sa: {sender}"
+  },
+  {
+    "id": "link_shortener",
+    "tl": "Pinaikli ang link, kaya hindi makita kung saan ito pupunta.",
+    "en": "The link is shortened, so its destination cannot be seen.",
+    "fact": "Link: {domain}"
+  },
+  {
+    "id": "phrasing",
+    "tl": "Kahawig ito ng mga kilalang scam na mensahe.",
+    "en": "The wording is close to known scam messages.",
+    "fact": "Uri: {type}"
+  }
+]

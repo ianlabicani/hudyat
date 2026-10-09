@@ -5,6 +5,7 @@ import { join } from "node:path";
 import { convertAgencies, convertLgu } from "./sources/directory";
 import { convertCityHotlines, convertNationalHotlines } from "./sources/hotlines";
 import { convertOverpass } from "./sources/osm";
+import { convertAgencySenders, convertCompanies, mergeSenders } from "./sources/senders";
 import { convertServices } from "./sources/services";
 import type { Intent, PackRecord } from "./types";
 import { writePack } from "./write";
@@ -39,7 +40,14 @@ const services = list("services").flatMap((file) => convertServices(read(`servic
 const places = convertOverpass(read("overpass.json"));
 
 const records: PackRecord[] = [...hotlines, ...agencies, ...officials, ...services, ...places];
-const intents: Intent[] = JSON.parse(readFileSync(join(ROOT, "data", "intents.json"), "utf8"));
+const data = (name: string) => JSON.parse(readFileSync(join(ROOT, "data", name), "utf8"));
+const intents: Intent[] = data("intents.json");
+
+const senderRules = data("sender_rules.json");
+const senders = mergeSenders(
+  convertCompanies(data("companies.json")),
+  convertAgencySenders(read("websites.json"), senderRules, agencies),
+);
 
 writePack(OUT, {
   meta: {
@@ -51,10 +59,18 @@ writePack(OUT, {
       { name: "bettergovph/bettergov", used_for: "Agencies, officials, services, national hotlines", licence: "CC0-1.0" },
       { name: "bettergovph/hotlines", used_for: "City hotlines", licence: "None listed" },
       { name: "OpenStreetMap contributors", used_for: "Places and map", licence: "ODbL" },
+      { name: "bettergovph/bettergov websites list", used_for: "Official agency websites", licence: "CC0-1.0" },
+      { name: "Company websites", used_for: "Official company websites and hotlines", licence: "Facts, cited per company" },
     ],
   },
   records,
   intents,
+  scam: {
+    senders,
+    examples: data("scam_examples.json"),
+    reasons: data("scam_reasons.json"),
+    shorteners: senderRules.shorteners,
+  },
 });
 
 const count = (kind: string) => records.filter((r) => r.kind === kind).length;
@@ -62,5 +78,6 @@ console.log(`wrote ${OUT}`);
 for (const kind of ["hotline", "agency", "official", "service", "place"]) {
   console.log(`  ${kind}: ${count(kind)}`);
 }
+console.log(`  official senders: ${senders.length} (${senders.filter((s) => s.phones.length > 0).length} with a number)`);
 const dialable = records.filter((r) => r.phones.some((p) => p.dial)).length;
 console.log(`  records with a dialable number: ${dialable} of ${records.length}`);

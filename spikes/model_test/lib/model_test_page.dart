@@ -286,6 +286,55 @@ class _ModelTestPageState extends State<ModelTestPage>
     );
   });
 
+  /// Vectors for the message check's phrasing threshold: the scam examples
+  /// as stored phrases, and held-out scam and ordinary messages as queries.
+  Future<void> _exportScamVectors() => _guard(() async {
+    final dir = _modelsDir!;
+    final examples = await _json('assets/scam_examples.json');
+    final tests = await _json('assets/check_messages.json');
+    await FlutterEdgeAi.installEmbedder()
+        .modelFromFile('$dir/$embedFile')
+        .tokenizerFromFile('$dir/$tokenizerFile')
+        .install();
+    final embedder = await FlutterEdgeAi.getActiveEmbedder();
+    final watch = Stopwatch()..start();
+
+    final stored = <Map<String, Object>>[];
+    for (final example in examples) {
+      stored.add({
+        'type': example['type'] as String,
+        'text': example['text'] as String,
+        'vector': await embedder.generateEmbedding(
+          example['text'] as String,
+          taskType: TaskType.retrievalDocument,
+        ),
+      });
+      if (stored.length % 10 == 0) {
+        _say('examples ${stored.length} (${watch.elapsed.inSeconds}s)');
+      }
+    }
+    final messages = <Map<String, Object>>[];
+    for (final test in tests) {
+      messages.add({
+        'scam': test['scam'] as bool,
+        'text': test['text'] as String,
+        'vector': await embedder.generateEmbedding(
+          test['text'] as String,
+          taskType: TaskType.retrievalQuery,
+        ),
+      });
+    }
+    final out = File('${Directory(dir).parent.path}/scam-vectors.json');
+    await out.writeAsString(
+      jsonEncode({'examples': stored, 'messages': messages}),
+    );
+    _say(
+      'RESULT scam export: ${stored.length} examples and '
+      '${messages.length} messages in ${watch.elapsed.inSeconds}s\n'
+      '${out.path}',
+    );
+  });
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -312,6 +361,10 @@ class _ModelTestPageState extends State<ModelTestPage>
               FilledButton(
                 onPressed: _running ? null : _exportVectors,
                 child: const Text('3. Export vectors'),
+              ),
+              FilledButton(
+                onPressed: _running ? null : _exportScamVectors,
+                child: const Text('4. Export scam vectors'),
               ),
               OutlinedButton(
                 onPressed: () =>

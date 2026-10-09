@@ -13,6 +13,10 @@ import 'core/pack/pack_store.dart';
 import 'core/theme/tokens.dart';
 import 'core/widgets/buttons.dart';
 import 'features/card/services/resolver.dart';
+import 'features/check/services/flagged_store.dart';
+import 'features/check/screens/check_screen.dart';
+import 'features/check/services/message_checker.dart';
+import 'features/check/services/share_entry.dart';
 import 'features/home/screens/home_screen.dart';
 import 'features/location/services/location_service.dart';
 import 'features/location/state/location_controller.dart';
@@ -33,7 +37,12 @@ class _HudyatAppState extends State<HudyatApp> {
   PackStore? _store;
   LocationController? _location;
   ModelManager? _models;
+  MessageChecker? _checker;
+  FlaggedStore? _flagged;
   Object? _error;
+
+  final _navigator = GlobalKey<NavigatorState>();
+  final _share = ShareEntry();
 
   @override
   void initState() {
@@ -51,6 +60,19 @@ class _HudyatAppState extends State<HudyatApp> {
         runtime: EdgeAiRuntime(),
         intents: store.intents(),
         cacheFile: File(p.join(support.path, 'intent-vectors.json')),
+        scamExamples: store.scamExamples(),
+        scamCacheFile: File(p.join(support.path, 'scam-vectors.json')),
+      );
+      final senders = store.officialSenders();
+      final checker = MessageChecker(
+        senders: senders,
+        shorteners: store.linkShorteners(),
+        phrases: () => models.scamPhrases,
+      );
+      // Flagged messages live in their own file, apart from the pack.
+      final flagged = FlaggedStore.open(
+        p.join(support.path, 'flagged.sqlite'),
+        senders: senders,
       );
       // Models load in the background; the app is usable before they do.
       unawaited(models.load());
@@ -61,16 +83,39 @@ class _HudyatAppState extends State<HudyatApp> {
           store,
         );
         _models = models;
+        _checker = checker;
+        _flagged = flagged;
       });
+      // Text shared while the app was closed, then anything shared later.
+      _share.listen(_openShared);
+      WidgetsBinding.instance.addPostFrameCallback((_) => _openShared());
     } on Object catch (error) {
       setState(() => _error = error);
     }
   }
 
+  /// Opens the Check screen with whatever another app handed over.
+  Future<void> _openShared() async {
+    final shared = await _share.take();
+    if (shared == null || !mounted) return;
+    unawaited(
+      _navigator.currentState?.push(
+        MaterialPageRoute<void>(
+          builder: (_) => CheckScreen(
+            initialText: shared.text,
+            sharedWithoutText: shared.text == null,
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   void dispose() {
+    _share.dispose();
     _location?.dispose();
     _models?.dispose();
+    _flagged?.close();
     _store?.close();
     super.dispose();
   }
@@ -80,7 +125,13 @@ class _HudyatAppState extends State<HudyatApp> {
     final store = _store;
     final location = _location;
     final models = _models;
-    if (store == null || location == null || models == null) {
+    final checker = _checker;
+    final flagged = _flagged;
+    if (store == null ||
+        location == null ||
+        models == null ||
+        checker == null ||
+        flagged == null) {
       return MaterialApp(
         title: 'Hudyat',
         theme: hudyatTheme(),
@@ -92,8 +143,11 @@ class _HudyatAppState extends State<HudyatApp> {
       resolver: Resolver(store),
       location: location,
       models: models,
+      checker: checker,
+      flagged: flagged,
       child: MaterialApp(
         title: 'Hudyat',
+        navigatorKey: _navigator,
         theme: hudyatTheme(),
         home: const HomeScreen(),
       ),

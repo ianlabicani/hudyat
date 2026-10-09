@@ -1,7 +1,7 @@
 import { Database } from "bun:sqlite";
 import { existsSync, mkdirSync, rmSync } from "node:fs";
 import { dirname } from "node:path";
-import type { Intent, PackRecord } from "./types";
+import type { Intent, PackRecord, ScamData } from "./types";
 
 export interface PackMeta {
   name: string;
@@ -17,6 +17,8 @@ export interface PackContents {
   meta: PackMeta;
   records: PackRecord[];
   intents: Intent[];
+  /** Data for the message check. The tables are created empty without it. */
+  scam?: ScamData;
 }
 
 const SCHEMA = `
@@ -63,7 +65,48 @@ CREATE TABLE first_aid_cards (
   source_url TEXT NOT NULL,
   examples TEXT NOT NULL
 );
+
+CREATE TABLE official_senders (
+  id INTEGER PRIMARY KEY,
+  name TEXT NOT NULL,
+  short TEXT NOT NULL,
+  kind TEXT NOT NULL,
+  aliases TEXT NOT NULL,
+  strict_aliases TEXT NOT NULL,
+  domains TEXT NOT NULL,
+  phones TEXT NOT NULL,
+  source_url TEXT
+);
+
+CREATE TABLE scam_examples (
+  id INTEGER PRIMARY KEY,
+  text TEXT NOT NULL,
+  type TEXT NOT NULL,
+  type_label TEXT NOT NULL
+);
+
+CREATE TABLE scam_reasons (
+  id TEXT PRIMARY KEY,
+  tl TEXT NOT NULL,
+  en TEXT NOT NULL,
+  fact TEXT NOT NULL
+);
 `;
+
+/** Throws when a sender could not be matched or would show a bad contact. */
+export function validateScamData(scam: ScamData): void {
+  for (const sender of scam.senders) {
+    if (!sender.name.trim() || sender.domains.length === 0) {
+      throw new Error(`Sender without a name or domain: ${JSON.stringify(sender)}`);
+    }
+    if (sender.aliases.length + sender.strict_aliases.length === 0) {
+      throw new Error(`Sender with nothing to match: ${sender.name}`);
+    }
+    if (sender.kind === "company" && sender.phones.length > 0 && !sender.source_url) {
+      throw new Error(`Company number without a source: ${sender.name}`);
+    }
+  }
+}
 
 /** Throws on the first record the app could not show or locate. */
 export function validateRecords(records: PackRecord[]): void {
@@ -79,6 +122,7 @@ export function validateRecords(records: PackRecord[]): void {
 
 export function writePack(path: string, contents: PackContents): void {
   validateRecords(contents.records);
+  if (contents.scam) validateScamData(contents.scam);
   if (path !== ":memory:") {
     mkdirSync(dirname(path), { recursive: true });
     if (existsSync(path)) rmSync(path);
@@ -120,6 +164,31 @@ export function writePack(path: string, contents: PackContents): void {
         r.parent ?? null,
         r.source,
       );
+    }
+    const scam = contents.scam;
+    if (scam) {
+      insertMeta.run("link_shorteners", JSON.stringify(scam.shorteners));
+      const insertSender = db.prepare(
+        `INSERT INTO official_senders
+           (name, short, kind, aliases, strict_aliases, domains, phones, source_url)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+      );
+      for (const s of scam.senders) {
+        insertSender.run(
+          s.name,
+          s.short,
+          s.kind,
+          JSON.stringify(s.aliases),
+          JSON.stringify(s.strict_aliases),
+          JSON.stringify(s.domains),
+          JSON.stringify(s.phones),
+          s.source_url,
+        );
+      }
+      const insertExample = db.prepare("INSERT INTO scam_examples (text, type, type_label) VALUES (?, ?, ?)");
+      for (const e of scam.examples) insertExample.run(e.text, e.type, e.type_label);
+      const insertReason = db.prepare("INSERT INTO scam_reasons (id, tl, en, fact) VALUES (?, ?, ?, ?)");
+      for (const r of scam.reasons) insertReason.run(r.id, r.tl, r.en, r.fact);
     }
     for (const intent of contents.intents) {
       insertIntent.run(

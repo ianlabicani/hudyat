@@ -1,0 +1,292 @@
+[
+  {
+    "name": "GCash",
+    "aliases": [
+      "GCash",
+      "G-Cash"
+    ],
+    "strict_aliases": [],
+    "domains": [
+      "gcash.com"
+    ],
+    "phones": [
+      {
+        "display": "(02) 7213-9999",
+        "dial": "0272139999"
+      },
+      {
+        "display": "2882 (Globe or TM)",
+        "dial": "2882"
+      }
+    ],
+    "source_url": "https://help.gcash.com/hc/en-us/p/contact-us"
+  },
+  {
+    "name": "Maya",
+    "aliases": [
+      "Maya Bank",
+      "PayMaya",
+      "Maya app",
+      "Maya account",
+      "Maya wallet"
+    ],
+    "strict_aliases": [
+      "Maya"
+    ],
+    "domains": [
+      "maya.ph",
+      "paymaya.com"
+    ],
+    "phones": [
+      {
+        "display": "(02) 8845-7788",
+        "dial": "0288457788"
+      }
+    ],
+    "source_url": "https://www.maya.ph/contact-us"
+  },
+  {
+    "name": "BDO",
+    "aliases": [
+      "BDO",
+      "BDO Unibank",
+      "Banco de Oro"
+    ],
+    "strict_aliases": [],
+    "domains": [
+      "bdo.com.ph"
+    ],
+    "phones": [
+      {
+        "display": "(02) 8888-0000",
+        "dial": "0288880000"
+      }
+    ],
+    "source_url": "https://www.bdo.com.ph/about-bdo/learn/help-and-support/contact-us"
+  },
+  {
+    "name": "BPI",
+    "aliases": [
+      "BPI",
+      "Bank of the Philippine Islands"
+    ],
+    "strict_aliases": [],
+    "domains": [
+      "bpi.com.ph"
+    ],
+    "phones": [
+      {
+        "display": "(02) 889-10000",
+        "dial": "0288910000"
+      }
+    ],
+    "source_url": "https://www.bpi.com.ph/contactus"
+  },
+  {
+    "name": "Metrobank",
+    "aliases": [
+      "Metrobank",
+      "Metropolitan Bank"
+    ],
+    "strict_aliases": [],
+    "domains": [
+      "metrobank.com.ph"
+    ],
+    "phones": [
+      {
+        "display": "(02) 88-700-700",
+        "dial": "0288700700"
+      }
+    ],
+    "source_url": "https://www.metrobank.com.ph/contact-us"
+  },
+  {
+    "name": "Landbank",
+    "aliases": [
+      "Landbank",
+      "Land Bank",
+      "Land Bank of the Philippines",
+      "LBP"
+    ],
+    "strict_aliases": [],
+    "domains": [
+      "landbank.com"
+    ],
+    "phones": [
+      {
+        "display": "(02) 8405-7000",
+        "dial": "0284057000"
+      }
+    ],
+    "source_url": "https://www.landbank.com/customer-service"
+  },
+  {
+    "name": "UnionBank",
+    "aliases": [
+      "UnionBank",
+      "Union Bank"
+    ],
+    "strict_aliases": [],
+    "domains": [
+      "unionbankph.com"
+    ],
+    "phones": [
+      {
+        "display": "(02) 8841-8600",
+        "dial": "0288418600"
+      }
+    ],
+    "source_url": "https://www.unionbankph.com/contact-us/directory"
+  },
+  {
+    "name": "Globe",
+    "aliases": [
+      "Globe Telecom",
+      "GlobeOne",
+      "Globe At Home"
+    ],
+    "strict_aliases": [
+      "Globe"
+    ],
+    "domains": [
+      "globe.com.ph"
+    ],
+    "phones": [
+      {
+        "display": "(02) 7730-1000",
+        "dial": "0277301000"
+      },
+      {
+        "display": "211 (Globe)",
+        "dial": "211"
+      }
+    ],
+    "source_url": "https://www.globe.com.ph/contact-us"
+  },
+  {
+    "name": "Smart",
+    "aliases": [
+      "Smart Communications",
+      "Smart Postpaid",
+      "Smart Prepaid"
+    ],
+    "strict_aliases": [
+      "Smart"
+    ],
+    "domains": [
+      "smart.com.ph"
+    ],
+    "phones": [
+      {
+        "display": "(02) 8888-1111",
+        "dial": "0288881111"
+      },
+      {
+        "display": "*888 (Smart or TNT)",
+        "dial": "*888"
+      }
+    ],
+    "source_url": "https://smart.com.ph/Help/contact-support"
+  },
+  {
+    "name": "DITO",
+    "aliases": [
+      "DITO Telecommunity"
+    ],
+    "strict_aliases": [
+      "DITO"
+    ],
+    "domains": [
+      "dito.ph"
+    ],
+    "phones": [
+      {
+        "display": "185 (DITO number)",
+        "dial": "185"
+      }
+    ],
+    "source_url": "https://dito.ph/faq"
+  },
+  {
+    "name": "LBC",
+    "aliases": [
+      "LBC",
+      "LBC Express"
+    ],
+    "strict_aliases": [],
+    "domains": [
+      "lbcexpress.com"
+    ],
+    "phones": [
+      {
+        "display": "(02) 8858-5999",
+        "dial": "0288585999"
+      }
+    ],
+    "source_url": "https://www.lbcexpress.com/contact-support"
+  },
+  {
+    "name": "J&T Express",
+    "aliases": [
+      "J&T",
+      "J&T Express",
+      "JT Express",
+      "JNT"
+    ],
+    "strict_aliases": [],
+    "domains": [
+      "jtexpress.ph"
+    ],
+    "phones": [
+      {
+        "display": "(02) 8911-1888",
+        "dial": "0289111888"
+      }
+    ],
+    "source_url": "https://www.jtexpress.ph/contact-us"
+  },
+  {
+    "name": "Meralco",
+    "aliases": [
+      "Meralco"
+    ],
+    "strict_aliases": [],
+    "domains": [
+      "meralco.com.ph"
+    ],
+    "phones": [
+      {
+        "display": "16211",
+        "dial": "16211"
+      }
+    ],
+    "source_url": "https://company.meralco.com.ph/contact-us"
+  },
+  {
+    "name": "Shopee",
+    "aliases": [
+      "Shopee",
+      "ShopeePay",
+      "SPayLater"
+    ],
+    "strict_aliases": [],
+    "domains": [
+      "shopee.ph"
+    ],
+    "phones": [],
+    "source_url": "https://shopee.ph"
+  },
+  {
+    "name": "Lazada",
+    "aliases": [
+      "Lazada",
+      "LazPay"
+    ],
+    "strict_aliases": [],
+    "domains": [
+      "lazada.com.ph"
+    ],
+    "phones": [],
+    "source_url": "https://www.lazada.com.ph"
+  }
+]

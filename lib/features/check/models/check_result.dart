@@ -1,0 +1,79 @@
+import '../../../core/pack/scam_records.dart';
+
+/// The three fixed outcomes of a message check. There is no "safe".
+enum Verdict {
+  scam('Mukhang scam', 'Looks like a scam'),
+  caution('Mag-ingat', 'Be careful'),
+  clear('Walang nakitang problema', 'No problem found');
+
+  const Verdict(this.label, this.gloss);
+
+  final String label;
+  final String gloss;
+}
+
+/// Ids of the pack's `scam_reasons` rows.
+abstract final class ReasonId {
+  static const linkLookalike = 'link_lookalike';
+  static const linkNotOfficial = 'link_not_official';
+  static const senderMobile = 'sender_mobile';
+  static const linkShortener = 'link_shortener';
+  static const phrasing = 'phrasing';
+}
+
+/// One finding: a reason id plus the facts that fill its fixed wording.
+class CheckReason {
+  const CheckReason(this.id, [this.facts = const {}]);
+
+  final String id;
+
+  /// Values for the wording's placeholders: `org`, `domain`, `official`,
+  /// `sender`, `type`.
+  final Map<String, String> facts;
+
+  /// [template] with its placeholders filled in.
+  String fill(String template) => template.replaceAllMapped(
+    RegExp(r'\{(\w+)\}'),
+    (match) => facts[match[1]] ?? '',
+  );
+}
+
+/// Where the phrasing check stood when the message was checked.
+enum PhrasingState { checked, notReady }
+
+/// Everything a check produces. No free text: a verdict, reason ids and
+/// facts from the pack.
+class CheckResult {
+  const CheckResult({
+    required this.text,
+    required this.verdict,
+    required this.reasons,
+    required this.phrasing,
+    this.sender,
+    this.app,
+    this.claimed,
+    this.linkCount = 0,
+    this.truncated = false,
+  });
+
+  final String text;
+  final Verdict verdict;
+  final List<CheckReason> reasons;
+  final PhrasingState phrasing;
+
+  /// Who sent it, when known. Paste, share and selection often have none.
+  final String? sender;
+
+  /// The app a notification came from.
+  final String? app;
+
+  /// The organisation the message claims to be, whose real contact is shown.
+  final OfficialSender? claimed;
+  final int linkCount;
+
+  /// Read from a notification, which may cut a long message short.
+  final bool truncated;
+
+  /// Only these are ever stored.
+  bool get isFlagged => verdict != Verdict.clear;
+}

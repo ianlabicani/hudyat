@@ -14,8 +14,16 @@ Future<bool> dial(String number) async {
 }
 
 /// Dials the record's number, or asks which one when it has several.
-Future<void> callRecord(BuildContext context, PackRecord record) async {
-  final numbers = record.dialable;
+Future<void> callRecord(BuildContext context, PackRecord record) =>
+    callNumbers(context, record.name, record.dialable);
+
+/// Dials one of [numbers], asking which when there are several. [name] heads
+/// the list.
+Future<void> callNumbers(
+  BuildContext context,
+  String name,
+  List<Phone> numbers,
+) async {
   if (numbers.isEmpty) return;
   final messenger = ScaffoldMessenger.of(context);
   final Phone? choice = numbers.length == 1
@@ -30,7 +38,7 @@ Future<void> callRecord(BuildContext context, PackRecord record) async {
               children: [
                 Padding(
                   padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
-                  child: Text(record.name, style: HudyatText.bodyBold),
+                  child: Text(name, style: HudyatText.bodyBold),
                 ),
                 for (final phone in numbers)
                   ListTile(

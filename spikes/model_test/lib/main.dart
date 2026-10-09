@@ -7,6 +7,7 @@ import 'package:flutter_edge_ai_litertlm/flutter_edge_ai_litertlm.dart';
 
 import 'map_test_page.dart';
 import 'model_test_page.dart';
+import 'notification_test_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,7 +28,7 @@ class SpikeApp extends StatelessWidget {
       title: 'Hudyat model test',
       theme: ThemeData(colorScheme: .fromSeed(seedColor: Colors.brown)),
       home: DefaultTabController(
-        length: 2,
+        length: 3,
         child: Scaffold(
           // The AppBar keeps the tabs below the status bar.
           appBar: AppBar(
@@ -37,13 +38,18 @@ class SpikeApp extends StatelessWidget {
               tabs: [
                 Tab(text: 'Models'),
                 Tab(text: 'Map'),
+                Tab(text: 'Notifs'),
               ],
             ),
           ),
           body: const SafeArea(
             child: TabBarView(
               physics: NeverScrollableScrollPhysics(),
-              children: [ModelTestPage(), MapTestPage()],
+              children: [
+                ModelTestPage(),
+                MapTestPage(),
+                NotificationTestPage(),
+              ],
             ),
           ),
         ),

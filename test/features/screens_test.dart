@@ -8,6 +8,9 @@ import 'package:hudyat/core/theme/tokens.dart';
 import 'package:hudyat/core/widgets/rows.dart';
 import 'package:hudyat/features/card/screens/card_screen.dart';
 import 'package:hudyat/features/card/services/resolver.dart';
+import 'package:hudyat/features/check/services/flagged_store.dart';
+import 'package:hudyat/features/check/services/message_checker.dart';
+import 'package:sqlite3/sqlite3.dart' show sqlite3;
 import 'package:hudyat/features/home/screens/home_screen.dart';
 import 'package:hudyat/features/location/state/location_controller.dart';
 import 'package:hudyat/features/search/screens/search_screen.dart';
@@ -20,6 +23,8 @@ void main() {
   late LocationController location;
   late FakeRuntime runtime;
   late ModelManager models;
+  late MessageChecker checker;
+  late FlaggedStore flagged;
 
   setUp(() {
     store = fixtureStore();
@@ -27,10 +32,20 @@ void main() {
     location = LocationController(gps, store);
     runtime = FakeRuntime();
     models = ModelManager(runtime: runtime, intents: store.intents());
+    checker = MessageChecker(
+      senders: store.officialSenders(),
+      shorteners: store.linkShorteners(),
+      phrases: () => models.scamPhrases,
+    );
+    flagged = FlaggedStore(
+      sqlite3.openInMemory(),
+      senders: store.officialSenders(),
+    );
   });
   tearDown(() {
     location.dispose();
     models.dispose();
+    flagged.close();
     store.close();
   });
 
@@ -45,6 +60,8 @@ void main() {
         resolver: Resolver(store),
         location: location,
         models: models,
+        checker: checker,
+        flagged: flagged,
         child: MaterialApp(theme: hudyatTheme(), home: home),
       ),
     );

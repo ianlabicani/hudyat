@@ -106,14 +106,26 @@ class _EdgeEmbedder implements TextEmbedder {
 
   final EmbeddingModel _model;
 
+  /// One call at a time: a typed message can arrive while the scam phrases
+  /// are still being embedded in the background.
+  Future<void> _last = Future.value();
+
   @override
   Future<List<List<double>>> embed(
     List<String> texts, {
     required bool asQuery,
-  }) => _model.generateEmbeddings(
-    texts,
-    taskType: asQuery ? TaskType.retrievalQuery : TaskType.retrievalDocument,
-  );
+  }) {
+    final result = _last.then(
+      (_) => _model.generateEmbeddings(
+        texts,
+        taskType: asQuery
+            ? TaskType.retrievalQuery
+            : TaskType.retrievalDocument,
+      ),
+    );
+    _last = result.then<void>((_) {}, onError: (_) {});
+    return result;
+  }
 }
 
 class _EdgeGenerator implements TextGenerator {

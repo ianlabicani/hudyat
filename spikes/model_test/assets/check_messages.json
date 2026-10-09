@@ -1,0 +1,182 @@
+[
+  {
+    "text": "GCash Advisory: Na-hold ang iyong wallet dahil sa incomplete verification. Kumpletuhin sa link para maiwasan ang permanenteng pag-block.",
+    "scam": true
+  },
+  {
+    "text": "Your BPI account is locked for security reasons. Reactivate now using the secure link below.",
+    "scam": true
+  },
+  {
+    "text": "Hindi maihatid ang order mo dahil mali ang address. I-update at bayaran ang P30 fee dito.",
+    "scam": true
+  },
+  {
+    "text": "J&T: Your shipment is on hold. Please settle the customs duty of P99 to continue delivery.",
+    "scam": true
+  },
+  {
+    "text": "Magandang balita! Kasama ka sa listahan ng tatanggap ng P8,000 calamity assistance. I-register ang GCash mo dito.",
+    "scam": true
+  },
+  {
+    "text": "DSWD: Ikaw ay napili bilang beneficiary ng emergency cash transfer. Kunin ang ayuda sa link.",
+    "scam": true
+  },
+  {
+    "text": "Sir, taga-bangko po ako. Pakisabi ang code na pinadala sa inyo para ma-verify namin ang account.",
+    "scam": true
+  },
+  {
+    "text": "Paki-send naman yung OTP na dumating sa phone mo, sa akin dapat yun napunta.",
+    "scam": true
+  },
+  {
+    "text": "Online job, P2,000 kada araw, gamit lang ang cellphone. Mag-message sa Telegram para magsimula.",
+    "scam": true
+  },
+  {
+    "text": "Our company is looking for remote workers. Daily pay 3000 pesos. No interview needed. Reply YES.",
+    "scam": true
+  },
+  {
+    "text": "You won! Your mobile number was selected for a 75,000 peso cash prize. Send your name and address to claim.",
+    "scam": true
+  },
+  {
+    "text": "Panalo ka sa promo namin! Bayaran lang ang tax na P1,000 para makuha ang premyo mo.",
+    "scam": true
+  },
+  {
+    "text": "Ma, si Ana to. Nawala phone ko kaya bago number ko. Pasend naman ng 2k sa GCash, kailangan ko lang ngayon.",
+    "scam": true
+  },
+  {
+    "text": "Bro bagong number ko to. May emergency, pahiram muna ng pera, send mo dito sa number ko.",
+    "scam": true
+  },
+  {
+    "text": "Instant cash loan, approved agad kahit walang ID. Kunin ang P30,000 mo ngayon, click here.",
+    "scam": true
+  },
+  {
+    "text": "Loan approved. To receive the money, deposit the verification fee first.",
+    "scam": true
+  },
+  {
+    "text": "Your SIM will be deactivated within 24 hours. Register again at the link to keep your number.",
+    "scam": true
+  },
+  {
+    "text": "Maya: Unusual sign-in detected. Secure your account immediately by confirming your details.",
+    "scam": true
+  },
+  {
+    "text": "Makakatanggap ang bawat pamilyang binaha ng P7,500. Limitado ang slots, mag-apply na sa link.",
+    "scam": true
+  },
+  {
+    "text": "PhilHealth: May refund ka na P4,300. I-claim sa link at ilagay ang bank details mo.",
+    "scam": true
+  },
+  {
+    "text": "Your GCash OTP is 482913. Never share this code. If you did not request this, ignore this message.",
+    "scam": false
+  },
+  {
+    "text": "Ang iyong one-time PIN ay 771204. Huwag ibahagi kahit kanino.",
+    "scam": false
+  },
+  {
+    "text": "Your parcel is out for delivery today. Please prepare the exact amount of P350 for COD.",
+    "scam": false
+  },
+  {
+    "text": "Hi! Rider po ito, nasa labas na po ako ng gate ninyo, may delivery po kayo.",
+    "scam": false
+  },
+  {
+    "text": "Ma, pauwi na ako. Anong ulam natin mamaya?",
+    "scam": false
+  },
+  {
+    "text": "Nak, bumili ka ng bigas pag-uwi mo ha. Ingat sa byahe.",
+    "scam": false
+  },
+  {
+    "text": "Kuya, nasaan ka na? Kanina pa kami naghihintay dito sa terminal.",
+    "scam": false
+  },
+  {
+    "text": "Meeting moved to 3pm tomorrow, same room. Please confirm if you can make it.",
+    "scam": false
+  },
+  {
+    "text": "Happy birthday pare! Inom tayo sa Sabado.",
+    "scam": false
+  },
+  {
+    "text": "You have received PHP 500.00 of GCash from JU** D. Your new balance is PHP 1,240.50.",
+    "scam": false
+  },
+  {
+    "text": "Your Meralco bill for October is P2,340.15, due on Oct 20. Thank you for paying on time.",
+    "scam": false
+  },
+  {
+    "text": "NDRRMC: Orange Rainfall Warning sa Metro Manila. Nagbabanta ang pagbaha sa mabababang lugar.",
+    "scam": false
+  },
+  {
+    "text": "Walang pasok bukas sa lahat ng antas sa Marikina dahil sa bagyo, ayon sa LGU.",
+    "scam": false
+  },
+  {
+    "text": "Reminder: ang appointment mo sa dentista ay sa Biyernes, 10 AM.",
+    "scam": false
+  },
+  {
+    "text": "Globe: You have 2GB left on your promo, valid until tomorrow. Dial *143# to register again.",
+    "scam": false
+  },
+  {
+    "text": "Salamat sa pagbisita sa aming tindahan! Balik po kayo.",
+    "scam": false
+  },
+  {
+    "text": "Nasa evacuation center na kami sa covered court. Okay naman kami, may pagkain na.",
+    "scam": false
+  },
+  {
+    "text": "Tumaas na ang tubig sa kalye namin, hanggang tuhod na. Nasaan na kayo?",
+    "scam": false
+  },
+  {
+    "text": "Paki-GCash na lang yung hati mo sa kuryente, P650. Salamat!",
+    "scam": false
+  },
+  {
+    "text": "Your booking is confirmed. Driver will arrive in 5 minutes. Plate number ABC 1234.",
+    "scam": false
+  },
+  {
+    "text": "Good morning po, pwede po bang magpa-schedule ng check-up bukas?",
+    "scam": false
+  },
+  {
+    "text": "Anak, napadala ko na yung allowance mo sa bangko. Tipirin mo ha.",
+    "scam": false
+  },
+  {
+    "text": "Shopee: Your order has been shipped and will arrive in 2 to 3 days.",
+    "scam": false
+  },
+  {
+    "text": "Class suspended today. Modules will be sent through the group chat.",
+    "scam": false
+  },
+  {
+    "text": "Barangay advisory: may libreng bakuna sa health center sa Sabado, 8 AM hanggang 12 NN.",
+    "scam": false
+  }
+]

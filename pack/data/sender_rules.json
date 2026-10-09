@@ -1,0 +1,107 @@
+{
+  "aliases": {
+    "dole.gov.ph": [
+      "DOLE"
+    ],
+    "deped.gov.ph": [
+      "DepEd"
+    ],
+    "dost.gov.ph": [
+      "DOST"
+    ],
+    "dotr.gov.ph": [
+      "DOTr"
+    ],
+    "philhealth.gov.ph": [
+      "PhilHealth"
+    ],
+    "pagibigfund.gov.ph": [
+      "Pag-IBIG",
+      "Pagibig",
+      "Pag-IBIG Fund"
+    ],
+    "phlpost.gov.ph": [
+      "PHLPost",
+      "Philpost",
+      "Post Office"
+    ],
+    "customs.gov.ph": [
+      "BOC"
+    ],
+    "ched.gov.ph": [
+      "CHED"
+    ],
+    "pagcor.ph": [
+      "PAGCOR"
+    ],
+    "pao.gov.ph": [
+      "PAO"
+    ],
+    "napolcom.gov.ph": [
+      "NAPOLCOM"
+    ],
+    "ombudsman.gov.ph": [
+      "Ombudsman"
+    ],
+    "dswd.gov.ph": [
+      "4Ps"
+    ],
+    "sss.gov.ph": [
+      "My.SSS"
+    ],
+    "lto.gov.ph": [
+      "LTMS"
+    ]
+  },
+  "blocked_acronyms": [
+    "DA",
+    "DAR",
+    "PIA",
+    "NIA",
+    "SEC",
+    "CPA",
+    "NYC",
+    "PMS",
+    "GAB",
+    "NDA",
+    "ECC",
+    "OTS",
+    "PCC",
+    "PSC",
+    "BCS",
+    "BLR",
+    "IFC",
+    "ILS",
+    "PCA",
+    "PCO",
+    "PHC",
+    "PMO",
+    "PPA",
+    "PRA",
+    "TPB",
+    "TRB",
+    "CDA",
+    "ADB",
+    "IMF",
+    "ILO",
+    "IOM",
+    "WFP"
+  ],
+  "shorteners": [
+    "bit.ly",
+    "tinyurl.com",
+    "t.co",
+    "cutt.ly",
+    "is.gd",
+    "rb.gy",
+    "goo.gl",
+    "shorturl.at",
+    "tiny.cc",
+    "ow.ly",
+    "s.id",
+    "rebrand.ly",
+    "t.ly",
+    "lnk.bio",
+    "linktr.ee"
+  ]
+}

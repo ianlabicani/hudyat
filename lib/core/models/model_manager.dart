@@ -2,8 +2,10 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 
+import '../../features/check/services/scam_phrases.dart';
 import '../../features/intent/services/intent_matcher.dart';
 import '../pack/pack_record.dart';
+import '../pack/scam_records.dart';
 import 'model_runtime.dart';
 
 enum ModelState { checking, preparing, missing, downloading, ready, failed }
@@ -16,11 +18,17 @@ class ModelManager extends ChangeNotifier {
     required this._runtime,
     required this._intents,
     this.cacheFile,
+    this.scamExamples = const [],
+    this.scamCacheFile,
   });
 
   final ModelRuntime _runtime;
   final List<IntentDef> _intents;
   final File? cacheFile;
+
+  /// Scam wording for the message check's phrasing step.
+  final List<ScamExample> scamExamples;
+  final File? scamCacheFile;
 
   ModelState embeddingState = ModelState.checking;
   ModelState chatState = ModelState.checking;
@@ -34,6 +42,14 @@ class ModelManager extends ChangeNotifier {
 
   IntentMatcher? matcher;
   TextGenerator? generator;
+
+  /// The phrasing check, set once its examples are embedded. That happens
+  /// after everything else, so it never delays "Find help".
+  ScamPhrases? scamPhrases;
+
+  /// 0 to 100 while the scam examples are being embedded, else null.
+  int? scamProgress;
+  TextEmbedder? _embedder;
 
   bool get canDownload => _runtime.canDownload;
   bool get allReady =>
@@ -64,15 +80,46 @@ class ModelManager extends ChangeNotifier {
     }
     await _embedding(_runtime.loadEmbedder);
     await _chat(_runtime.loadGenerator);
+    await _scam();
   }
 
-  Future<void> downloadEmbedding() => _embedding(
-    () => _runtime.downloadEmbedder((percent) {
-      embeddingProgress = percent;
-      notifyListeners();
-    }),
-    downloading: true,
-  );
+  /// Embeds the scam examples with whichever embedder is loaded. A failure
+  /// leaves the message check on its link and sender rules.
+  Future<void> _scam() async {
+    final embedder = _embedder;
+    if (embedder == null || scamExamples.isEmpty) return;
+    final prepared = ScamPhrases(
+      embedder: embedder,
+      examples: scamExamples,
+      cacheFile: scamCacheFile,
+    );
+    scamProgress = 0;
+    notifyListeners();
+    try {
+      await prepared.prepare(
+        onProgress: (done, total) {
+          scamProgress = (done * 100 / total).round();
+          notifyListeners();
+        },
+      );
+      scamPhrases = prepared;
+    } on Object {
+      scamPhrases = null;
+    }
+    scamProgress = null;
+    notifyListeners();
+  }
+
+  Future<void> downloadEmbedding() async {
+    await _embedding(
+      () => _runtime.downloadEmbedder((percent) {
+        embeddingProgress = percent;
+        notifyListeners();
+      }),
+      downloading: true,
+    );
+    await _scam();
+  }
 
   Future<void> downloadChat() => _chat(
     () => _runtime.downloadGenerator((percent) {
@@ -91,6 +138,7 @@ class ModelManager extends ChangeNotifier {
     notifyListeners();
     try {
       final embedder = await obtain();
+      _embedder = embedder;
       if (embedder == null) {
         embeddingState = ModelState.missing;
       } else {
@@ -116,6 +164,7 @@ class ModelManager extends ChangeNotifier {
       }
     } on Object catch (error) {
       matcher = null;
+      _embedder = null;
       embeddingState = ModelState.failed;
       embeddingError = '$error';
     }

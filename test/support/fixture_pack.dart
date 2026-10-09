@@ -34,6 +34,9 @@ class FakeEmbedder implements TextEmbedder {
     'passport',
     'klinika',
     'ubo',
+    'na-lock',
+    'i-verify',
+    'ayuda',
   ];
 
   int calls = 0;
@@ -136,6 +139,18 @@ CREATE VIRTUAL TABLE records_fts USING fts5 (
 CREATE TABLE intents (
   id TEXT PRIMARY KEY, label TEXT NOT NULL, examples TEXT NOT NULL,
   hotline_categories TEXT NOT NULL, place_kinds TEXT NOT NULL
+);
+CREATE TABLE official_senders (
+  id INTEGER PRIMARY KEY, name TEXT NOT NULL, short TEXT NOT NULL,
+  kind TEXT NOT NULL, aliases TEXT NOT NULL, strict_aliases TEXT NOT NULL,
+  domains TEXT NOT NULL, phones TEXT NOT NULL, source_url TEXT
+);
+CREATE TABLE scam_examples (
+  id INTEGER PRIMARY KEY, text TEXT NOT NULL, type TEXT NOT NULL,
+  type_label TEXT NOT NULL
+);
+CREATE TABLE scam_reasons (
+  id TEXT PRIMARY KEY, tl TEXT NOT NULL, en TEXT NOT NULL, fact TEXT NOT NULL
 );
 ''');
 
@@ -347,5 +362,103 @@ CREATE TABLE intents (
   );
 
   db.execute("INSERT INTO records_fts (records_fts) VALUES ('rebuild')");
+
+  meta('link_shorteners', jsonEncode(['bit.ly', 'tinyurl.com']));
+  void sender(
+    String name,
+    String kind,
+    List<String> aliases,
+    List<String> domains, {
+    String? short,
+    List<String> strict = const [],
+    List<(String, String?)> phones = const [],
+  }) => db.execute(
+    'INSERT INTO official_senders (name, short, kind, aliases, '
+    'strict_aliases, domains, phones) VALUES (?, ?, ?, ?, ?, ?, ?)',
+    [
+      name,
+      short ?? name,
+      kind,
+      jsonEncode(aliases),
+      jsonEncode(strict),
+      jsonEncode(domains),
+      jsonEncode([
+        for (final (display, dial) in phones)
+          {'display': display, 'dial': dial},
+      ]),
+    ],
+  );
+  sender(
+    'GCash',
+    'company',
+    ['GCash'],
+    ['gcash.com'],
+    phones: [('(02) 7213-9999', '0272139999'), ('2882', '2882')],
+  );
+  sender('BDO', 'company', ['BDO', 'Banco de Oro'], ['bdo.com.ph']);
+  sender(
+    'Smart',
+    'company',
+    ['Smart Communications'],
+    ['smart.com.ph'],
+    strict: ['Smart'],
+  );
+  sender('Maya', 'company', ['PayMaya'], ['maya.ph'], strict: ['Maya']);
+  sender(
+    'Department of Social Welfare and Development',
+    'agency',
+    ['Department of Social Welfare and Development', 'DSWD'],
+    ['dswd.gov.ph'],
+    short: 'DSWD',
+  );
+  sender(
+    'Social Security System',
+    'agency',
+    ['Social Security System', 'SSS'],
+    ['sss.gov.ph'],
+    short: 'SSS',
+  );
+
+  void example(String text, String label) => db.execute(
+    'INSERT INTO scam_examples (text, type, type_label) VALUES (?, ?, ?)',
+    [text, 'test', label],
+  );
+  example('Na-lock ang account mo, i-verify agad', 'Na-lock na account');
+  example('Kwalipikado ka sa ayuda, i-claim na', 'Pekeng ayuda');
+
+  void reason(String id, String tl, String en, String fact) => db.execute(
+    'INSERT INTO scam_reasons VALUES (?, ?, ?, ?)',
+    [id, tl, en, fact],
+  );
+  reason(
+    'link_lookalike',
+    'Ginagaya ng link na {domain} ang {org}.',
+    'The link {domain} imitates {org}.',
+    'Opisyal: {official}',
+  );
+  reason(
+    'link_not_official',
+    'Hindi opisyal na website ng {org} ang {domain}.',
+    'The link {domain} is not the official {org} website.',
+    'Opisyal: {official}',
+  );
+  reason(
+    'sender_mobile',
+    'Nagpapakilalang {org} pero galing sa mobile number.',
+    'Claims to be {org} but comes from a mobile number.',
+    'Galing sa: {sender}',
+  );
+  reason(
+    'link_shortener',
+    'Pinaikli ang link.',
+    'The link is shortened.',
+    'Link: {domain}',
+  );
+  reason(
+    'phrasing',
+    'Kahawig ito ng mga kilalang scam.',
+    'Close to known scam messages.',
+    'Uri: {type}',
+  );
   return PackStore(db);
 }

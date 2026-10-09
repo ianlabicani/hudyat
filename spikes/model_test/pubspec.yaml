@@ -39,6 +39,7 @@ dependencies:
   path_provider: ^2.1.6
   flutter_edge_ai_litertlm: ^1.10.1
   flutter_edge_ai_embeddings: ^2.2.2
+  notification_listener_service: ^1.0.0
 
 dev_dependencies:
   flutter_test:
@@ -64,6 +65,8 @@ flutter:
   assets:
     - assets/intents.json
     - assets/test_messages.json
+    - assets/scam_examples.json
+    - assets/check_messages.json
     - assets/metro-manila.pmtiles
 
   # To add assets to your application, add an assets section, like this:

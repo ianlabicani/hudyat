@@ -11,6 +11,7 @@ import '../../../core/widgets/buttons.dart';
 import '../../../core/widgets/panels.dart';
 import '../../card/card_labels.dart';
 import '../../card/screens/card_screen.dart';
+import '../../check/screens/check_screen.dart';
 import '../../location/screens/pick_city_screen.dart';
 import '../../location/state/location_controller.dart';
 import '../../intent/services/intent_matcher.dart';
@@ -216,9 +217,29 @@ class _HomeScreenState extends State<HomeScreen> {
                   onTap: _openCard,
                 ),
                 const SizedBox(height: 10),
-                SecondaryButton(
-                  label: 'Look up agencies, officials, services',
-                  onPressed: _search,
+                Row(
+                  crossAxisAlignment: .start,
+                  spacing: 10,
+                  children: [
+                    Expanded(
+                      child: _TwoLineButton(
+                        label: 'Look up',
+                        gloss: 'Agencies, officials',
+                        onPressed: _search,
+                      ),
+                    ),
+                    Expanded(
+                      child: _TwoLineButton(
+                        label: 'Check a message',
+                        gloss: 'Suriin ang mensahe',
+                        onPressed: () => Navigator.of(context).push(
+                          MaterialPageRoute<void>(
+                            builder: (_) => const CheckScreen(),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 20),
                 DecoratedBox(
@@ -337,6 +358,49 @@ class _EmergencyButton extends StatelessWidget {
               fontWeight: .w500,
               color: HudyatColors.surface,
             ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// One of the two outlined buttons under the quick buttons: a bold label
+/// with a smaller line beneath it.
+class _TwoLineButton extends StatelessWidget {
+  const _TwoLineButton({
+    required this.label,
+    required this.gloss,
+    required this.onPressed,
+  });
+
+  final String label;
+  final String gloss;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return OutlinedButton(
+      onPressed: onPressed,
+      style: OutlinedButton.styleFrom(
+        foregroundColor: HudyatColors.ink,
+        side: HudyatShape.secondaryBorder,
+        minimumSize: const Size.fromHeight(52),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+        shape: const RoundedRectangleBorder(borderRadius: HudyatShape.radius),
+      ),
+      child: Column(
+        mainAxisSize: .min,
+        children: [
+          Text(
+            label,
+            textAlign: .center,
+            style: HudyatText.bodyBold.copyWith(fontSize: 15),
+          ),
+          Text(
+            gloss,
+            textAlign: .center,
+            style: HudyatText.gloss.copyWith(fontSize: 13),
           ),
         ],
       ),

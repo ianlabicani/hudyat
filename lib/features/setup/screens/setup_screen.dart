@@ -36,7 +36,7 @@ class SetupScreen extends StatelessWidget {
               const SizedBox(height: 8),
               const Text(
                 'After this, Hudyat works in airplane mode, and nothing you '
-                'type leaves your phone.',
+                'type or receive leaves your phone.',
                 style: HudyatText.secondary,
               ),
               const SizedBox(height: 18),

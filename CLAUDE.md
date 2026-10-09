@@ -10,7 +10,7 @@ The design spec is `docs/superpowers/specs/2026-10-09-hudyat-design.md`. Read it
 
 ## Current state
 
-Built on branch `feat/mvp`, with Dart tests: the pack builder (`pack/`), `PackStore`, `Resolver`, `LocationService`, keyword search, the model layer (`ModelManager`, `IntentMatcher`, `Explainer`) and the Home, Card, city picker, Search, No match, Setup and Map screens. Not built yet: the message check (spec 3.4) and first-aid cards. `IntentMatcher` uses threshold 0.49 and an escalation margin of 0.04, both measured on the phone (28 of 33 test messages).
+Built on branch `feat/mvp`, with Dart tests: the pack builder (`pack/`), `PackStore`, `Resolver`, `LocationService`, keyword search, the model layer (`ModelManager`, `IntentMatcher`, `Explainer`) and the Home, Card, city picker, Search, No match, Setup and Map screens. The message check (spec 3.4) has its manual path: pack tables, `MessageChecker`, `ScamPhrases`, `FlaggedStore`, `ShareEntry` (Android side in `ShareActivity.kt`) and the Check, Result and Flagged screens. `ScamPhrases.defaultThreshold` is a placeholder until the scam export run on the phone. Not built yet: automatic checking from notifications, the AI note on results, and first-aid cards. `IntentMatcher` uses threshold 0.49 and an escalation margin of 0.04, both measured on the phone (28 of 33 test messages).
 
 The pack and map ship as assets (`assets/pack/`). The 53 MB map file is git-ignored; rebuild it with `bun run map` in `pack/`. The throwaway model and map test app is in `spikes/model_test/` and is excluded from analysis.
 

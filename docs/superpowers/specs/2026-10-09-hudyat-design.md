@@ -172,20 +172,30 @@ model.
 - **Look-alike:** the domain contains an organisation's name or acronym
   (`gcash-verify.com`, `dswd-ayuda.net`) but is not that organisation's
   listed domain or a subdomain of it.
-- **Not theirs:** the text names an organisation and has a link that is
-  not on that organisation's domain.
+- **Not theirs:** the text claims to be from an organisation and has a
+  link that is not on that organisation's domain.
 - **Shortener:** the link goes through `bit.ly` or a similar service, so
-  the destination cannot be seen.
+  the destination cannot be seen. This is a soft reason even when an
+  organisation is claimed, since real senders use shorteners too.
 - A link to an ordinary site that is not in the pack gives no reason
-  when the text names no organisation.
+  when the text claims no organisation.
+
+**Claiming is more than mentioning.** "Paki-GCash na lang yung hati mo"
+names GCash without pretending to be it. A message claims an
+organisation when the name opens it as a label ("GCash:", "DSWD
+Advisory"), follows "from", "mula sa", "galing sa" or "taga-", follows
+"your" or "iyong", follows "agent ng" or "customer service ng", or is
+followed by "account mo" and the like. The link and sender rules use the
+claim, not the mention. A look-alike link needs no claim.
 
 **Sender rules.**
 
 - Real messages from agencies, banks and e-wallets arrive under a sender
   name, not the landline in the pack, so the sending number is never
   compared with the official number.
-- The one sender reason: the text names a listed organisation and the
-  sender is an ordinary mobile number (`09…` or `+639…`).
+- The one sender reason: the text claims to be from a listed
+  organisation and the sender is an ordinary mobile number (`09…` or
+  `+639…`).
 - A sender name such as "GCash" gives no reason either way, because
   sender names can be faked.
 - With no sender given (paste without the optional field, share, text
@@ -193,17 +203,18 @@ model.
 
 **Name matching.** Full name or a listed alias, as a whole word,
 ignoring case. Acronyms need three or more letters. Acronyms that are
-also ordinary words are left out. Smart, Globe, Maya and DITO count only
-when capitalised or next to a word such as "account", "load" or "SIM".
+also ordinary words are left out, and a three-letter acronym counts only
+in capitals. Smart, Globe, Maya and DITO count only when capitalised and
+the message also has a word such as "account", "load" or "SIM".
 
 **From reasons to a verdict.**
 
 | Finding | Verdict |
 |---|---|
 | A look-alike link | Mukhang scam |
-| An organisation is named and a link is not theirs | Mukhang scam |
+| An organisation is claimed and a link is not theirs | Mukhang scam |
 | Any two different reasons | Mukhang scam |
-| Exactly one of: organisation named from a mobile number, phrasing match, shortener link | Mag-ingat |
+| Exactly one of: organisation claimed from a mobile number, phrasing match, shortener link | Mag-ingat |
 | Nothing found | Walang nakitang problema |
 
 The phrasing check alone never gives "Mukhang scam".
@@ -512,7 +523,7 @@ submission disclosures.
 | Models | Gemma 3 1B, EmbeddingGemma |
 | Reading notifications | `notification_listener_service` |
 | Posting alerts | `flutter_local_notifications` |
-| Share sheet and selection menu | `receive_sharing_intent`, plus an Android `PROCESS_TEXT` intent filter |
+| Share sheet and selection menu | A small Android activity (`ShareActivity`) with `SEND` and `PROCESS_TEXT` intent filters, passing the text to the app over a method channel. No package |
 
 The three message-check packages are untested on the Infinix and on
 Android 16.
@@ -579,7 +590,7 @@ checkpoint.
 - **Models:** Gemma 3 1B, EmbeddingGemma.
 - **Frameworks and libraries:** Flutter, `flutter_edge_ai`, `sqlite3`,
   `maplibre_gl`, `notification_listener_service`,
-  `flutter_local_notifications`, `receive_sharing_intent`.
+  `flutter_local_notifications`.
 - **Data:** BetterGov open data, OpenStreetMap, own lists of company
   websites and scam examples.
 - **Cloud use:** first-run download of models and packs only.

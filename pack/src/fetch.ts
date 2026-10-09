@@ -56,6 +56,7 @@ async function download(url: string, target: string, init?: RequestInit): Promis
 
 await download(`${HOTLINES}/hotlines.json`, "hotlines.json");
 await download(`${BETTERGOV}/philippines_hotlines.json`, "philippines_hotlines.json");
+await download(`${BETTERGOV}/websites.json`, "websites.json");
 for (const name of DIRECTORY_FILES) {
   await download(`${BETTERGOV}/directory/${name}.json`, `directory/${name}.json`);
 }

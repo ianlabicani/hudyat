@@ -1,9 +1,10 @@
-import 'dart:convert';
 import 'dart:io';
-import 'dart:math' as math;
 
+import '../../../core/models/example_vectors.dart';
 import '../../../core/models/model_runtime.dart';
 import '../../../core/pack/pack_record.dart';
+
+export '../../../core/models/example_vectors.dart' show cosine;
 
 /// The decision step's whole output: an intent id and a score, never text.
 class IntentMatch {
@@ -11,17 +12,6 @@ class IntentMatch {
 
   final String intentId;
   final double score;
-}
-
-double cosine(List<double> a, List<double> b) {
-  var dot = 0.0, normA = 0.0, normB = 0.0;
-  for (var i = 0; i < a.length; i++) {
-    dot += a[i] * b[i];
-    normA += a[i] * a[i];
-    normB += b[i] * b[i];
-  }
-  if (normA == 0 || normB == 0) return 0;
-  return dot / (math.sqrt(normA) * math.sqrt(normB));
 }
 
 /// Maps a message to one of the pack's fixed intents by comparing its
@@ -58,44 +48,21 @@ class IntentMatcher {
   /// on this phone once and always match its model.
   final File? cacheFile;
 
-  final _ids = <String>[];
-  final _vectors = <List<double>>[];
+  late final _ids = [
+    for (final intent in _intents)
+      for (final _ in intent.examples) intent.id,
+  ];
+  late final _examples = ExampleVectors(
+    embedder: _embedder,
+    phrases: [for (final intent in _intents) ...intent.examples],
+    cacheFile: cacheFile,
+  );
 
-  bool get isReady => _vectors.isNotEmpty;
+  bool get isReady => _examples.isReady;
 
   /// Embeds every example phrase, or reads them back from the cache.
-  /// Embedding takes about a second per phrase on a phone, so [onProgress]
-  /// reports how many are done.
-  Future<void> prepare({void Function(int done, int total)? onProgress}) async {
-    final phrases = <String>[];
-    final ids = <String>[];
-    for (final intent in _intents) {
-      for (final example in intent.examples) {
-        ids.add(intent.id);
-        phrases.add(example);
-      }
-    }
-    final key = _fingerprint(phrases);
-    var vectors = _readCache(key);
-    if (vectors == null || vectors.length != phrases.length) {
-      vectors = [];
-      const batch = 5;
-      for (var start = 0; start < phrases.length; start += batch) {
-        final end = (start + batch).clamp(0, phrases.length);
-        vectors.addAll(
-          await _embedder.embed(phrases.sublist(start, end), asQuery: false),
-        );
-        onProgress?.call(end, phrases.length);
-      }
-      _writeCache(key, vectors);
-    }
-    _ids
-      ..clear()
-      ..addAll(ids);
-    _vectors
-      ..clear()
-      ..addAll(vectors);
-  }
+  Future<void> prepare({void Function(int done, int total)? onProgress}) =>
+      _examples.prepare(onProgress: onProgress);
 
   /// The intent to act on for [message], or null when the message should go
   /// to keyword search instead: nothing scored high enough, or the best
@@ -127,49 +94,13 @@ class IntentMatcher {
   /// intent is as close as its single nearest phrase: on the phone that beat
   /// averaging several phrases or comparing with an intent's centre.
   Future<List<IntentMatch>> scoreAll(String message) async {
-    if (!isReady || message.trim().isEmpty) return const [];
-    final query = (await _embedder.embed([message], asQuery: true)).single;
+    final scores = await _examples.scores(message);
     final best = <String, double>{};
-    for (var i = 0; i < _vectors.length; i++) {
-      final score = cosine(query, _vectors[i]);
-      if (score > (best[_ids[i]] ?? -1)) best[_ids[i]] = score;
+    for (var i = 0; i < scores.length; i++) {
+      if (scores[i] > (best[_ids[i]] ?? -1)) best[_ids[i]] = scores[i];
     }
     return [
       for (final entry in best.entries) IntentMatch(entry.key, entry.value),
     ]..sort((a, b) => b.score.compareTo(a.score));
-  }
-
-  /// Changes whenever the phrases do, so a stale cache is never used.
-  String _fingerprint(List<String> phrases) {
-    var hash = 0xcbf29ce484222325;
-    for (final unit in utf8.encode(phrases.join('\n'))) {
-      hash = ((hash ^ unit) * 0x100000001b3) & 0x7fffffffffffffff;
-    }
-    return hash.toRadixString(16);
-  }
-
-  List<List<double>>? _readCache(String key) {
-    final file = cacheFile;
-    if (file == null || !file.existsSync()) return null;
-    try {
-      final json = jsonDecode(file.readAsStringSync()) as Map<String, dynamic>;
-      if (json['key'] != key) return null;
-      return [
-        for (final vector in json['vectors'] as List)
-          [for (final value in vector as List) (value as num).toDouble()],
-      ];
-    } on Object {
-      return null;
-    }
-  }
-
-  void _writeCache(String key, List<List<double>> vectors) {
-    try {
-      cacheFile?.writeAsStringSync(
-        jsonEncode({'key': key, 'vectors': vectors}),
-      );
-    } on FileSystemException {
-      // The cache only saves time; matching works without it.
-    }
   }
 }

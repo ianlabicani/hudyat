@@ -1,16 +1,68 @@
 # Hudyat: demo video script
 
-- **Date:** 2026-10-09
-- **Status:** draft, not rehearsed on the phone
-- **Built from:** stories 1 (Lola Nena) and 3 (the Reyes family) in
+- **Date:** 2026-10-10
+- **Built from:** stories 2 (Marco) and 3 (the Reyes family) for the
+  submission video; stories 1 (Lola Nena) and 3 for the long version, in
   [the user stories](stories/2026-10-09-user-stories.md)
-- **Length:** about 3 minutes. The time limit was not checked; confirm
-  it in the submission rules and cut from the marked lines if needed.
 
-Everything shown is a screen recording of the Infinix. Nothing is
-mocked. The narration never says more than the stories do.
+Two versions. The **submission video** is about 1 minute, which is what
+the hackathon's submission rules ask for. The **long version** below it
+is the live demo for Demo Day, where finalists get 5 minutes of demo and
+3 minutes of questions.
 
-## Before recording
+## Submission video (1 minute)
+
+An animated video made in Remotion, kept outside this repository in
+`~/Desktop/hudyat-video`. The app screens in it are **recreated**, not
+recorded, and the end card says so. Every label on them is copied from the
+Dart screens, and every number, reason and first-aid step from the pack
+built 2026-10-09. Real screenshots go in the submission form separately.
+
+Judging weights it is cut for: Problem & Usefulness 25%, Local AI
+Implementation 25%, Technical Execution 20%, Innovation 15%, Product &
+Demo Quality 15%.
+
+| Time | Scene | On screen | Voice-over |
+|---|---|---|---|
+| 0:00–0:06 | Problem | Signal bars drop to none; fake "ayuda" texts pop in | "A typhoon takes the signal, just when you need to know who to call. Then the fake ayuda texts start." |
+| 0:06–0:09 | Logo | The mark and "AI on the phone. Works in airplane mode" | "Hudyat keeps the AI on the phone." |
+| 0:09–0:21 | Understand | Home with the airplane icon; "Binabaha na dito, hanggang tuhod na, may matanda kami" types in; the strip "Understood: Flood rescue · AI on this phone"; pick Pasig | "Airplane mode. Liza types in Taglish. A model on the phone understands: flood rescue." |
+| 0:21–0:29 | Card | Pasig City DRRMO Emergency Hotline, 86430000, with Call and the pack build date | "The AI picks what she needs. The number is copied from data, never written by AI." |
+| 0:29–0:38 | First aid | "nasugatan si tatay, ang daming dugo, ayaw tumigil"; the "Malakas na pagdurugo" steps; source British Red Cross | "Her father is bleeding. Fixed first-aid steps, source named. The AI chose the card, not the steps." |
+| 0:38–0:50 | Scam | "BDO Advisory: your account will be closed today. Update here" with a short link, shared in; "Mukhang scam"; the short-link and BSP reasons; BDO's contact | "Then a fake bank text. Share it to Hudyat. Mukhang scam, with each reason listed. And the bank's real contact." |
+| 0:50–0:56 | Why local | EmbeddingGemma, Gemma 3 1B, Infinix X6876 | "Two open models, on a budget phone. Nothing you type or receive leaves it." |
+| 0:56–1:00 | End card | The mark; credits; `#AppBuildersPH`; "App screens recreated for this video" | "Hudyat. Help that works with no signal." |
+
+What the video leaves out on purpose:
+
+- **No timing figure.** The app's strip shows how long the model took;
+  the video's strip does not, because no figure was measured for it.
+- **No wording-check reason in the scam scene.** That verdict comes from
+  the short-link and bank-link rules, so only those two reasons show.
+- The closed-app alert, the widget, the offline map and tap-to-call.
+  They are in the long version.
+
+Not confirmed on the phone: that the bleeding message is understood as
+"Injury" with the "Severe bleeding" card. Rehearsal step 6 below checks
+it; if the phone says otherwise, change the strip in the video's
+`src/scenes/Help.tsx` before posting.
+
+To render: `./render-final.sh` in the video folder. For the voice-over,
+run `ELEVENLABS_API_KEY=... node scripts/make-vo.mjs` first, then render
+again; ElevenLabs then belongs in the AI-tools disclosure.
+
+After rendering: post it on X or LinkedIn, tag Devin / Cognition, add
+`#AppBuildersPH`, and paste the post's URL into the submission form.
+
+## Long version (Demo Day, 5-minute live demo)
+
+- **Status:** draft, not rehearsed on the phone
+- **Length:** about 3 minutes, which leaves room inside the 5.
+
+Everything shown is the Infinix itself. Nothing is mocked. The narration
+never says more than the stories do.
+
+### Before recording
 
 Do these in order. Each one changes what the camera sees.
 
@@ -38,14 +90,14 @@ The scam text to send from the second phone:
 
 > GCash: Your account is locked. Verify now at gcash-verify. com
 
-## Part 0: the problem (0:00 to 0:15)
+### Part 0: the problem (0:00 to 0:15)
 
 | Screen | Narration |
 |---|---|
 | Title card: "Hudyat" and the product line | "When a typhoon takes the signal, two things happen. People cannot look up who to call. And the fake ayuda texts start arriving." |
 | The phone's home screen with the widget | "So Hudyat keeps the official numbers and the AI on the phone itself. Not on a rescuer's laptop or an office server — on this phone, a ₱6,000 phone, because that is what is inside the flood zone." |
 
-## Part 1: Lola Nena (0:15 to 1:20)
+### Part 1: Lola Nena (0:15 to 1:20)
 
 | # | Screen | Action | Narration |
 |---|---|---|---|
@@ -64,7 +116,7 @@ line 5 to "Opening Hudyat checks her texts at once."
 
 **Cut first if short on time:** step 7.
 
-## Part 2: the Reyes family (1:20 to 2:35)
+### Part 2: the Reyes family (1:20 to 2:35)
 
 Airplane mode stays on and the icon stays in frame.
 
@@ -90,13 +142,13 @@ Infinix.
 dashed box once and say "This part is AI-written and labelled. The card
 did not wait for it." Do not read the sentences out.
 
-## Part 3: why local, and what it does not do (2:35 to 3:00)
+### Part 3: why local, and what it does not do (2:35 to 3:00)
 
 | Screen | Narration |
 |---|---|
 | Home screen with the pack line and "Ready offline" | "Two open models run on this budget phone: EmbeddingGemma decides, Gemma writes. Nothing Lola Nena receives and nothing Liza types leaves the device." |
 | Result screen, "Walang nakitang problema" with the "This is not a guarantee" notice | "Hudyat never tells you a message is safe. It tells you what it found, and who to really call." |
-| Credits: BetterGov open data, OpenStreetMap contributors, first-aid sources, Claude Code | "Built in one night on open data. Hudyat." |
+| Credits: BetterGov open data, OpenStreetMap contributors, first-aid sources, Claude Code, Devin, Codex | "Built in one night on open data. Hudyat." |
 
 ## Lines that must not be said
 

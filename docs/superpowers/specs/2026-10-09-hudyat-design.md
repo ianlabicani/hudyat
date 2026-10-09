@@ -378,7 +378,7 @@ widget. It does not read notifications.
   that nothing leaves the phone before the user turns it on.
 - **Alerts:** one Android notification for each new "Mukhang scam" text:
   the title names the sender, the body is the first reason, and
-  "Tingnan" opens the Flagged list. Texts already in the inbox when the
+  "View result" opens that message's saved result. Texts already in the inbox when the
   check is turned on are counted but not alerted. An alert comes at
   the next check. Checks are scheduled about every 12 hours. Android may
   delay them. Opening Hudyat also checks recent texts.
@@ -693,11 +693,11 @@ submission disclosures.
 | Result | No official sender matched | No contact section; one line says why | `CheckResultClear` |
 | Result | Gambling promo | "Mag-ingat" with the fixed gambling reason; the fact line names the brand or the link's domain. In place of a contact, a "Want fewer of these?" section: "Block this sender in Messages" when there is an SMS sender, how many promos that sender has sent when two or more are kept, the pack's Mental Health Crisis Line with Call, and one sentence on PAGCOR's exclusion programme with its website from the pack. Shown on any result with a gambling reason, whatever the verdict | Rule only |
 | Result | Flagged, sender given | "Open in Messages / Buksan sa Messages" opens that sender's conversation in the SMS app, with one line saying Hudyat cannot delete texts. A snackbar if it cannot open | Rule only |
-| Result | No sender given | The Sender row reads "Not given / Hindi ibinigay" | Rule only |
+| Result | No sender given | On a "Walang nakitang problema" result, the Sender row under "What was checked" reads "Not given / Hindi ibinigay". A flagged result shows no Sender row | Rule only |
 | Result | Scam phrases not ready | The Phrasing row reads "Not ready yet"; the verdict comes from links and sender | Rule only |
 | Result | Chat model missing or slow | No `AiNote`; nothing else changes | Rule only |
 | Result | Note names a number or link that is not in the reasons, or calls the message safe | The `AiNote` is dropped; nothing else changes | Rule only |
-| Alert | A new Mukhang scam text found by the timed check | Standard Android notification: sender in the title, first reason in the body, one "Tingnan" action that opens the Flagged list | `ScamAlert` |
+| Alert | A new Mukhang scam text found by the timed check | Standard Android notification: sender in the title, first reason in the body, one "View result" action that opens that message's saved result | `ScamAlert` |
 | Flagged | Has messages | "n messages kept · m senders" and Clear all, then one row per sender (sender and app together; texts with no sender share "Sender not given"): the worst verdict's tag, the sender, counts per kind ("Mukhang scam", "Mag-ingat", and "Sugal promo" for texts whose only reason is a gambling promo), the newest text on one line and the total. Senders with a "Mukhang scam" text come first, then the newest. A row opens that sender's messages. One line says clearing does not delete anything from the SMS app | `Flagged` |
 | Flagged sender | Has messages | The sender in the top bar and "n messages kept", then three groups, each with its count: "Mukhang scam", "Mag-ingat" and "Sugal promo"; each row opens its result and has a "Remove from this list" icon button. Removing the last one returns to the Flagged list. One line says removing does not delete the text from the SMS app | `Flagged` |
 | Flagged | Empty | "No flagged messages" and a link to Automatic checking | Rule only |

@@ -52,13 +52,14 @@ calls. Her apo set the phone up.
 **An ordinary week.**
 
 1. A text arrives: "GCash: your account is locked, verify at
-   gcash-verify. com".
+   gcash-verify.com".
 2. Hudyat checks the text as it arrives, on the phone, with no model
    load and no network.
-3. A notification appears. The title is the sender; the body is the
-   reason: the link is not GCash's official website.
+3. A notification appears. The title names the sender; the body is the
+   first reason, in Tagalog: the link imitates GCash but is not its
+   official website.
 4. She taps "View result" and the saved result opens. It reads
-   "Mukhang scam", with the reason in plain English and the real GCash
+   "Mukhang scam", with each reason in plain English and the real GCash
    contact with a Call button.
 5. She calls the real number or shows her apo. She does not tap the
    link.
@@ -100,9 +101,10 @@ phone. He is the one his parents ask "totoo ba ito?".
 4. The result shows "Mukhang scam", each reason on its own line, and
    BDO's real contact from the pack with a Call button. One reason says
    the BSP tells banks and e-wallets not to send links by text.
-5. The Sender row reads "Not given / Hindi ibinigay", because a shared
-   message carries no sender. The result says the sender check was
-   skipped.
+5. A shared message carries no sender, so the result quotes the text
+   with no sender line and the verdict rests on the link and the
+   wording. The result does not say that the sender check was left
+   out.
 6. If the chat model is ready, a dashed box labelled as AI-written adds
    one or two sentences. If not, nothing else changes.
 
@@ -111,7 +113,9 @@ phone. He is the one his parents ask "totoo ba ito?".
 - Without notification access he does the sharing himself; with it,
   the message's notification is checked as it arrives.
 - With no sender, one of the checks cannot run, so the verdict rests on
-  the link and the wording.
+  the link and the wording. Only a "Walang nakitang problema" result
+  lists what was checked, with the Sender row reading "Not given /
+  Hindi ibinigay".
 - A short link hides where it goes. By itself that gives "Mag-ingat".
   It is "Mukhang scam" here only because the text claims to be a bank.
   The same link in a text that claims a telco or a shop stays
@@ -119,8 +123,7 @@ phone. He is the one his parents ask "totoo ba ito?".
 
 **Relies on.** Spec 3.4 manual path, link and sender rules; states
 Check "Opened from share or selection", Result "Mukhang scam" or
-"Mag-ingat", Result "No sender given", Result "Chat model missing or
-slow".
+"Mag-ingat", Result "Chat model missing or slow".
 
 ## 3. The Reyes family: typhoon night, indoors, no GPS
 
@@ -170,8 +173,9 @@ installed Hudyat because his daughter in Manila told him to.
 1. During a flood he taps the flood button.
 2. The pack has no hotlines listed for Tuguegarao, so the card shows
    the national numbers, with a filled badge and a notice saying so.
-3. He needs the DSWD regional office. He types "DSWD" into the box on
-   Home and gets the agency's contacts with a Call button.
+3. He needs the DSWD. He types "social welfare" into the box on Home
+   and gets the department's hotline and its agency record, each with
+   a Call button. These are national numbers, not a regional office.
 4. The message check works for him exactly as it does in Manila.
 
 **Where it falls short.**
@@ -180,6 +184,9 @@ installed Hudyat because his daughter in Manila told him to.
   only for Metro Manila.
 - How the places list reads for someone far outside Metro Manila has
   not been checked on the phone. Check it before showing this story.
+- Search matches names, not acronyms. "DSWD" finds only two of the
+  department's online services, not the department; "social welfare"
+  finds it.
 - Only 61 cities have their own hotlines in the pack, and only 10 of
   Metro Manila's are among them. Marikina is not. Everyone else gets
   the national numbers.
@@ -234,23 +241,32 @@ messages".
 ## 6. Ate Joy: an agency number with no data
 
 **Who.** Joy, 34, a call-centre worker in Taguig. After the storm she
-has no data and needs to ask about a calamity loan.
+has no data and needs to ask about calamity assistance.
 
 **Flow.**
 
-1. On Home she types "SSS" into the box and taps "Find help". Hudyat
-   says this did not look like an emergency and shows search results.
-2. The results list the agency with its contact numbers. Each row with
-   a number has a Call button.
-3. She also searches for her barangay captain's office and finds the
-   LGU contact.
+1. On Home she types "social welfare" into the box and taps "Find
+   help". Hudyat says this did not look like an emergency and shows
+   search results.
+2. The results list the department's hotline and its agency record.
+   Each row with a number the dialer accepts has a Call button.
+3. She also searches for "Taguig city hall" and finds the trunkline,
+   and "Taguig mayor" finds the mayor's office number.
 4. A result for an online service is marked "needs internet" and is
    shown with the agency's phone number, which she can still call.
 
 **Where it falls short.**
 
-- Hudyat gives the contact, not the answer. Whether the loan is open is
+- Hudyat gives the contact, not the answer. Whether she qualifies is
   for the agency to say.
+- Search matches names, not acronyms. "SSS" or "PhilHealth" finds
+  only online services with no number, and "DSWD" misses the
+  department's own record.
+- Most agencies in the pack have no phone number: 232 of 295, SSS
+  among them. Searching for one of those gives a name and nothing to
+  call.
+- Officials are mayors and vice mayors only, and most have no number
+  listed. There are no barangay offices.
 - Service entries are a title and a web link. They are no use until she
   is back online.
 - Typing something no card or record matches gives the emergency
@@ -272,8 +288,9 @@ on the phone.
    show, not the usual four.
 2. He taps the fire button. The card appears with the fire hotline and
    the nearest fire stations, the same as on any other phone.
-3. He types "ospital". Keyword search lists hospitals with Call
-   buttons.
+3. He types "ospital". Keyword search lists hospitals by name. A Call
+   button shows only where the pack has a number the dialer accepts,
+   which is few of them.
 4. He pastes a suspicious text into Check. The link, sender and
    gambling checks run. The Phrasing row reads "Not ready yet".
 5. No AI-written sentences appear anywhere. The cards and verdicts are

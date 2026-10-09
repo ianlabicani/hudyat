@@ -43,7 +43,7 @@ The scam text to send from the second phone:
 | Screen | Narration |
 |---|---|
 | Title card: "Hudyat" and the product line | "When a typhoon takes the signal, two things happen. People cannot look up who to call. And the fake ayuda texts start arriving." |
-| The phone's home screen with the widget | "Hudyat keeps the official numbers and the AI on the phone itself." |
+| The phone's home screen with the widget | "So Hudyat keeps the official numbers and the AI on the phone itself. Not on a rescuer's laptop or an office server — on this phone, a ₱6,000 phone, because that is what is inside the flood zone." |
 
 ## Part 1: Lola Nena (0:15 to 1:20)
 

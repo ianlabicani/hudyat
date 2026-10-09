@@ -5,6 +5,10 @@ contacts. Metro Manila supplies the map and nearby places; the pack also include
 national agencies and hotlines. Calls, external sites and directions open the
 phone's usual apps.
 
+Both AI models run on the phone itself — a budget Android inside the flood
+zone, not a rescuer's laptop or an office server. The person who loses signal
+is the one carrying the help.
+
 The current implementation and release checklist is
 [the stabilization/classifier plan](docs/superpowers/plans/2026-10-09-stabilization-and-classifier.md).
 See the [design spec](docs/superpowers/specs/2026-10-09-hudyat-design.md) and

@@ -197,14 +197,18 @@ payments all day. Her inbox is full of promos and "wrong send" texts.
 3. The rules pass finishes in about a second for a few hundred texts. A
    progress line shows "Checking n of m".
 4. The summary shows how many were read and the counts per verdict.
-5. In the Flagged list, the casino and bingo promos sit under
-   "Mag-ingat" with the gambling reason. The reason names the brand or
+5. In the Flagged list, the casino and bingo promos have their own
+   group, "Sugal promo", with a count. The reason names the brand or
    the link's domain. It does not call the operator illegal.
-6. A fake "customer service" text with a broken-up link sits under
+6. She opens a promo. Under "Want fewer of these?" it says how many
+   that sender has sent, and she taps "Block this sender in Messages" to
+   block it herself in her SMS app. The same section gives a free line
+   to talk to someone and says PAGCOR has an exclusion programme.
+7. A fake "customer service" text with a broken-up link sits under
    "Mukhang scam".
-7. She opens one and taps "Open in Messages" to delete the conversation
+8. She opens one and taps "Open in Messages" to delete the conversation
    herself in her SMS app.
-8. A real payment text such as "Paki-GCash na lang yung bayad" is not
+9. A real payment text such as "Paki-GCash na lang yung bayad" is not
    flagged. Naming GCash is not the same as pretending to be GCash.
 
 **Where it falls short.**

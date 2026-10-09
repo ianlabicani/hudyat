@@ -246,6 +246,17 @@ Words such as "free", "bonus", "win" and "play" are not on the list,
 because telcos, banks and e-wallets use them. The reason's fact line
 names the brand, or the link's domain when the brand is not listed.
 
+**What a promo's result offers.** The aim is fewer promos reaching the
+person, and a way out for someone who wants one. The result has a button
+that opens the sender's conversation in the SMS app, where it can be
+blocked; a count of the promos that sender has sent; a free line to talk
+to someone, taken from the pack; and one sentence saying PAGCOR runs an
+exclusion programme, with its website from the pack. Hudyat does not
+alert for a promo, since that would draw attention to it, and it still
+cannot block or delete a text itself. The exclusion sentence gives no
+durations or age limits: the sources found for them disagree, and it
+should be checked against pagcor.ph.
+
 **From reasons to a verdict.**
 
 | Finding | Verdict |
@@ -663,14 +674,14 @@ submission disclosures.
 | Result | Mag-ingat | Outlined verdict, reasons, real contact with Call, `AiNote` | `CheckResultCaution` |
 | Result | Walang nakitang problema | Dashed verdict, "This is not a guarantee" Notice, list of checks run | `CheckResultClear` |
 | Result | No official sender matched | No contact section; one line says why | `CheckResultClear` |
-| Result | Gambling promo | "Mag-ingat" with the fixed gambling reason; the fact line names the brand or the link's domain. No contact section | Rule only |
+| Result | Gambling promo | "Mag-ingat" with the fixed gambling reason; the fact line names the brand or the link's domain. In place of a contact, a "Want fewer of these?" section: "Block this sender in Messages" when there is an SMS sender, how many promos that sender has sent when two or more are kept, the pack's Mental Health Crisis Line with Call, and one sentence on PAGCOR's exclusion programme with its website from the pack. Shown on any result with a gambling reason, whatever the verdict | Rule only |
 | Result | Flagged, sender given | "Open in Messages / Buksan sa Messages" opens that sender's conversation in the SMS app, with one line saying Hudyat cannot delete texts. A snackbar if it cannot open | Rule only |
 | Result | No sender given | The Sender row reads "Not given / Hindi ibinigay" | Rule only |
 | Result | Scam phrases not ready | The Phrasing row reads "Not ready yet"; the verdict comes from links and sender | Rule only |
 | Result | Chat model missing or slow | No `AiNote`; nothing else changes | Rule only |
 | Result | Note names a number or link that is not in the reasons, or calls the message safe | The `AiNote` is dropped; nothing else changes | Rule only |
 | Alert | A new Mukhang scam text found by the timed check | Standard Android notification: sender in the title, first reason in the body, one "Tingnan" action that opens the Flagged list | `ScamAlert` |
-| Flagged | Has messages | Grouped by verdict; each row opens its result and has a "Remove from this list" icon button; Clear all. One line says removing does not delete the text from the SMS app | `Flagged` |
+| Flagged | Has messages | Three groups, each with its count: "Mukhang scam", "Mag-ingat", and "Sugal promo" for texts whose only reason is a gambling promo; each row opens its result and has a "Remove from this list" icon button; Clear all. One line says removing does not delete the text from the SMS app | `Flagged` |
 | Flagged | Empty | "No flagged messages" and a link to Automatic checking | Rule only |
 | Automatic checking | Off | What is read, kept and sent; Notice that Android will ask for SMS access (or that it was not given); Turn on | `WatcherSetup` |
 | Automatic checking | On | Badge reads ON; a panel with the three counts, texts checked and the time; "Turn off" | `WatcherSetup` |

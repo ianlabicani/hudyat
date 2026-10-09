@@ -61,6 +61,11 @@ Two open models run on the phone. Neither was trained by us.
 | EmbeddingGemma (about 300M) | Matches a typed request to one of a fixed list of needs, picks a first-aid card, and compares a message's wording with known scam wording |
 | Gemma 3 1B | Writes one or two sentences under a card or result, labelled "AI-written" |
 
+**A small model on a small phone is best used to understand and route,
+not to know and answer.** It cannot hold reliable facts, but it can tell
+what a Taglish message means and point it to the right piece of data.
+Hudyat is built around that limit.
+
 The design assumes a small model will sometimes be wrong:
 
 - **The data is the knowledge.** Every phone number, address, website and

@@ -229,11 +229,16 @@ class _HomeScreenState extends State<HomeScreen> {
             final models = scope.models;
             final understands = models.matcher != null;
             final understood = _understood;
+            // Not while the model is still loading at start-up: the buttons
+            // would show and then vanish a few seconds later.
+            final noModel =
+                models.embeddingState == ModelState.missing ||
+                models.embeddingState == ModelState.failed;
             final quick = [
               for (final id in [
                 ...CardLabels.quickIntents,
                 // Without the model, typing cannot open these cards.
-                if (!understands) ...CardLabels.typedIntents,
+                if (noModel) ...CardLabels.typedIntents,
               ])
                 if (byId[id] != null) byId[id]!,
             ];

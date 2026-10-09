@@ -241,10 +241,22 @@ void main() {
     });
 
     testWidgets('without the model, every card keeps a button', (tester) async {
+      await models.load();
       await pump(tester, const HomeScreen());
       // Typing only searches here, so these cards need their buttons.
       for (final label in ['Medical', 'Injury', 'Medicine', 'Clinic']) {
         expect(find.text(label), findsOneWidget);
+      }
+    });
+
+    testWidgets('while the model is still loading, the buttons do not jump', (
+      tester,
+    ) async {
+      // Start-up, before the model has been looked for.
+      await pump(tester, const HomeScreen());
+      expect(find.text('Medical'), findsOneWidget);
+      for (final label in ['Injury', 'Medicine', 'Clinic']) {
+        expect(find.text(label), findsNothing);
       }
     });
 

@@ -54,7 +54,7 @@ class PackRules(
                     val meta = HashMap<String, String>()
                     db.rawQuery(
                         "SELECT key, value FROM meta WHERE key IN " +
-                            "('link_shorteners', 'neutral_hosts', 'gambling', 'rules_version')",
+                            "('link_shorteners', 'neutral_hosts', 'gambling', 'bank_senders', 'rules_version')",
                         null,
                     ).use { rows ->
                         while (rows.moveToNext()) meta[rows.getString(0)] = rows.getString(1)
@@ -69,9 +69,10 @@ class PackRules(
                             meta["link_shorteners"]?.let(::strings) ?: emptyList(),
                             meta["neutral_hosts"]?.let(::strings) ?: emptyList(),
                             meta["gambling"]?.let(::JSONObject),
+                            meta["bank_senders"]?.let(::JSONObject),
                         ),
                         wording,
-                        "${meta["rules_version"] ?: "unknown"}-3",
+                        "${meta["rules_version"] ?: "unknown"}-4",
                     )
                 }
             } catch (error: Exception) {

@@ -158,7 +158,8 @@ model.
 | Check | Method | Needs a model |
 |---|---|---|
 | Links | Each link's domain is compared with the official domains in the pack | No |
-| Claimed sender | Agency or company names in the text are matched to the pack; the sender is checked for being an ordinary mobile number | No |
+| Claimed sender | Agency or company names in the text are matched to the pack; the sender is checked for being an ordinary mobile number, or a bank's sender name | No |
+| Bank link | A text that claims a bank or e-wallet is checked for any link that is not the bank's own | No |
 | Gambling promo | Brand names, link domains and promo wording are compared with the pack's gambling list | No |
 | Phrasing | The text is embedded and compared with scam example phrases | EmbeddingGemma |
 
@@ -181,6 +182,12 @@ model.
 - **Shortener:** the link goes through `bit.ly` or a similar service, so
   the destination cannot be seen. This is a soft reason even when an
   organisation is claimed, since real senders use shorteners too.
+- **Bank link:** the first organisation claimed is a bank or e-wallet
+  (marked `bank` in the pack's company list) and the text has a link
+  that is not on its domain and not a neutral host. The BSP tells banks
+  and e-wallets not to send links by text (Memorandum M-2022-015), and
+  the reason cites it. It is always found together with another link
+  reason, so a bank text with a shortened link is "Mukhang scam".
 - A link to an ordinary site that is not in the pack gives no reason
   when the text claims no organisation.
 - **Neutral hosts:** a link to a platform anyone uses (`facebook.com`,
@@ -210,8 +217,14 @@ claim, not the mention. A look-alike link needs no claim.
 - The one sender reason: the text claims to be from a listed
   organisation and the sender is an ordinary mobile number (`09…` or
   `+639…`).
-- A sender name such as "GCash" gives no reason either way, because
-  sender names can be faked.
+- A sender name such as "GCash" never clears a message, because sender
+  names can be faked.
+- A bank's or e-wallet's sender name counts as a claim to be that bank,
+  whatever the text says. A faked sender name puts a scam in the bank's
+  real thread, and the text itself often names no one. The link rules
+  then apply as for any claimed organisation. Other organisations'
+  sender names are not treated this way: telcos and shops really do
+  send short links.
 - With no sender given (paste without the optional field, share, text
   selection) the sender check is skipped and the result says so.
 
@@ -264,6 +277,7 @@ should be checked against pagcor.ph.
 | A look-alike link | Mukhang scam |
 | A hidden link | Mukhang scam |
 | An organisation is claimed and a link is not theirs | Mukhang scam |
+| A bank or e-wallet is claimed and a link is shortened (two reasons) | Mukhang scam |
 | Any two different reasons | Mukhang scam |
 | Exactly one of: organisation claimed from a mobile number, phrasing match, shortener link, gambling promo | Mag-ingat |
 | Nothing found | Walang nakitang problema |
@@ -470,7 +484,7 @@ One SQLite file per pack, built on the laptop by a script.
 
 | Table | Contents |
 |---|---|
-| `meta` | Pack name, area, build date, sources, licences; also the link shorteners and the gambling list, each as one JSON value |
+| `meta` | Pack name, area, build date, sources, licences; also the link shorteners, the gambling list and the banks' sender names, each as one JSON value |
 | `records` | One row per hotline, agency, official, service or place |
 | `records_fts` | FTS5 keyword index over `records` |
 | `intents` | Intent id, label, example phrases, linked record kinds |

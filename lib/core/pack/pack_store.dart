@@ -109,6 +109,21 @@ class PackStore {
   /// trusted, since a sender name can be faked.
   List<String> _loadKnownSenderIds() => _metaList('sender_ids');
 
+  /// Sender names by bank or e-wallet short name. The BSP tells them not to
+  /// text links, so a link under one of these names is a finding. Empty in
+  /// an older pack.
+  Map<String, List<String>> bankSenders() {
+    final rows = _db.select(
+      "SELECT value FROM meta WHERE key = 'bank_senders'",
+    );
+    if (rows.isEmpty) return const {};
+    return {
+      for (final MapEntry(:key, :value)
+          in (jsonDecode(rows.first['value'] as String) as Map).entries)
+        key as String: (value as List).cast<String>(),
+    };
+  }
+
   /// Identifies the message-check lists in this pack. Falls back to the
   /// build date for a pack made before it was recorded.
   String _loadRulesVersion() {

@@ -215,10 +215,11 @@ export function writePack(path: string, contents: PackContents): void {
     if (scam) {
       // Changes whenever the lists do, so the app rechecks texts it scanned
       // with older ones.
-      insertMeta.run("rules_version", Bun.hash(JSON.stringify({ senders: scam.senders, shorteners: scam.shorteners, neutralHosts: scam.neutralHosts, senderIds: scam.senderIds, gambling: scam.gambling })).toString(16));
+      insertMeta.run("rules_version", Bun.hash(JSON.stringify({ senders: scam.senders, shorteners: scam.shorteners, neutralHosts: scam.neutralHosts, senderIds: scam.senderIds, gambling: scam.gambling, bankSenders: scam.bankSenders })).toString(16));
       insertMeta.run("link_shorteners", JSON.stringify(scam.shorteners));
       insertMeta.run("neutral_hosts", JSON.stringify(scam.neutralHosts));
       insertMeta.run("sender_ids", JSON.stringify(scam.senderIds));
+      if (scam.bankSenders) insertMeta.run("bank_senders", JSON.stringify(scam.bankSenders));
       if (scam.gambling) insertMeta.run("gambling", JSON.stringify(scam.gambling));
       const insertSender = db.prepare(
         `INSERT INTO official_senders

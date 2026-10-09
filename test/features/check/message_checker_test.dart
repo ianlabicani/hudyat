@@ -20,6 +20,7 @@ void main() {
       shorteners: store.linkShorteners(),
       neutralHosts: store.neutralHosts(),
       gambling: store.gamblingRules(),
+      bankSenders: store.bankSenders(),
       phrases: () => phrases,
     );
   });
@@ -294,6 +295,95 @@ void main() {
         sender: '09171234567',
       );
       expect(result.verdict, Verdict.clear);
+    });
+  });
+
+  group('banks', () {
+    test('a link under a bank sender name is a scam', () async {
+      final result = await checker.check(
+        'Your account is restricted. Open https://account-restore.info now.',
+        sender: 'bdo alert',
+      );
+      expect(result.verdict, Verdict.scam);
+      expect(ids(result), [ReasonId.linkNotOfficial, ReasonId.bankLink]);
+      expect(result.reasons.first.facts, {
+        'org': 'BDO',
+        'domain': 'account-restore.info',
+        'official': 'bdo.com.ph',
+      });
+      expect(result.claimed?.short, 'BDO');
+    });
+
+    test('a shortened link in a text claiming a bank is a scam', () async {
+      final result = await checker.check(
+        'BDO: Your card was used. Details at https://bit.ly/3abcXYZ',
+      );
+      expect(result.verdict, Verdict.scam);
+      expect(ids(result), [ReasonId.linkShortener, ReasonId.bankLink]);
+    });
+
+    test('a look-alike link names the BSP rule too', () async {
+      final result = await checker.check(
+        'GCash: I-verify ang account mo sa https://gcash-verify.com',
+      );
+      expect(ids(result), [ReasonId.linkLookalike, ReasonId.bankLink]);
+    });
+
+    test('the bank\'s own website is left alone', () async {
+      final result = await checker.check(
+        'Read our advisory at https://www.gcash.com/help',
+        sender: 'GCash',
+      );
+      expect(result.verdict, Verdict.clear);
+      expect(result.claimed?.short, 'GCash');
+    });
+
+    test('a link anyone uses is left alone', () async {
+      final result = await checker.check(
+        'Follow us at https://facebook.com/gcashofficial',
+        sender: 'GCash',
+      );
+      expect(result.verdict, Verdict.clear);
+    });
+
+    test('a bank sender name with no link gives no reason', () async {
+      final result = await checker.check(
+        'Your OTP is 123456. Do not share it.',
+        sender: 'BDO',
+      );
+      expect(result.verdict, Verdict.clear);
+    });
+
+    test('an organisation that is not a bank keeps the old rules', () async {
+      final named = await checker.check(
+        'Your bill is ready: bit.ly/3xYz',
+        sender: 'Smart',
+      );
+      expect(ids(named), [ReasonId.linkShortener]);
+      expect(named.claimed, isNull);
+
+      final claimed = await checker.check(
+        'Mula sa DSWD: basahin sa bit.ly/3xYz',
+      );
+      expect(claimed.verdict, Verdict.caution);
+      expect(ids(claimed), [ReasonId.linkShortener]);
+    });
+
+    test('an older pack without the list keeps the old rules', () async {
+      final older = MessageChecker(
+        senders: store.officialSenders(),
+        shorteners: store.linkShorteners(),
+      );
+      final result = await older.check(
+        'BDO: Your card was used. Details at https://bit.ly/3abcXYZ',
+        sender: 'BDO',
+      );
+      expect(ids(result), [ReasonId.linkShortener]);
+    });
+
+    test('the reason cites the BSP memorandum', () {
+      final wording = store.scamReasons()[ReasonId.bankLink]!;
+      expect(wording.fact, 'Batayan: BSP Memorandum M-2022-015');
     });
   });
 

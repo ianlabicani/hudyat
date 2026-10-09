@@ -29,6 +29,7 @@ void main() {
         shorteners: store.linkShorteners(),
         neutralHosts: store.neutralHosts(),
         gambling: store.gamblingRules(),
+        bankSenders: store.bankSenders(),
       );
       final inbox = jsonDecode(files.last.readAsStringSync()) as Map;
       final unexpected = <String>[];

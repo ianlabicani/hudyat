@@ -42,6 +42,12 @@
     "fact": "Link: {domain}"
   },
   {
+    "id": "bank_link",
+    "tl": "Ayon sa BSP, hindi nagpapadala ng link sa text ang mga bangko at e-wallet.",
+    "en": "The BSP says banks and e-wallets do not send links by text.",
+    "fact": "Batayan: BSP Memorandum M-2022-015"
+  },
+  {
     "id": "ask_credentials",
     "tl": "Kahina-hinala ang paghingi nito ng sensitibong detalye o code.",
     "en": "Its request for sensitive details or a code looks suspicious.",

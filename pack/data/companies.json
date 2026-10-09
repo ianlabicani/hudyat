@@ -1,6 +1,7 @@
 [
   {
     "name": "GCash",
+    "bank": true,
     "aliases": [
       "GCash",
       "G-Cash"
@@ -26,6 +27,7 @@
   },
   {
     "name": "Maya",
+    "bank": true,
     "aliases": [
       "Maya Bank",
       "PayMaya",
@@ -55,6 +57,7 @@
   },
   {
     "name": "BDO",
+    "bank": true,
     "aliases": [
       "BDO",
       "BDO Unibank",
@@ -79,6 +82,7 @@
   },
   {
     "name": "BPI",
+    "bank": true,
     "aliases": [
       "BPI",
       "Bank of the Philippine Islands"
@@ -98,6 +102,7 @@
   },
   {
     "name": "Metrobank",
+    "bank": true,
     "aliases": [
       "Metrobank",
       "Metropolitan Bank"
@@ -117,6 +122,7 @@
   },
   {
     "name": "Landbank",
+    "bank": true,
     "aliases": [
       "Landbank",
       "Land Bank",
@@ -140,6 +146,7 @@
   },
   {
     "name": "UnionBank",
+    "bank": true,
     "aliases": [
       "UnionBank",
       "Union Bank"

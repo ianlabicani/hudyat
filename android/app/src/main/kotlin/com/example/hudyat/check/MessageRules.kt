@@ -25,6 +25,8 @@ class RuleData(
     val brands: List<GamblingBrand>,
     val hostWords: List<String>,
     val terms: List<String>,
+    /** Sender names by bank or e-wallet short name; empty in an older pack. */
+    val bankSenders: Map<String, List<String>> = emptyMap(),
 ) {
     companion object {
         private fun strings(array: JSONArray?): List<String> =
@@ -43,6 +45,7 @@ class RuleData(
             shorteners: List<String>,
             neutralHosts: List<String>,
             gambling: JSONObject?,
+            bankSenders: JSONObject? = null,
         ): RuleData {
             val brands = gambling?.optJSONArray("brands")
             return RuleData(
@@ -59,6 +62,9 @@ class RuleData(
                 },
                 hostWords = strings(gambling?.optJSONArray("host_words")),
                 terms = strings(gambling?.optJSONArray("terms")),
+                bankSenders = bankSenders?.keys()?.asSequence()
+                    ?.associateWith { strings(bankSenders.optJSONArray(it)) }
+                    ?: emptyMap(),
             )
         }
 
@@ -69,6 +75,7 @@ class RuleData(
                 strings(json.optJSONArray("shorteners")),
                 strings(json.optJSONArray("neutral_hosts")),
                 json.optJSONObject("gambling"),
+                json.optJSONObject("bank_senders"),
             )
         }
     }
@@ -89,12 +96,20 @@ class Verdict(val name: String, val reasons: List<Reason>) {
 class MessageRules(private val data: RuleData) {
     private val terms = data.terms.map { Regex("(?<![a-z0-9])" + Regex.escape(it.lowercase())) }
 
+    // The bank a sender name belongs to, by the name in lower case.
+    private val bankBySender = buildMap {
+        for (bank in data.senders) {
+            for (name in data.bankSenders[bank.short] ?: emptyList()) put(name.lowercase(), bank)
+        }
+    }
+
     fun check(text: String, sender: String?): Verdict {
         val from = sender?.trim()
         val broken = Links.brokenLinkHosts(text)
         val plain = Links.linkHosts(text)
         val hosts = plain + broken.filter { it !in plain }
-        val claimed = claimedSenders(text)
+        val named = from?.let { bankBySender[it.lowercase()] }
+        val claimed = listOfNotNull(named) + claimedSenders(text).filter { it !== named }
         val reasons = mutableListOf<Reason>()
 
         fun add(id: String, vararg facts: Pair<String, String>) {
@@ -124,6 +139,11 @@ class MessageRules(private val data: RuleData) {
                     "domain" to host,
                     "official" to org.domains.first(),
                 )
+            }
+            if (claimed.isNotEmpty() && claimed.first().short in data.bankSenders &&
+                data.neutralHosts.none { Links.isOnDomain(host, it) }
+            ) {
+                add(BANK_LINK, "org" to claimed.first().short)
             }
         }
         // A look-alike already says the link is not theirs.
@@ -259,6 +279,7 @@ class MessageRules(private val data: RuleData) {
         const val LINK_SHORTENER = "link_shortener"
         const val LINK_HIDDEN = "link_hidden"
         const val GAMBLING_PROMO = "gambling_promo"
+        const val BANK_LINK = "bank_link"
 
         private val notPlain = Regex("[^a-z0-9]")
         private val dashesAndSpaces = Regex("[-$S]+")

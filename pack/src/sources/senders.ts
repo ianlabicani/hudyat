@@ -17,6 +17,8 @@ export interface Company {
   source_url: string;
   /** Sender names this company really texts from, seen in a real inbox. */
   sender_ids?: string[];
+  /** A bank or e-wallet under the BSP, which tells them not to text links. */
+  bank?: boolean;
 }
 
 const SMALL_WORDS = new Set(["OF", "THE", "AND", "NG", "FOR", "ON", "IN", "SA"]);
@@ -119,6 +121,18 @@ export function convertCompanies(companies: Company[]): OfficialSender[] {
     phones: company.phones,
     source_url: company.source_url,
   }));
+}
+
+/**
+ * The sender names of each bank and e-wallet, by its short name. The bank's
+ * own name is always one of them: a faked sender name is usually just that.
+ */
+export function bankSenders(companies: Company[]): Record<string, string[]> {
+  return Object.fromEntries(
+    companies
+      .filter((company) => company.bank)
+      .map((company) => [company.name, [...new Set([company.name, ...(company.sender_ids ?? [])])]]),
+  );
 }
 
 /** Companies win when an agency row has the same domain (Landbank). */

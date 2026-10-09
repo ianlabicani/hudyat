@@ -5,7 +5,7 @@ import { join } from "node:path";
 import { convertAgencies, convertLgu } from "./sources/directory";
 import { convertCityHotlines, convertNationalHotlines } from "./sources/hotlines";
 import { convertOverpass } from "./sources/osm";
-import { convertAgencySenders, convertCompanies, mergeSenders } from "./sources/senders";
+import { bankSenders, convertAgencySenders, convertCompanies, mergeSenders } from "./sources/senders";
 import { convertServices } from "./sources/services";
 import type { FirstAidCard, Intent, PackRecord } from "./types";
 import { writePack } from "./write";
@@ -84,6 +84,7 @@ writePack(OUT, {
       ...data("companies.json").flatMap((company: { sender_ids?: string[] }) => company.sender_ids ?? []),
       ...senderRules.agency_sender_ids,
     ],
+    bankSenders: bankSenders(data("companies.json")),
     gambling: data("gambling.json"),
   },
 });

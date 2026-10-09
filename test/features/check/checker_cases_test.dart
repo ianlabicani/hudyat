@@ -54,9 +54,18 @@ void main() {
     'Mula sa DSWD, kunin ang ayuda dito: ayuda-claim-ph.net/form',
     'Your BPI account mo ay naka-hold. Buksan ang https://account-restore.info',
     'GCash: sundan kami sa https://www.youtube.com/watch?v=abc',
+    'Your account is restricted. Open https://account-restore.info now.',
+    'Your OTP is 123456. Do not share it with anyone.',
   ];
 
-  const senders = [null, '09171234567', '+63 917 123 4567', 'GCash', '8080'];
+  const senders = [
+    null,
+    '09171234567',
+    '+63 917 123 4567',
+    'GCash',
+    'BDO Alert',
+    '8080',
+  ];
 
   Future<List<Map<String, Object?>>> answers(
     MessageChecker checker,
@@ -87,6 +96,7 @@ void main() {
       shorteners: store.linkShorteners(),
       neutralHosts: store.neutralHosts(),
       gambling: store.gamblingRules(),
+      bankSenders: store.bankSenders(),
     );
     final gambling = store.gamblingRules();
     final rules = {
@@ -101,6 +111,7 @@ void main() {
       ],
       'shorteners': store.linkShorteners(),
       'neutral_hosts': store.neutralHosts(),
+      'bank_senders': store.bankSenders(),
       'gambling': {
         'brands': [
           for (final brand in gambling.brands)

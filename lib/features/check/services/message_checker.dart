@@ -7,10 +7,10 @@ import 'suspicious_classifier.dart';
 
 /// Raise this when the rules in [MessageChecker] change, so texts an inbox
 /// scan checked with the old rules are checked again.
-const checkerVersion = 3;
+const checkerVersion = 4;
 
-/// Stage 1 of the message check (spec 3.4): links, claimed sender,
-/// gambling promos and phrasing, giving a verdict and reason ids. One checker serves paste,
+/// Stage 1 of the message check (spec 3.4): links, claimed sender, the
+/// BSP's no-links rule for banks, gambling promos and phrasing, giving a verdict and reason ids. One checker serves paste,
 /// share, selection and notifications.
 class MessageChecker {
   MessageChecker({
@@ -18,13 +18,28 @@ class MessageChecker {
     List<String> shorteners = const [],
     List<String> neutralHosts = const [],
     GamblingRules gambling = GamblingRules.none,
+    Map<String, List<String>> bankSenders = const {},
     this.phrases,
     this.classifier,
   }) : _shorteners = shorteners.toSet(),
        _neutral = neutralHosts.toSet(),
-       _gambling = GamblingMatcher(gambling);
+       _gambling = GamblingMatcher(gambling),
+       _banks = bankSenders.keys.toSet(),
+       _bankBySender = {
+         for (final bank in _senders)
+           for (final name in bankSenders[bank.short] ?? const <String>[])
+             name.toLowerCase(): bank,
+       };
 
   final List<OfficialSender> _senders;
+
+  /// Short names of banks and e-wallets, which the BSP tells not to text
+  /// links.
+  final Set<String> _banks;
+
+  /// The bank a sender name belongs to, by the name in lower case. A text
+  /// under that name claims to be the bank, whatever it says.
+  final Map<String, OfficialSender> _bankBySender;
   final Set<String> _shorteners;
 
   /// Hosts anyone links to, such as a Facebook page.
@@ -61,7 +76,12 @@ class MessageChecker {
       for (final host in broken)
         if (!linkHosts(text).contains(host)) host,
     ];
-    final claimed = claimedSenders(text);
+    final named = from == null ? null : _bankBySender[from.toLowerCase()];
+    final claimed = [
+      ?named,
+      for (final sender in claimedSenders(text))
+        if (sender != named) sender,
+    ];
     final reasons = <CheckReason>[];
 
     void add(CheckReason reason) {
@@ -96,6 +116,11 @@ class MessageChecker {
             'official': org.domains.first,
           }),
         );
+      }
+      if (claimed.isNotEmpty &&
+          _banks.contains(claimed.first.short) &&
+          !_neutral.any((domain) => isOnDomain(host, domain))) {
+        add(CheckReason(ReasonId.bankLink, {'org': claimed.first.short}));
       }
     }
     // A look-alike already says the link is not theirs.

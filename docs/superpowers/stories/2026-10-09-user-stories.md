@@ -97,8 +97,9 @@ phone. He is the one his parents ask "totoo ba ito?".
    the text and taps "Check with Hudyat".
 3. The Check screen opens with the text already in the box and the
    check runs at once.
-4. The result shows the verdict, each reason on its own line, and BDO's
-   real contact from the pack with a Call button.
+4. The result shows "Mukhang scam", each reason on its own line, and
+   BDO's real contact from the pack with a Call button. One reason says
+   the BSP tells banks and e-wallets not to send links by text.
 5. The Sender row reads "Not given / Hindi ibinigay", because a shared
    message carries no sender. The result says the sender check was
    skipped.
@@ -111,8 +112,10 @@ phone. He is the one his parents ask "totoo ba ito?".
   the message's notification is checked as it arrives.
 - With no sender, one of the checks cannot run, so the verdict rests on
   the link and the wording.
-- A short link hides where it goes. By itself that gives "Mag-ingat",
-  not "Mukhang scam".
+- A short link hides where it goes. By itself that gives "Mag-ingat".
+  It is "Mukhang scam" here only because the text claims to be a bank.
+  The same link in a text that claims a telco or a shop stays
+  "Mag-ingat".
 
 **Relies on.** Spec 3.4 manual path, link and sender rules; states
 Check "Opened from share or selection", Result "Mukhang scam" or

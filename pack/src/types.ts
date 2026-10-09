@@ -100,5 +100,7 @@ export interface ScamData {
   neutralHosts: string[];
   /** Sender names real organisations text from. Shown, never trusted. */
   senderIds: string[];
+  /** Sender names by bank or e-wallet. A text under one may not carry a link. */
+  bankSenders?: Record<string, string[]>;
   gambling?: GamblingRules;
 }

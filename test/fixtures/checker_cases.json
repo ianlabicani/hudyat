@@ -2859,6 +2859,34 @@
    "apps.apple.com",
    "viber.com"
   ],
+  "bank_senders": {
+   "GCash": [
+    "GCash"
+   ],
+   "Maya": [
+    "Maya",
+    "MayaSavings",
+    "MayaBank"
+   ],
+   "BDO": [
+    "BDO",
+    "BDO Alert",
+    "BDO Deals"
+   ],
+   "BPI": [
+    "BPI"
+   ],
+   "Metrobank": [
+    "Metrobank"
+   ],
+   "Landbank": [
+    "Landbank",
+    "LANDBANK"
+   ],
+   "UnionBank": [
+    "UnionBank"
+   ]
+  },
   "gambling": {
    "brands": [
     {
@@ -3058,6 +3086,12 @@
   },
   {
    "text": "Ang iyong GCash account ay na-lock. I-verify agad ang iyong account sa link na ito para hindi ma-suspend.",
+   "sender": "BDO Alert",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Ang iyong GCash account ay na-lock. I-verify agad ang iyong account sa link na ito para hindi ma-suspend.",
    "sender": "8080",
    "verdict": "clear",
    "reasons": []
@@ -3083,6 +3117,12 @@
   {
    "text": "Your account has been temporarily restricted due to unusual activity. Verify now to avoid permanent suspension.",
    "sender": "GCash",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Your account has been temporarily restricted due to unusual activity. Verify now to avoid permanent suspension.",
+   "sender": "BDO Alert",
    "verdict": "clear",
    "reasons": []
   },
@@ -3134,6 +3174,12 @@
   },
   {
    "text": "Dear customer, your BDO online banking will be deactivated today. Update your details here to continue using your account.",
+   "sender": "BDO Alert",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Dear customer, your BDO online banking will be deactivated today. Update your details here to continue using your account.",
    "sender": "8080",
    "verdict": "clear",
    "reasons": []
@@ -3159,6 +3205,12 @@
   {
    "text": "Na-detect namin ang kahina-hinalang login sa iyong account. I-click ang link para i-secure ito sa loob ng 24 oras.",
    "sender": "GCash",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Na-detect namin ang kahina-hinalang login sa iyong account. I-click ang link para i-secure ito sa loob ng 24 oras.",
+   "sender": "BDO Alert",
    "verdict": "clear",
    "reasons": []
   },
@@ -3210,6 +3262,12 @@
   },
   {
    "text": "Your Maya wallet needs to be re-verified. Failure to comply will result in account closure. Click here.",
+   "sender": "BDO Alert",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Your Maya wallet needs to be re-verified. Failure to comply will result in account closure. Click here.",
    "sender": "8080",
    "verdict": "clear",
    "reasons": []
@@ -3240,6 +3298,12 @@
   },
   {
    "text": "Mag-e-expire na ang iyong SIM registration. I-update ang iyong impormasyon sa link para hindi ma-deactivate ang SIM mo.",
+   "sender": "BDO Alert",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Mag-e-expire na ang iyong SIM registration. I-update ang iyong impormasyon sa link para hindi ma-deactivate ang SIM mo.",
    "sender": "8080",
    "verdict": "clear",
    "reasons": []
@@ -3270,6 +3334,12 @@
   },
   {
    "text": "Your parcel could not be delivered due to incomplete address. Please update your address and pay the redelivery fee here.",
+   "sender": "BDO Alert",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Your parcel could not be delivered due to incomplete address. Please update your address and pay the redelivery fee here.",
    "sender": "8080",
    "verdict": "clear",
    "reasons": []
@@ -3300,6 +3370,12 @@
   },
   {
    "text": "Hindi na-deliver ang iyong parcel. Magbayad ng P25 na redelivery fee sa link para maipadala ulit.",
+   "sender": "BDO Alert",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Hindi na-deliver ang iyong parcel. Magbayad ng P25 na redelivery fee sa link para maipadala ulit.",
    "sender": "8080",
    "verdict": "clear",
    "reasons": []
@@ -3325,6 +3401,12 @@
   {
    "text": "Naka-hold ang package mo sa customs. Bayaran ang clearance fee para ma-release ngayong araw.",
    "sender": "GCash",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Naka-hold ang package mo sa customs. Bayaran ang clearance fee para ma-release ngayong araw.",
+   "sender": "BDO Alert",
    "verdict": "clear",
    "reasons": []
   },
@@ -3376,6 +3458,12 @@
   },
   {
    "text": "LBC: Your package is pending. Confirm your delivery details within 12 hours or it will be returned to sender.",
+   "sender": "BDO Alert",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "LBC: Your package is pending. Confirm your delivery details within 12 hours or it will be returned to sender.",
    "sender": "8080",
    "verdict": "clear",
    "reasons": []
@@ -3401,6 +3489,12 @@
   {
    "text": "May parcel ka na hindi ma-deliver, kulang ang address. I-click ang link at ilagay ang iyong detalye.",
    "sender": "GCash",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "May parcel ka na hindi ma-deliver, kulang ang address. I-click ang link at ilagay ang iyong detalye.",
+   "sender": "BDO Alert",
    "verdict": "clear",
    "reasons": []
   },
@@ -3452,6 +3546,12 @@
   },
   {
    "text": "Kwalipikado ka sa P10,000 ayuda mula sa DSWD. I-claim ngayon, ilagay lang ang iyong pangalan at GCash number sa link.",
+   "sender": "BDO Alert",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Kwalipikado ka sa P10,000 ayuda mula sa DSWD. I-claim ngayon, ilagay lang ang iyong pangalan at GCash number sa link.",
    "sender": "8080",
    "verdict": "clear",
    "reasons": []
@@ -3498,6 +3598,12 @@
   },
   {
    "text": "DSWD cash assistance: You are a beneficiary of the typhoon relief fund. Register here to receive your payout.",
+   "sender": "BDO Alert",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "DSWD cash assistance: You are a beneficiary of the typhoon relief fund. Register here to receive your payout.",
    "sender": "8080",
    "verdict": "clear",
    "reasons": []
@@ -3528,6 +3634,12 @@
   },
   {
    "text": "Mga nasalanta ng bagyo, makakatanggap ng P5,000 na tulong pinansyal. Mag-register sa link bago maubos ang slots.",
+   "sender": "BDO Alert",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Mga nasalanta ng bagyo, makakatanggap ng P5,000 na tulong pinansyal. Mag-register sa link bago maubos ang slots.",
    "sender": "8080",
    "verdict": "clear",
    "reasons": []
@@ -3558,6 +3670,12 @@
   },
   {
    "text": "Congratulations! Napili ka para sa government financial assistance. Send your full name, address and GCash number to claim.",
+   "sender": "BDO Alert",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Congratulations! Napili ka para sa government financial assistance. Send your full name, address and GCash number to claim.",
    "sender": "8080",
    "verdict": "clear",
    "reasons": []
@@ -3583,6 +3701,12 @@
   {
    "text": "Libreng ayuda para sa lahat ng apektado ng baha. I-claim ang iyong relief cash sa link na ito, hanggang ngayong araw lang.",
    "sender": "GCash",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Libreng ayuda para sa lahat ng apektado ng baha. I-claim ang iyong relief cash sa link na ito, hanggang ngayong araw lang.",
+   "sender": "BDO Alert",
    "verdict": "clear",
    "reasons": []
   },
@@ -3634,6 +3758,12 @@
   },
   {
    "text": "Your SSS calamity loan has been approved. Click the link to release your funds today.",
+   "sender": "BDO Alert",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Your SSS calamity loan has been approved. Click the link to release your funds today.",
    "sender": "8080",
    "verdict": "clear",
    "reasons": []
@@ -3664,6 +3794,12 @@
   },
   {
    "text": "Ako ang agent ng bangko ninyo. Pakibigay po ang OTP na natanggap ninyo para ma-cancel ang unauthorized transaction.",
+   "sender": "BDO Alert",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Ako ang agent ng bangko ninyo. Pakibigay po ang OTP na natanggap ninyo para ma-cancel ang unauthorized transaction.",
    "sender": "8080",
    "verdict": "clear",
    "reasons": []
@@ -3694,6 +3830,12 @@
   },
   {
    "text": "Nagkamali ako ng send ng code sa number mo, pwede pa-forward ng 6-digit code na natanggap mo? Salamat.",
+   "sender": "BDO Alert",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Nagkamali ako ng send ng code sa number mo, pwede pa-forward ng 6-digit code na natanggap mo? Salamat.",
    "sender": "8080",
    "verdict": "clear",
    "reasons": []
@@ -3719,6 +3861,12 @@
   {
    "text": "To reverse the transaction, please provide your MPIN and the one-time password sent to your phone.",
    "sender": "GCash",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "To reverse the transaction, please provide your MPIN and the one-time password sent to your phone.",
+   "sender": "BDO Alert",
    "verdict": "clear",
    "reasons": []
   },
@@ -3770,6 +3918,12 @@
   },
   {
    "text": "Customer service po ito ng GCash. Para ma-refund ang pera ninyo, ibigay ang inyong MPIN at OTP.",
+   "sender": "BDO Alert",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Customer service po ito ng GCash. Para ma-refund ang pera ninyo, ibigay ang inyong MPIN at OTP.",
    "sender": "8080",
    "verdict": "clear",
    "reasons": []
@@ -3800,6 +3954,12 @@
   },
   {
    "text": "May nag-attempt mag-withdraw sa account mo. Reply with your OTP to block the transaction immediately.",
+   "sender": "BDO Alert",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "May nag-attempt mag-withdraw sa account mo. Reply with your OTP to block the transaction immediately.",
    "sender": "8080",
    "verdict": "clear",
    "reasons": []
@@ -3830,6 +3990,12 @@
   },
   {
    "text": "Hiring! Work from home, kumita ng P3,000 hanggang P8,000 kada araw. Walang experience na kailangan. Message sa Telegram.",
+   "sender": "BDO Alert",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Hiring! Work from home, kumita ng P3,000 hanggang P8,000 kada araw. Walang experience na kailangan. Message sa Telegram.",
    "sender": "8080",
    "verdict": "clear",
    "reasons": []
@@ -3860,6 +4026,12 @@
   },
   {
    "text": "We are hiring part-time staff. Earn 500 to 5000 pesos daily just by liking videos. Contact our HR on WhatsApp.",
+   "sender": "BDO Alert",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "We are hiring part-time staff. Earn 500 to 5000 pesos daily just by liking videos. Contact our HR on WhatsApp.",
    "sender": "8080",
    "verdict": "clear",
    "reasons": []
@@ -3885,6 +4057,12 @@
   {
    "text": "Hello, ako si Anna mula sa HR. Na-review namin ang resume mo, may online job kami, sweldo P1,500 kada oras. Interesado ka ba?",
    "sender": "GCash",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Hello, ako si Anna mula sa HR. Na-review namin ang resume mo, may online job kami, sweldo P1,500 kada oras. Interesado ka ba?",
+   "sender": "BDO Alert",
    "verdict": "clear",
    "reasons": []
   },
@@ -3915,6 +4093,12 @@
   {
    "text": "Part-time job offer: 30 minutes a day, salary paid daily through GCash. Add us on Telegram to start.",
    "sender": "GCash",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Part-time job offer: 30 minutes a day, salary paid daily through GCash. Add us on Telegram to start.",
+   "sender": "BDO Alert",
    "verdict": "clear",
    "reasons": []
   },
@@ -3945,6 +4129,12 @@
   {
    "text": "Kailangan ng online assistant, bayad agad araw-araw. Mag-deposit lang ng maliit na halaga para ma-activate ang account mo.",
    "sender": "GCash",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Kailangan ng online assistant, bayad agad araw-araw. Mag-deposit lang ng maliit na halaga para ma-activate ang account mo.",
+   "sender": "BDO Alert",
    "verdict": "clear",
    "reasons": []
   },
@@ -3975,6 +4165,12 @@
   {
    "text": "Congratulations! Your number won P50,000 in our anniversary raffle. Claim your prize by sending your details.",
    "sender": "GCash",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Congratulations! Your number won P50,000 in our anniversary raffle. Claim your prize by sending your details.",
+   "sender": "BDO Alert",
    "verdict": "clear",
    "reasons": []
   },
@@ -4005,6 +4201,12 @@
   {
    "text": "Nanalo ka ng P100,000 sa raffle! Para ma-claim, magpadala muna ng P500 na processing fee.",
    "sender": "GCash",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Nanalo ka ng P100,000 sa raffle! Para ma-claim, magpadala muna ng P500 na processing fee.",
+   "sender": "BDO Alert",
    "verdict": "clear",
    "reasons": []
   },
@@ -4035,6 +4237,12 @@
   {
    "text": "Ikaw ang napiling winner ng brand new iPhone. I-click ang link para i-claim ang iyong premyo ngayon.",
    "sender": "GCash",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Ikaw ang napiling winner ng brand new iPhone. I-click ang link para i-claim ang iyong premyo ngayon.",
+   "sender": "BDO Alert",
    "verdict": "clear",
    "reasons": []
   },
@@ -4065,6 +4273,12 @@
   {
    "text": "You have unclaimed rewards points expiring today. Redeem your free gift here before midnight.",
    "sender": "GCash",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "You have unclaimed rewards points expiring today. Redeem your free gift here before midnight.",
+   "sender": "BDO Alert",
    "verdict": "clear",
    "reasons": []
   },
@@ -4095,6 +4309,12 @@
   {
    "text": "Binabati ka namin! Napili ang iyong SIM sa promo. Tumawag sa number na ito para makuha ang cash prize.",
    "sender": "GCash",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Binabati ka namin! Napili ang iyong SIM sa promo. Tumawag sa number na ito para makuha ang cash prize.",
+   "sender": "BDO Alert",
    "verdict": "clear",
    "reasons": []
   },
@@ -4125,6 +4345,12 @@
   {
    "text": "Hi ma, bagong number ko to. Nasira yung phone ko. Pwede pa-send muna ng pera sa GCash na ito, emergency lang.",
    "sender": "GCash",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Hi ma, bagong number ko to. Nasira yung phone ko. Pwede pa-send muna ng pera sa GCash na ito, emergency lang.",
+   "sender": "BDO Alert",
    "verdict": "clear",
    "reasons": []
   },
@@ -4155,6 +4381,12 @@
   {
    "text": "Kuya, ako to, nagpalit ako ng number. Pautang muna ng 3k, ibabalik ko bukas, i-send mo sa number na to.",
    "sender": "GCash",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Kuya, ako to, nagpalit ako ng number. Pautang muna ng 3k, ibabalik ko bukas, i-send mo sa number na to.",
+   "sender": "BDO Alert",
    "verdict": "clear",
    "reasons": []
   },
@@ -4185,6 +4417,12 @@
   {
    "text": "Tita si Jun to, bagong sim ko. Nasa ospital ako ngayon, kailangan ko ng pambayad, pwede pa-GCash agad?",
    "sender": "GCash",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Tita si Jun to, bagong sim ko. Nasa ospital ako ngayon, kailangan ko ng pambayad, pwede pa-GCash agad?",
+   "sender": "BDO Alert",
    "verdict": "clear",
    "reasons": []
   },
@@ -4215,6 +4453,12 @@
   {
    "text": "Hello this is my new number, please save it. I need a favor, can you send load or GCash now? I will explain later.",
    "sender": "GCash",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Hello this is my new number, please save it. I need a favor, can you send load or GCash now? I will explain later.",
+   "sender": "BDO Alert",
    "verdict": "clear",
    "reasons": []
   },
@@ -4245,6 +4489,12 @@
   {
    "text": "Pre-approved ka na sa P50,000 loan, walang collateral at walang requirements. I-click ang link para makuha ngayon.",
    "sender": "GCash",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Pre-approved ka na sa P50,000 loan, walang collateral at walang requirements. I-click ang link para makuha ngayon.",
+   "sender": "BDO Alert",
    "verdict": "clear",
    "reasons": []
   },
@@ -4275,6 +4525,12 @@
   {
    "text": "Need cash? Get an instant loan up to 100,000 pesos, approved in 5 minutes, no documents needed. Apply here.",
    "sender": "GCash",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Need cash? Get an instant loan up to 100,000 pesos, approved in 5 minutes, no documents needed. Apply here.",
+   "sender": "BDO Alert",
    "verdict": "clear",
    "reasons": []
   },
@@ -4305,6 +4561,12 @@
   {
    "text": "Approved na ang loan mo. Magbayad lang ng P1,000 processing fee para ma-release ang pera sa GCash mo.",
    "sender": "GCash",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Approved na ang loan mo. Magbayad lang ng P1,000 processing fee para ma-release ang pera sa GCash mo.",
+   "sender": "BDO Alert",
    "verdict": "clear",
    "reasons": []
   },
@@ -4335,6 +4597,12 @@
   {
    "text": "Your loan application is approved. Pay the insurance fee first to release your funds today.",
    "sender": "GCash",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Your loan application is approved. Pay the insurance fee first to release your funds today.",
+   "sender": "BDO Alert",
    "verdict": "clear",
    "reasons": []
   },
@@ -4365,6 +4633,12 @@
   {
    "text": "Hello Ka-Fiber! Kung may concern kayo sa internet o billing, i-message kami sa aming website. Pakitanggal ang space bago ang com kapag ita-type.",
    "sender": "GCash",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Hello Ka-Fiber! Kung may concern kayo sa internet o billing, i-message kami sa aming website. Pakitanggal ang space bago ang com kapag ita-type.",
+   "sender": "BDO Alert",
    "verdict": "clear",
    "reasons": []
   },
@@ -4395,6 +4669,12 @@
   {
    "text": "Customer service po ito ng internet provider ninyo. Para sa internet concern, pumunta sa website namin, alisin lang ang space sa link.",
    "sender": "GCash",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Customer service po ito ng internet provider ninyo. Para sa internet concern, pumunta sa website namin, alisin lang ang space sa link.",
+   "sender": "BDO Alert",
    "verdict": "clear",
    "reasons": []
   },
@@ -4441,6 +4721,12 @@
   {
    "text": "GCash Advisory: Na-hold ang iyong wallet dahil sa incomplete verification. Kumpletuhin sa link para maiwasan ang permanenteng pag-block.",
    "sender": "GCash",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "GCash Advisory: Na-hold ang iyong wallet dahil sa incomplete verification. Kumpletuhin sa link para maiwasan ang permanenteng pag-block.",
+   "sender": "BDO Alert",
    "verdict": "clear",
    "reasons": []
   },
@@ -4492,6 +4778,12 @@
   },
   {
    "text": "Your BPI account is locked for security reasons. Reactivate now using the secure link below.",
+   "sender": "BDO Alert",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Your BPI account is locked for security reasons. Reactivate now using the secure link below.",
    "sender": "8080",
    "verdict": "clear",
    "reasons": []
@@ -4517,6 +4809,12 @@
   {
    "text": "Hindi maihatid ang order mo dahil mali ang address. I-update at bayaran ang P30 fee dito.",
    "sender": "GCash",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Hindi maihatid ang order mo dahil mali ang address. I-update at bayaran ang P30 fee dito.",
+   "sender": "BDO Alert",
    "verdict": "clear",
    "reasons": []
   },
@@ -4568,6 +4866,12 @@
   },
   {
    "text": "J&T: Your shipment is on hold. Please settle the customs duty of P99 to continue delivery.",
+   "sender": "BDO Alert",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "J&T: Your shipment is on hold. Please settle the customs duty of P99 to continue delivery.",
    "sender": "8080",
    "verdict": "clear",
    "reasons": []
@@ -4593,6 +4897,12 @@
   {
    "text": "Magandang balita! Kasama ka sa listahan ng tatanggap ng P8,000 calamity assistance. I-register ang GCash mo dito.",
    "sender": "GCash",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Magandang balita! Kasama ka sa listahan ng tatanggap ng P8,000 calamity assistance. I-register ang GCash mo dito.",
+   "sender": "BDO Alert",
    "verdict": "clear",
    "reasons": []
   },
@@ -4644,6 +4954,12 @@
   },
   {
    "text": "DSWD: Ikaw ay napili bilang beneficiary ng emergency cash transfer. Kunin ang ayuda sa link.",
+   "sender": "BDO Alert",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "DSWD: Ikaw ay napili bilang beneficiary ng emergency cash transfer. Kunin ang ayuda sa link.",
    "sender": "8080",
    "verdict": "clear",
    "reasons": []
@@ -4674,6 +4990,12 @@
   },
   {
    "text": "Sir, taga-bangko po ako. Pakisabi ang code na pinadala sa inyo para ma-verify namin ang account.",
+   "sender": "BDO Alert",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Sir, taga-bangko po ako. Pakisabi ang code na pinadala sa inyo para ma-verify namin ang account.",
    "sender": "8080",
    "verdict": "clear",
    "reasons": []
@@ -4704,6 +5026,12 @@
   },
   {
    "text": "Paki-send naman yung OTP na dumating sa phone mo, sa akin dapat yun napunta.",
+   "sender": "BDO Alert",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Paki-send naman yung OTP na dumating sa phone mo, sa akin dapat yun napunta.",
    "sender": "8080",
    "verdict": "clear",
    "reasons": []
@@ -4734,6 +5062,12 @@
   },
   {
    "text": "Online job, P2,000 kada araw, gamit lang ang cellphone. Mag-message sa Telegram para magsimula.",
+   "sender": "BDO Alert",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Online job, P2,000 kada araw, gamit lang ang cellphone. Mag-message sa Telegram para magsimula.",
    "sender": "8080",
    "verdict": "clear",
    "reasons": []
@@ -4759,6 +5093,12 @@
   {
    "text": "Our company is looking for remote workers. Daily pay 3000 pesos. No interview needed. Reply YES.",
    "sender": "GCash",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Our company is looking for remote workers. Daily pay 3000 pesos. No interview needed. Reply YES.",
+   "sender": "BDO Alert",
    "verdict": "clear",
    "reasons": []
   },
@@ -4789,6 +5129,12 @@
   {
    "text": "You won! Your mobile number was selected for a 75,000 peso cash prize. Send your name and address to claim.",
    "sender": "GCash",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "You won! Your mobile number was selected for a 75,000 peso cash prize. Send your name and address to claim.",
+   "sender": "BDO Alert",
    "verdict": "clear",
    "reasons": []
   },
@@ -4819,6 +5165,12 @@
   {
    "text": "Panalo ka sa promo namin! Bayaran lang ang tax na P1,000 para makuha ang premyo mo.",
    "sender": "GCash",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Panalo ka sa promo namin! Bayaran lang ang tax na P1,000 para makuha ang premyo mo.",
+   "sender": "BDO Alert",
    "verdict": "clear",
    "reasons": []
   },
@@ -4849,6 +5201,12 @@
   {
    "text": "Ma, si Ana to. Nawala phone ko kaya bago number ko. Pasend naman ng 2k sa GCash, kailangan ko lang ngayon.",
    "sender": "GCash",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Ma, si Ana to. Nawala phone ko kaya bago number ko. Pasend naman ng 2k sa GCash, kailangan ko lang ngayon.",
+   "sender": "BDO Alert",
    "verdict": "clear",
    "reasons": []
   },
@@ -4879,6 +5237,12 @@
   {
    "text": "Bro bagong number ko to. May emergency, pahiram muna ng pera, send mo dito sa number ko.",
    "sender": "GCash",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Bro bagong number ko to. May emergency, pahiram muna ng pera, send mo dito sa number ko.",
+   "sender": "BDO Alert",
    "verdict": "clear",
    "reasons": []
   },
@@ -4909,6 +5273,12 @@
   {
    "text": "Instant cash loan, approved agad kahit walang ID. Kunin ang P30,000 mo ngayon, click here.",
    "sender": "GCash",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Instant cash loan, approved agad kahit walang ID. Kunin ang P30,000 mo ngayon, click here.",
+   "sender": "BDO Alert",
    "verdict": "clear",
    "reasons": []
   },
@@ -4939,6 +5309,12 @@
   {
    "text": "Loan approved. To receive the money, deposit the verification fee first.",
    "sender": "GCash",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Loan approved. To receive the money, deposit the verification fee first.",
+   "sender": "BDO Alert",
    "verdict": "clear",
    "reasons": []
   },
@@ -4969,6 +5345,12 @@
   {
    "text": "Your SIM will be deactivated within 24 hours. Register again at the link to keep your number.",
    "sender": "GCash",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Your SIM will be deactivated within 24 hours. Register again at the link to keep your number.",
+   "sender": "BDO Alert",
    "verdict": "clear",
    "reasons": []
   },
@@ -5020,6 +5402,12 @@
   },
   {
    "text": "Maya: Unusual sign-in detected. Secure your account immediately by confirming your details.",
+   "sender": "BDO Alert",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Maya: Unusual sign-in detected. Secure your account immediately by confirming your details.",
    "sender": "8080",
    "verdict": "clear",
    "reasons": []
@@ -5045,6 +5433,12 @@
   {
    "text": "Makakatanggap ang bawat pamilyang binaha ng P7,500. Limitado ang slots, mag-apply na sa link.",
    "sender": "GCash",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Makakatanggap ang bawat pamilyang binaha ng P7,500. Limitado ang slots, mag-apply na sa link.",
+   "sender": "BDO Alert",
    "verdict": "clear",
    "reasons": []
   },
@@ -5096,6 +5490,12 @@
   },
   {
    "text": "PhilHealth: May refund ka na P4,300. I-claim sa link at ilagay ang bank details mo.",
+   "sender": "BDO Alert",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "PhilHealth: May refund ka na P4,300. I-claim sa link at ilagay ang bank details mo.",
    "sender": "8080",
    "verdict": "clear",
    "reasons": []
@@ -5142,6 +5542,12 @@
   },
   {
    "text": "Your GCash OTP is 482913. Never share this code. If you did not request this, ignore this message.",
+   "sender": "BDO Alert",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Your GCash OTP is 482913. Never share this code. If you did not request this, ignore this message.",
    "sender": "8080",
    "verdict": "clear",
    "reasons": []
@@ -5172,6 +5578,12 @@
   },
   {
    "text": "Ang iyong one-time PIN ay 771204. Huwag ibahagi kahit kanino.",
+   "sender": "BDO Alert",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Ang iyong one-time PIN ay 771204. Huwag ibahagi kahit kanino.",
    "sender": "8080",
    "verdict": "clear",
    "reasons": []
@@ -5202,6 +5614,12 @@
   },
   {
    "text": "Your parcel is out for delivery today. Please prepare the exact amount of P350 for COD.",
+   "sender": "BDO Alert",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Your parcel is out for delivery today. Please prepare the exact amount of P350 for COD.",
    "sender": "8080",
    "verdict": "clear",
    "reasons": []
@@ -5232,6 +5650,12 @@
   },
   {
    "text": "Hi! Rider po ito, nasa labas na po ako ng gate ninyo, may delivery po kayo.",
+   "sender": "BDO Alert",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Hi! Rider po ito, nasa labas na po ako ng gate ninyo, may delivery po kayo.",
    "sender": "8080",
    "verdict": "clear",
    "reasons": []
@@ -5257,6 +5681,12 @@
   {
    "text": "Ma, pauwi na ako. Anong ulam natin mamaya?",
    "sender": "GCash",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Ma, pauwi na ako. Anong ulam natin mamaya?",
+   "sender": "BDO Alert",
    "verdict": "clear",
    "reasons": []
   },
@@ -5287,6 +5717,12 @@
   {
    "text": "Nak, bumili ka ng bigas pag-uwi mo ha. Ingat sa byahe.",
    "sender": "GCash",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Nak, bumili ka ng bigas pag-uwi mo ha. Ingat sa byahe.",
+   "sender": "BDO Alert",
    "verdict": "clear",
    "reasons": []
   },
@@ -5317,6 +5753,12 @@
   {
    "text": "Kuya, nasaan ka na? Kanina pa kami naghihintay dito sa terminal.",
    "sender": "GCash",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Kuya, nasaan ka na? Kanina pa kami naghihintay dito sa terminal.",
+   "sender": "BDO Alert",
    "verdict": "clear",
    "reasons": []
   },
@@ -5347,6 +5789,12 @@
   {
    "text": "Meeting moved to 3pm tomorrow, same room. Please confirm if you can make it.",
    "sender": "GCash",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Meeting moved to 3pm tomorrow, same room. Please confirm if you can make it.",
+   "sender": "BDO Alert",
    "verdict": "clear",
    "reasons": []
   },
@@ -5377,6 +5825,12 @@
   {
    "text": "Happy birthday pare! Inom tayo sa Sabado.",
    "sender": "GCash",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Happy birthday pare! Inom tayo sa Sabado.",
+   "sender": "BDO Alert",
    "verdict": "clear",
    "reasons": []
   },
@@ -5407,6 +5861,12 @@
   {
    "text": "You have received PHP 500.00 of GCash from JU** D. Your new balance is PHP 1,240.50.",
    "sender": "GCash",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "You have received PHP 500.00 of GCash from JU** D. Your new balance is PHP 1,240.50.",
+   "sender": "BDO Alert",
    "verdict": "clear",
    "reasons": []
   },
@@ -5458,6 +5918,12 @@
   },
   {
    "text": "Your Meralco bill for October is P2,340.15, due on Oct 20. Thank you for paying on time.",
+   "sender": "BDO Alert",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Your Meralco bill for October is P2,340.15, due on Oct 20. Thank you for paying on time.",
    "sender": "8080",
    "verdict": "clear",
    "reasons": []
@@ -5488,6 +5954,12 @@
   },
   {
    "text": "NDRRMC: Orange Rainfall Warning sa Metro Manila. Nagbabanta ang pagbaha sa mabababang lugar.",
+   "sender": "BDO Alert",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "NDRRMC: Orange Rainfall Warning sa Metro Manila. Nagbabanta ang pagbaha sa mabababang lugar.",
    "sender": "8080",
    "verdict": "clear",
    "reasons": []
@@ -5518,6 +5990,12 @@
   },
   {
    "text": "Walang pasok bukas sa lahat ng antas sa Marikina dahil sa bagyo, ayon sa LGU.",
+   "sender": "BDO Alert",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Walang pasok bukas sa lahat ng antas sa Marikina dahil sa bagyo, ayon sa LGU.",
    "sender": "8080",
    "verdict": "clear",
    "reasons": []
@@ -5543,6 +6021,12 @@
   {
    "text": "Reminder: ang appointment mo sa dentista ay sa Biyernes, 10 AM.",
    "sender": "GCash",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Reminder: ang appointment mo sa dentista ay sa Biyernes, 10 AM.",
+   "sender": "BDO Alert",
    "verdict": "clear",
    "reasons": []
   },
@@ -5594,6 +6078,12 @@
   },
   {
    "text": "Globe: You have 2GB left on your promo, valid until tomorrow. Dial *143# to register again.",
+   "sender": "BDO Alert",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Globe: You have 2GB left on your promo, valid until tomorrow. Dial *143# to register again.",
    "sender": "8080",
    "verdict": "clear",
    "reasons": []
@@ -5624,6 +6114,12 @@
   },
   {
    "text": "Salamat sa pagbisita sa aming tindahan! Balik po kayo.",
+   "sender": "BDO Alert",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Salamat sa pagbisita sa aming tindahan! Balik po kayo.",
    "sender": "8080",
    "verdict": "clear",
    "reasons": []
@@ -5654,6 +6150,12 @@
   },
   {
    "text": "Nasa evacuation center na kami sa covered court. Okay naman kami, may pagkain na.",
+   "sender": "BDO Alert",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Nasa evacuation center na kami sa covered court. Okay naman kami, may pagkain na.",
    "sender": "8080",
    "verdict": "clear",
    "reasons": []
@@ -5684,6 +6186,12 @@
   },
   {
    "text": "Tumaas na ang tubig sa kalye namin, hanggang tuhod na. Nasaan na kayo?",
+   "sender": "BDO Alert",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Tumaas na ang tubig sa kalye namin, hanggang tuhod na. Nasaan na kayo?",
    "sender": "8080",
    "verdict": "clear",
    "reasons": []
@@ -5709,6 +6217,12 @@
   {
    "text": "Paki-GCash na lang yung hati mo sa kuryente, P650. Salamat!",
    "sender": "GCash",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Paki-GCash na lang yung hati mo sa kuryente, P650. Salamat!",
+   "sender": "BDO Alert",
    "verdict": "clear",
    "reasons": []
   },
@@ -5739,6 +6253,12 @@
   {
    "text": "Your booking is confirmed. Driver will arrive in 5 minutes. Plate number ABC 1234.",
    "sender": "GCash",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Your booking is confirmed. Driver will arrive in 5 minutes. Plate number ABC 1234.",
+   "sender": "BDO Alert",
    "verdict": "clear",
    "reasons": []
   },
@@ -5769,6 +6289,12 @@
   {
    "text": "Good morning po, pwede po bang magpa-schedule ng check-up bukas?",
    "sender": "GCash",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Good morning po, pwede po bang magpa-schedule ng check-up bukas?",
+   "sender": "BDO Alert",
    "verdict": "clear",
    "reasons": []
   },
@@ -5799,6 +6325,12 @@
   {
    "text": "Anak, napadala ko na yung allowance mo sa bangko. Tipirin mo ha.",
    "sender": "GCash",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Anak, napadala ko na yung allowance mo sa bangko. Tipirin mo ha.",
+   "sender": "BDO Alert",
    "verdict": "clear",
    "reasons": []
   },
@@ -5850,6 +6382,12 @@
   },
   {
    "text": "Shopee: Your order has been shipped and will arrive in 2 to 3 days.",
+   "sender": "BDO Alert",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Shopee: Your order has been shipped and will arrive in 2 to 3 days.",
    "sender": "8080",
    "verdict": "clear",
    "reasons": []
@@ -5880,6 +6418,12 @@
   },
   {
    "text": "Class suspended today. Modules will be sent through the group chat.",
+   "sender": "BDO Alert",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Class suspended today. Modules will be sent through the group chat.",
    "sender": "8080",
    "verdict": "clear",
    "reasons": []
@@ -5910,6 +6454,12 @@
   },
   {
    "text": "Barangay advisory: may libreng bakuna sa health center sa Sabado, 8 AM hanggang 12 NN.",
+   "sender": "BDO Alert",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Barangay advisory: may libreng bakuna sa health center sa Sabado, 8 AM hanggang 12 NN.",
    "sender": "8080",
    "verdict": "clear",
    "reasons": []
@@ -5940,6 +6490,12 @@
   },
   {
    "text": "Account Number: 0012345678901 As of Oct 08, 2026, your total amount due: Php 888.00 Due Date: Oct 11, 2026 For same day posting of payment, pay via GCash, or at https://gofiber.ph/pay-bill.",
+   "sender": "BDO Alert",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Account Number: 0012345678901 As of Oct 08, 2026, your total amount due: Php 888.00 Due Date: Oct 11, 2026 For same day posting of payment, pay via GCash, or at https://gofiber.ph/pay-bill.",
    "sender": "8080",
    "verdict": "clear",
    "reasons": []
@@ -5965,6 +6521,12 @@
   {
    "text": "This is an urgent reminder that your outstanding bill as of 4-Sep for Account No. 0012345678901 amounting to P 1,198.80 remains overdue. Please settle your account immediately to reconnect your service.",
    "sender": "GCash",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "This is an urgent reminder that your outstanding bill as of 4-Sep for Account No. 0012345678901 amounting to P 1,198.80 remains overdue. Please settle your account immediately to reconnect your service.",
+   "sender": "BDO Alert",
    "verdict": "clear",
    "reasons": []
   },
@@ -5995,6 +6557,12 @@
   {
    "text": "You may now get your September 2026 invoice through gofiber.ph. Total amount due: PHP 888.00 Due date: Oct 11, 2026 Please ensure full payment of the balance is made on or before your due date.",
    "sender": "GCash",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "You may now get your September 2026 invoice through gofiber.ph. Total amount due: PHP 888.00 Due date: Oct 11, 2026 Please ensure full payment of the balance is made on or before your due date.",
+   "sender": "BDO Alert",
    "verdict": "clear",
    "reasons": []
   },
@@ -6041,6 +6609,12 @@
   {
    "text": "Greetings from Maya! As part of our commitment to you, we'd like to notify you that your Maya Savings account will soon become dormant by 2026-10-12 because of inactivity in the last 23 months.",
    "sender": "GCash",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Greetings from Maya! As part of our commitment to you, we'd like to notify you that your Maya Savings account will soon become dormant by 2026-10-12 because of inactivity in the last 23 months.",
+   "sender": "BDO Alert",
    "verdict": "clear",
    "reasons": []
   },
@@ -6092,6 +6666,12 @@
   },
   {
    "text": "Hi JUAN. CONGRATULATIONS! Your Virtual Pag-IBIG Account has been activated. Now, you may track your Pag-IBIG Savings, view your loan records and enjoy many more services anytime, anywhere.",
+   "sender": "BDO Alert",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Hi JUAN. CONGRATULATIONS! Your Virtual Pag-IBIG Account has been activated. Now, you may track your Pag-IBIG Savings, view your loan records and enjoy many more services anytime, anywhere.",
    "sender": "8080",
    "verdict": "clear",
    "reasons": []
@@ -6117,6 +6697,12 @@
   {
    "text": "Hi JUAN. Your One-Time PIN (OTP) for your Virtual Pag-IBIG is 4821 under Reference Code: JDDEBA. This is valid for 10 minutes. Do NOT share this OTP with anyone.",
    "sender": "GCash",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Hi JUAN. Your One-Time PIN (OTP) for your Virtual Pag-IBIG is 4821 under Reference Code: JDDEBA. This is valid for 10 minutes. Do NOT share this OTP with anyone.",
+   "sender": "BDO Alert",
    "verdict": "clear",
    "reasons": []
   },
@@ -6168,6 +6754,12 @@
   },
   {
    "text": "Sub: My.SSS OTP Your SSS OTP is 482913. This is valid for 5 mins only. Do not share. Didn't request? Call SSS Hotline at 1455.",
+   "sender": "BDO Alert",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Sub: My.SSS OTP Your SSS OTP is 482913. This is valid for 5 mins only. Do not share. Didn't request? Call SSS Hotline at 1455.",
    "sender": "8080",
    "verdict": "clear",
    "reasons": []
@@ -6198,6 +6790,12 @@
   },
   {
    "text": "NEVER SHARE THIS TO ANYONE. Your OTP is 771204 for Fund Transfer amounting to PHP6,000.00. Ref No: 725D",
+   "sender": "BDO Alert",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "NEVER SHARE THIS TO ANYONE. Your OTP is 771204 for Fund Transfer amounting to PHP6,000.00. Ref No: 725D",
    "sender": "8080",
    "verdict": "clear",
    "reasons": []
@@ -6223,6 +6821,12 @@
   {
    "text": "Your Fund Transfer of PHP3,000.00 to MariBank Philippines Inc account ending in 4412 was SUCCESSFUL. Call (+632) 8405-7000 for any discrepancy.",
    "sender": "GCash",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Your Fund Transfer of PHP3,000.00 to MariBank Philippines Inc account ending in 4412 was SUCCESSFUL. Call (+632) 8405-7000 for any discrepancy.",
+   "sender": "BDO Alert",
    "verdict": "clear",
    "reasons": []
   },
@@ -6274,6 +6878,12 @@
   },
   {
    "text": "Your phone may now access your LANDBANK Mobile Banking Account. If you did not make this request, please remove it from your registered devices and change your password immediately.",
+   "sender": "BDO Alert",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Your phone may now access your LANDBANK Mobile Banking Account. If you did not make this request, please remove it from your registered devices and change your password immediately.",
    "sender": "8080",
    "verdict": "clear",
    "reasons": []
@@ -6304,6 +6914,12 @@
   },
   {
    "text": "Your phone is now registered with GCash. If this is not you, report immediately by typing \"report unknown phone\" in the Help Center.",
+   "sender": "BDO Alert",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Your phone is now registered with GCash. If this is not you, report immediately by typing \"report unknown phone\" in the Help Center.",
    "sender": "8080",
    "verdict": "clear",
    "reasons": []
@@ -6334,6 +6950,12 @@
   },
   {
    "text": "Your payment of P85.00 to SPOTIFY AB has been successfully processed on 09-21-26 04:52:32 PM. Ref. No. 904412345",
+   "sender": "BDO Alert",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Your payment of P85.00 to SPOTIFY AB has been successfully processed on 09-21-26 04:52:32 PM. Ref. No. 904412345",
    "sender": "8080",
    "verdict": "clear",
    "reasons": []
@@ -6359,6 +6981,12 @@
   {
    "text": "Earn up to P200 REWARDS with GCash Missions. Cash In, Buy Load, or Pay Bills to claim your rewards today. T&Cs apply.",
    "sender": "GCash",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Earn up to P200 REWARDS with GCash Missions. Cash In, Buy Load, or Pay Bills to claim your rewards today. T&Cs apply.",
+   "sender": "BDO Alert",
    "verdict": "clear",
    "reasons": []
   },
@@ -6410,6 +7038,12 @@
   },
   {
    "text": "You have a transaction using your BDO Debit Card ending in 4412 at GOOGLE *Play for USD 25.00. If invalid, text UN No Ref# 904412345 to 225678.",
+   "sender": "BDO Alert",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "You have a transaction using your BDO Debit Card ending in 4412 at GOOGLE *Play for USD 25.00. If invalid, text UN No Ref# 904412345 to 225678.",
    "sender": "8080",
    "verdict": "clear",
    "reasons": []
@@ -6440,6 +7074,12 @@
   },
   {
    "text": "#BDOStopScam: DO NOT ENTERTAIN calls asking you to surrender your credit card for a replacement. It's a SCAM. Keep your card safe and don't share your info.",
+   "sender": "BDO Alert",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "#BDOStopScam: DO NOT ENTERTAIN calls asking you to surrender your credit card for a replacement. It's a SCAM. Keep your card safe and don't share your info.",
    "sender": "8080",
    "verdict": "clear",
    "reasons": []
@@ -6470,6 +7110,12 @@
   },
   {
    "text": "#BDOStopScam: Mag-ingat sa scam calls! Protect your account info: Don't share your Account, Card, Login details and OTP with anyone.",
+   "sender": "BDO Alert",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "#BDOStopScam: Mag-ingat sa scam calls! Protect your account info: Don't share your Account, Card, Login details and OTP with anyone.",
    "sender": "8080",
    "verdict": "clear",
    "reasons": []
@@ -6500,6 +7146,12 @@
   },
   {
    "text": "Your transaction of PHP 63.00 at Amazon web services has been declined. If unauthorized, please chat with us live on the MariBank app.",
+   "sender": "BDO Alert",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Your transaction of PHP 63.00 at Amazon web services has been declined. If unauthorized, please chat with us live on the MariBank app.",
    "sender": "8080",
    "verdict": "clear",
    "reasons": []
@@ -6525,6 +7177,12 @@
   {
    "text": "Enjoy EXTRA 12% or up to P5K OFF on Agoda hotels w/ BDO Cards! Book on 8/19-31/26. Search AGODA MEGA on BDO site for T&C.",
    "sender": "GCash",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Enjoy EXTRA 12% or up to P5K OFF on Agoda hotels w/ BDO Cards! Book on 8/19-31/26. Search AGODA MEGA on BDO site for T&C.",
+   "sender": "BDO Alert",
    "verdict": "clear",
    "reasons": []
   },
@@ -6555,6 +7213,12 @@
   {
    "text": "Apply now! Get No Annual Fee For Life on a Metrobank Titanium Card via Moneymax. Limited offer! T&Cs apply",
    "sender": "GCash",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Apply now! Get No Annual Fee For Life on a Metrobank Titanium Card via Moneymax. Limited offer! T&Cs apply",
+   "sender": "BDO Alert",
    "verdict": "clear",
    "reasons": []
   },
@@ -6585,6 +7249,12 @@
   {
    "text": "LAST CHANCE para manalo ng Cebu Getaway for 2 sa TeaM Birthday Raffle! Sali na gamit ang iyong FREE RAFFLE ENTRY.",
    "sender": "GCash",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "LAST CHANCE para manalo ng Cebu Getaway for 2 sa TeaM Birthday Raffle! Sali na gamit ang iyong FREE RAFFLE ENTRY.",
+   "sender": "BDO Alert",
    "verdict": "clear",
    "reasons": []
   },
@@ -6615,6 +7285,12 @@
   {
    "text": "Ka-TM! Hindi mo pa na-claim ang FREE 1GB data valid for 1 day na FunRegalo mo! Pumunta lang sa GlobeOne app para mag-claim hanggang October 31. T&Cs apply.",
    "sender": "GCash",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Ka-TM! Hindi mo pa na-claim ang FREE 1GB data valid for 1 day na FunRegalo mo! Pumunta lang sa GlobeOne app para mag-claim hanggang October 31. T&Cs apply.",
+   "sender": "BDO Alert",
    "verdict": "clear",
    "reasons": []
   },
@@ -6645,6 +7321,12 @@
   {
    "text": "It's your lucky day at napili ka sa special promo na ito! Meron kaming handog na FREE 30 mins allnet calls, valid for 1 day kapag nag-register ka sa EZ50.",
    "sender": "GCash",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "It's your lucky day at napili ka sa special promo na ito! Meron kaming handog na FREE 30 mins allnet calls, valid for 1 day kapag nag-register ka sa EZ50.",
+   "sender": "BDO Alert",
    "verdict": "clear",
    "reasons": []
   },
@@ -6675,6 +7357,12 @@
   {
    "text": "Miss ka na namin, Ka-TM! Dahil mahalaga ka sa amin, bibigyan ka namin ng FREE 100MB pang-internet, valid for 1 day! Mag-load lang one-time ng at least P10.",
    "sender": "GCash",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Miss ka na namin, Ka-TM! Dahil mahalaga ka sa amin, bibigyan ka namin ng FREE 100MB pang-internet, valid for 1 day! Mag-load lang one-time ng at least P10.",
+   "sender": "BDO Alert",
    "verdict": "clear",
    "reasons": []
   },
@@ -6705,6 +7393,12 @@
   {
    "text": "Ka-TeaM, as of 10/09/26 16:18, meron ka pang 15.00MB sa data ng iyong mobile internet promo. I-check ang status ng inyong promo sa GlobeOne app.",
    "sender": "GCash",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Ka-TeaM, as of 10/09/26 16:18, meron ka pang 15.00MB sa data ng iyong mobile internet promo. I-check ang status ng inyong promo sa GlobeOne app.",
+   "sender": "BDO Alert",
    "verdict": "clear",
    "reasons": []
   },
@@ -6735,6 +7429,12 @@
   {
    "text": "GET MORE on your next load up, HURRY! Subscribe to any promo at least P75 to get EXTRA 2 GB for 3 days FREE! Get it via the Smart App or dial *123# TODAY!",
    "sender": "GCash",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "GET MORE on your next load up, HURRY! Subscribe to any promo at least P75 to get EXTRA 2 GB for 3 days FREE! Get it via the Smart App or dial *123# TODAY!",
+   "sender": "BDO Alert",
    "verdict": "clear",
    "reasons": []
   },
@@ -6765,6 +7465,12 @@
   {
    "text": "Don't know what to load? You get total of 18 GB! That's FREE 16 GB for 3 days from us when you buy MAGIC DATA 99. For TODAY only! Load via Smart App NOW!",
    "sender": "GCash",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Don't know what to load? You get total of 18 GB! That's FREE 16 GB for 3 days from us when you buy MAGIC DATA 99. For TODAY only! Load via Smart App NOW!",
+   "sender": "BDO Alert",
    "verdict": "clear",
    "reasons": []
   },
@@ -6795,6 +7501,12 @@
   {
    "text": "You have been successfully loaded with ALL-NET SURF 10 P10.00. Trace No. 904412345 10/09/2026 08:14:43.",
    "sender": "GCash",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "You have been successfully loaded with ALL-NET SURF 10 P10.00. Trace No. 904412345 10/09/2026 08:14:43.",
+   "sender": "BDO Alert",
    "verdict": "clear",
    "reasons": []
   },
@@ -6825,6 +7537,12 @@
   {
    "text": "NQCW-PNQP-GSP6 is now out for delivery. Please prepare COD of P85.00. Track and contact your rider in the app.",
    "sender": "GCash",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "NQCW-PNQP-GSP6 is now out for delivery. Please prepare COD of P85.00. Track and contact your rider in the app.",
+   "sender": "BDO Alert",
    "verdict": "clear",
    "reasons": []
   },
@@ -6855,6 +7573,12 @@
   {
    "text": "You are about to purchase Fiber Prepaid amounting to 699.00. If you made this request, please enter the 6-digit code on the purchase page: 482913 If this is not you, don't give this code to anyone.",
    "sender": "GCash",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "You are about to purchase Fiber Prepaid amounting to 699.00. If you made this request, please enter the 6-digit code on the purchase page: 482913 If this is not you, don't give this code to anyone.",
+   "sender": "BDO Alert",
    "verdict": "clear",
    "reasons": []
   },
@@ -6885,6 +7609,12 @@
   {
    "text": "482913 is your GRAB verification code. It expires in 2 minutes. Do not share it with anyone, including GRAB.",
    "sender": "GCash",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "482913 is your GRAB verification code. It expires in 2 minutes. Do not share it with anyone, including GRAB.",
+   "sender": "BDO Alert",
    "verdict": "clear",
    "reasons": []
   },
@@ -6915,6 +7645,12 @@
   {
    "text": "Enter verification code: 771204, to activate SPayLater, valid for 15 mins. NEVER share this code with others under any circumstances.",
    "sender": "GCash",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Enter verification code: 771204, to activate SPayLater, valid for 15 mins. NEVER share this code with others under any circumstances.",
+   "sender": "BDO Alert",
    "verdict": "clear",
    "reasons": []
   },
@@ -6945,6 +7681,12 @@
   {
    "text": "Life is unpredictable but protection shouldn't be. Redeem P500 Singlife Credits and get covered now on the GlobeOne app, no Rewards points required. T&Cs apply.",
    "sender": "GCash",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Life is unpredictable but protection shouldn't be. Redeem P500 Singlife Credits and get covered now on the GlobeOne app, no Rewards points required. T&Cs apply.",
+   "sender": "BDO Alert",
    "verdict": "clear",
    "reasons": []
   },
@@ -6966,6 +7708,12 @@
       "domain": "gcash-verify.com",
       "official": "gcash.com"
      }
+    },
+    {
+     "id": "bank_link",
+     "facts": {
+      "org": "GCash"
+     }
     }
    ]
   },
@@ -6980,6 +7728,12 @@
       "org": "GCash",
       "domain": "gcash-verify.com",
       "official": "gcash.com"
+     }
+    },
+    {
+     "id": "bank_link",
+     "facts": {
+      "org": "GCash"
      }
     },
     {
@@ -7005,6 +7759,12 @@
      }
     },
     {
+     "id": "bank_link",
+     "facts": {
+      "org": "GCash"
+     }
+    },
+    {
      "id": "sender_mobile",
      "facts": {
       "org": "GCash",
@@ -7025,6 +7785,33 @@
       "domain": "gcash-verify.com",
       "official": "gcash.com"
      }
+    },
+    {
+     "id": "bank_link",
+     "facts": {
+      "org": "GCash"
+     }
+    }
+   ]
+  },
+  {
+   "text": "GCash: I-verify ang account mo sa https://gcash-verify.com",
+   "sender": "BDO Alert",
+   "verdict": "scam",
+   "reasons": [
+    {
+     "id": "link_lookalike",
+     "facts": {
+      "org": "GCash",
+      "domain": "gcash-verify.com",
+      "official": "gcash.com"
+     }
+    },
+    {
+     "id": "bank_link",
+     "facts": {
+      "org": "BDO"
+     }
     }
    ]
   },
@@ -7039,6 +7826,12 @@
       "org": "GCash",
       "domain": "gcash-verify.com",
       "official": "gcash.com"
+     }
+    },
+    {
+     "id": "bank_link",
+     "facts": {
+      "org": "GCash"
      }
     }
    ]
@@ -7080,6 +7873,12 @@
   {
    "text": "GCash: I-verify ang account mo sa https://www.gcash.com/help",
    "sender": "GCash",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "GCash: I-verify ang account mo sa https://www.gcash.com/help",
+   "sender": "BDO Alert",
    "verdict": "clear",
    "reasons": []
   },
@@ -7160,6 +7959,33 @@
       "domain": "dswd-ayuda.net",
       "official": "dswd.gov.ph"
      }
+    },
+    {
+     "id": "bank_link",
+     "facts": {
+      "org": "GCash"
+     }
+    }
+   ]
+  },
+  {
+   "text": "Mula sa DSWD: kunin ang ayuda sa dswd-ayuda.net ngayon",
+   "sender": "BDO Alert",
+   "verdict": "scam",
+   "reasons": [
+    {
+     "id": "link_lookalike",
+     "facts": {
+      "org": "DSWD",
+      "domain": "dswd-ayuda.net",
+      "official": "dswd.gov.ph"
+     }
+    },
+    {
+     "id": "bank_link",
+     "facts": {
+      "org": "BDO"
+     }
     }
    ]
   },
@@ -7220,6 +8046,12 @@
   },
   {
    "text": "DSWD Advisory: tingnan ang https://www.dswd.gov.ph/ayuda",
+   "sender": "BDO Alert",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "DSWD Advisory: tingnan ang https://www.dswd.gov.ph/ayuda",
    "sender": "8080",
    "verdict": "clear",
    "reasons": []
@@ -7236,6 +8068,12 @@
       "domain": "bdo-online.com",
       "official": "bdo.com.ph"
      }
+    },
+    {
+     "id": "bank_link",
+     "facts": {
+      "org": "BDO"
+     }
     }
    ]
   },
@@ -7250,6 +8088,12 @@
       "org": "BDO",
       "domain": "bdo-online.com",
       "official": "bdo.com.ph"
+     }
+    },
+    {
+     "id": "bank_link",
+     "facts": {
+      "org": "BDO"
      }
     },
     {
@@ -7275,6 +8119,12 @@
      }
     },
     {
+     "id": "bank_link",
+     "facts": {
+      "org": "BDO"
+     }
+    },
+    {
      "id": "sender_mobile",
      "facts": {
       "org": "BDO",
@@ -7295,6 +8145,33 @@
       "domain": "bdo-online.com",
       "official": "bdo.com.ph"
      }
+    },
+    {
+     "id": "bank_link",
+     "facts": {
+      "org": "GCash"
+     }
+    }
+   ]
+  },
+  {
+   "text": "Your BDO account is locked. Visit bdo-online.com to restore.",
+   "sender": "BDO Alert",
+   "verdict": "scam",
+   "reasons": [
+    {
+     "id": "link_lookalike",
+     "facts": {
+      "org": "BDO",
+      "domain": "bdo-online.com",
+      "official": "bdo.com.ph"
+     }
+    },
+    {
+     "id": "bank_link",
+     "facts": {
+      "org": "BDO"
+     }
     }
    ]
   },
@@ -7310,18 +8187,30 @@
       "domain": "bdo-online.com",
       "official": "bdo.com.ph"
      }
+    },
+    {
+     "id": "bank_link",
+     "facts": {
+      "org": "BDO"
+     }
     }
    ]
   },
   {
    "text": "BDO: Your card was used. Details at https://bit.ly/3abcXYZ",
    "sender": null,
-   "verdict": "caution",
+   "verdict": "scam",
    "reasons": [
     {
      "id": "link_shortener",
      "facts": {
       "domain": "bit.ly"
+     }
+    },
+    {
+     "id": "bank_link",
+     "facts": {
+      "org": "BDO"
      }
     }
    ]
@@ -7335,6 +8224,12 @@
      "id": "link_shortener",
      "facts": {
       "domain": "bit.ly"
+     }
+    },
+    {
+     "id": "bank_link",
+     "facts": {
+      "org": "BDO"
      }
     },
     {
@@ -7358,6 +8253,12 @@
      }
     },
     {
+     "id": "bank_link",
+     "facts": {
+      "org": "BDO"
+     }
+    },
+    {
      "id": "sender_mobile",
      "facts": {
       "org": "BDO",
@@ -7369,12 +8270,37 @@
   {
    "text": "BDO: Your card was used. Details at https://bit.ly/3abcXYZ",
    "sender": "GCash",
-   "verdict": "caution",
+   "verdict": "scam",
    "reasons": [
     {
      "id": "link_shortener",
      "facts": {
       "domain": "bit.ly"
+     }
+    },
+    {
+     "id": "bank_link",
+     "facts": {
+      "org": "GCash"
+     }
+    }
+   ]
+  },
+  {
+   "text": "BDO: Your card was used. Details at https://bit.ly/3abcXYZ",
+   "sender": "BDO Alert",
+   "verdict": "scam",
+   "reasons": [
+    {
+     "id": "link_shortener",
+     "facts": {
+      "domain": "bit.ly"
+     }
+    },
+    {
+     "id": "bank_link",
+     "facts": {
+      "org": "BDO"
      }
     }
    ]
@@ -7382,12 +8308,18 @@
   {
    "text": "BDO: Your card was used. Details at https://bit.ly/3abcXYZ",
    "sender": "8080",
-   "verdict": "caution",
+   "verdict": "scam",
    "reasons": [
     {
      "id": "link_shortener",
      "facts": {
       "domain": "bit.ly"
+     }
+    },
+    {
+     "id": "bank_link",
+     "facts": {
+      "org": "BDO"
      }
     }
    ]
@@ -7418,6 +8350,12 @@
   },
   {
    "text": "Paki-GCash na lang ng bayad, salamat. Tingnan mo sa shopee.ph",
+   "sender": "BDO Alert",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Paki-GCash na lang ng bayad, salamat. Tingnan mo sa shopee.ph",
    "sender": "8080",
    "verdict": "clear",
    "reasons": []
@@ -7434,6 +8372,12 @@
       "domain": "maya-secure.ph",
       "official": "maya.ph"
      }
+    },
+    {
+     "id": "bank_link",
+     "facts": {
+      "org": "Maya"
+     }
     }
    ]
   },
@@ -7448,6 +8392,12 @@
       "org": "Maya",
       "domain": "maya-secure.ph",
       "official": "maya.ph"
+     }
+    },
+    {
+     "id": "bank_link",
+     "facts": {
+      "org": "Maya"
      }
     },
     {
@@ -7473,6 +8423,12 @@
      }
     },
     {
+     "id": "bank_link",
+     "facts": {
+      "org": "Maya"
+     }
+    },
+    {
      "id": "sender_mobile",
      "facts": {
       "org": "Maya",
@@ -7493,6 +8449,33 @@
       "domain": "maya-secure.ph",
       "official": "maya.ph"
      }
+    },
+    {
+     "id": "bank_link",
+     "facts": {
+      "org": "GCash"
+     }
+    }
+   ]
+  },
+  {
+   "text": "Hi, this is from Maya. Your wallet needs to verify at maya-secure.ph",
+   "sender": "BDO Alert",
+   "verdict": "scam",
+   "reasons": [
+    {
+     "id": "link_lookalike",
+     "facts": {
+      "org": "Maya",
+      "domain": "maya-secure.ph",
+      "official": "maya.ph"
+     }
+    },
+    {
+     "id": "bank_link",
+     "facts": {
+      "org": "BDO"
+     }
     }
    ]
   },
@@ -7507,6 +8490,12 @@
       "org": "Maya",
       "domain": "maya-secure.ph",
       "official": "maya.ph"
+     }
+    },
+    {
+     "id": "bank_link",
+     "facts": {
+      "org": "Maya"
      }
     }
    ]
@@ -7532,6 +8521,12 @@
   {
    "text": "maya ko pa babayaran, tingnan mo muna sa lazada.com.ph",
    "sender": "GCash",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "maya ko pa babayaran, tingnan mo muna sa lazada.com.ph",
+   "sender": "BDO Alert",
    "verdict": "clear",
    "reasons": []
   },
@@ -7583,6 +8578,12 @@
   },
   {
    "text": "Smart: Your postpaid bill is ready. Pay at https://smart.com.ph/pay",
+   "sender": "BDO Alert",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Smart: Your postpaid bill is ready. Pay at https://smart.com.ph/pay",
    "sender": "8080",
    "verdict": "clear",
    "reasons": []
@@ -7629,12 +8630,37 @@
   {
    "text": "Smart ka talaga! Check mo to: tinyurl.com/abc123",
    "sender": "GCash",
-   "verdict": "caution",
+   "verdict": "scam",
    "reasons": [
     {
      "id": "link_shortener",
      "facts": {
       "domain": "tinyurl.com"
+     }
+    },
+    {
+     "id": "bank_link",
+     "facts": {
+      "org": "GCash"
+     }
+    }
+   ]
+  },
+  {
+   "text": "Smart ka talaga! Check mo to: tinyurl.com/abc123",
+   "sender": "BDO Alert",
+   "verdict": "scam",
+   "reasons": [
+    {
+     "id": "link_shortener",
+     "facts": {
+      "domain": "tinyurl.com"
+     }
+    },
+    {
+     "id": "bank_link",
+     "facts": {
+      "org": "BDO"
      }
     }
    ]
@@ -7701,6 +8727,47 @@
      "facts": {
       "domain": "csraftersales.com"
      }
+    },
+    {
+     "id": "link_not_official",
+     "facts": {
+      "org": "GCash",
+      "domain": "csraftersales.com",
+      "official": "gcash.com"
+     }
+    },
+    {
+     "id": "bank_link",
+     "facts": {
+      "org": "GCash"
+     }
+    }
+   ]
+  },
+  {
+   "text": "Para sa refund, pumunta sa csraftersales. com at pakitanggal ang space",
+   "sender": "BDO Alert",
+   "verdict": "scam",
+   "reasons": [
+    {
+     "id": "link_hidden",
+     "facts": {
+      "domain": "csraftersales.com"
+     }
+    },
+    {
+     "id": "link_not_official",
+     "facts": {
+      "org": "BDO",
+      "domain": "csraftersales.com",
+      "official": "bdo.com.ph"
+     }
+    },
+    {
+     "id": "bank_link",
+     "facts": {
+      "org": "BDO"
+     }
     }
    ]
   },
@@ -7766,6 +8833,47 @@
      "facts": {
       "domain": "helpdesk-refund.com"
      }
+    },
+    {
+     "id": "link_not_official",
+     "facts": {
+      "org": "GCash",
+      "domain": "helpdesk-refund.com",
+      "official": "gcash.com"
+     }
+    },
+    {
+     "id": "bank_link",
+     "facts": {
+      "org": "GCash"
+     }
+    }
+   ]
+  },
+  {
+   "text": "Customer service: visit helpdesk-refund (dot) com for your claim",
+   "sender": "BDO Alert",
+   "verdict": "scam",
+   "reasons": [
+    {
+     "id": "link_hidden",
+     "facts": {
+      "domain": "helpdesk-refund.com"
+     }
+    },
+    {
+     "id": "link_not_official",
+     "facts": {
+      "org": "BDO",
+      "domain": "helpdesk-refund.com",
+      "official": "bdo.com.ph"
+     }
+    },
+    {
+     "id": "bank_link",
+     "facts": {
+      "org": "BDO"
+     }
     }
    ]
   },
@@ -7831,6 +8939,47 @@
      "facts": {
       "domain": "supportcenter.com"
      }
+    },
+    {
+     "id": "link_not_official",
+     "facts": {
+      "org": "GCash",
+      "domain": "supportcenter.com",
+      "official": "gcash.com"
+     }
+    },
+    {
+     "id": "bank_link",
+     "facts": {
+      "org": "GCash"
+     }
+    }
+   ]
+  },
+  {
+   "text": "I-type ang supportcenter .com (alisin ang space) para makuha",
+   "sender": "BDO Alert",
+   "verdict": "scam",
+   "reasons": [
+    {
+     "id": "link_hidden",
+     "facts": {
+      "domain": "supportcenter.com"
+     }
+    },
+    {
+     "id": "link_not_official",
+     "facts": {
+      "org": "BDO",
+      "domain": "supportcenter.com",
+      "official": "bdo.com.ph"
+     }
+    },
+    {
+     "id": "bank_link",
+     "facts": {
+      "org": "BDO"
+     }
     }
    ]
   },
@@ -7868,6 +9017,12 @@
   {
    "text": "Kita tayo sa Oct.20, sabi ni Hi.Ako daw bahala",
    "sender": "GCash",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Kita tayo sa Oct.20, sabi ni Hi.Ako daw bahala",
+   "sender": "BDO Alert",
    "verdict": "clear",
    "reasons": []
   },
@@ -7947,6 +9102,33 @@
       "org": "Meralco",
       "domain": "meralco-bills.xyz",
       "official": "meralco.com.ph"
+     }
+    },
+    {
+     "id": "bank_link",
+     "facts": {
+      "org": "GCash"
+     }
+    }
+   ]
+  },
+  {
+   "text": "Meralco Advisory: Bayaran ang bill sa http://meralco-bills.xyz/pay?id=1",
+   "sender": "BDO Alert",
+   "verdict": "scam",
+   "reasons": [
+    {
+     "id": "link_lookalike",
+     "facts": {
+      "org": "Meralco",
+      "domain": "meralco-bills.xyz",
+      "official": "meralco.com.ph"
+     }
+    },
+    {
+     "id": "bank_link",
+     "facts": {
+      "org": "BDO"
      }
     }
    ]
@@ -8008,6 +9190,12 @@
   },
   {
    "text": "Follow us at https://facebook.com/gcashofficial. GCash: salamat!",
+   "sender": "BDO Alert",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Follow us at https://facebook.com/gcashofficial. GCash: salamat!",
    "sender": "8080",
    "verdict": "clear",
    "reasons": []
@@ -8054,6 +9242,12 @@
   },
   {
    "text": "PLDT: Ang iyong account ay may balanse. https://pldthome.com/bills",
+   "sender": "BDO Alert",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "PLDT: Ang iyong account ay may balanse. https://pldthome.com/bills",
    "sender": "8080",
    "verdict": "clear",
    "reasons": []
@@ -8100,8 +9294,49 @@
   {
    "text": "Congrats! Claim your 100% welcome bonus, free spins at cashback sa https://lucky-casino88.com",
    "sender": "GCash",
-   "verdict": "caution",
+   "verdict": "scam",
    "reasons": [
+    {
+     "id": "link_not_official",
+     "facts": {
+      "org": "GCash",
+      "domain": "lucky-casino88.com",
+      "official": "gcash.com"
+     }
+    },
+    {
+     "id": "bank_link",
+     "facts": {
+      "org": "GCash"
+     }
+    },
+    {
+     "id": "gambling_promo",
+     "facts": {
+      "source": "lucky-casino88.com"
+     }
+    }
+   ]
+  },
+  {
+   "text": "Congrats! Claim your 100% welcome bonus, free spins at cashback sa https://lucky-casino88.com",
+   "sender": "BDO Alert",
+   "verdict": "scam",
+   "reasons": [
+    {
+     "id": "link_not_official",
+     "facts": {
+      "org": "BDO",
+      "domain": "lucky-casino88.com",
+      "official": "bdo.com.ph"
+     }
+    },
+    {
+     "id": "bank_link",
+     "facts": {
+      "org": "BDO"
+     }
+    },
     {
      "id": "gambling_promo",
      "facts": {
@@ -8165,8 +9400,49 @@
   {
    "text": "BingoPlus: Deposit now, get rebate and free bonus! bingoplus.com",
    "sender": "GCash",
-   "verdict": "caution",
+   "verdict": "scam",
    "reasons": [
+    {
+     "id": "link_not_official",
+     "facts": {
+      "org": "GCash",
+      "domain": "bingoplus.com",
+      "official": "gcash.com"
+     }
+    },
+    {
+     "id": "bank_link",
+     "facts": {
+      "org": "GCash"
+     }
+    },
+    {
+     "id": "gambling_promo",
+     "facts": {
+      "source": "BingoPlus"
+     }
+    }
+   ]
+  },
+  {
+   "text": "BingoPlus: Deposit now, get rebate and free bonus! bingoplus.com",
+   "sender": "BDO Alert",
+   "verdict": "scam",
+   "reasons": [
+    {
+     "id": "link_not_official",
+     "facts": {
+      "org": "BDO",
+      "domain": "bingoplus.com",
+      "official": "bdo.com.ph"
+     }
+    },
+    {
+     "id": "bank_link",
+     "facts": {
+      "org": "BDO"
+     }
+    },
     {
      "id": "gambling_promo",
      "facts": {
@@ -8254,6 +9530,37 @@
      "id": "link_shortener",
      "facts": {
       "domain": "bit.ly"
+     }
+    },
+    {
+     "id": "bank_link",
+     "facts": {
+      "org": "GCash"
+     }
+    },
+    {
+     "id": "gambling_promo",
+     "facts": {
+      "source": "bit.ly"
+     }
+    }
+   ]
+  },
+  {
+   "text": "Sali na sa jackpot! Mag-deposit at kunin ang rebate: https://bit.ly/win",
+   "sender": "BDO Alert",
+   "verdict": "scam",
+   "reasons": [
+    {
+     "id": "link_shortener",
+     "facts": {
+      "domain": "bit.ly"
+     }
+    },
+    {
+     "id": "bank_link",
+     "facts": {
+      "org": "BDO"
      }
     },
     {
@@ -8325,6 +9632,12 @@
   },
   {
    "text": "Globe: Your rewards points expire soon. Redeem in the app.",
+   "sender": "BDO Alert",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Globe: Your rewards points expire soon. Redeem in the app.",
    "sender": "8080",
    "verdict": "clear",
    "reasons": []
@@ -8371,6 +9684,12 @@
   },
   {
    "text": "Agent ng BPI ito. Ibigay ang OTP para ma-verify ang account mo.",
+   "sender": "BDO Alert",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Agent ng BPI ito. Ibigay ang OTP para ma-verify ang account mo.",
    "sender": "8080",
    "verdict": "clear",
    "reasons": []
@@ -8387,6 +9706,12 @@
       "domain": "landbank-verify.com.ph",
       "official": "landbank.com"
      }
+    },
+    {
+     "id": "bank_link",
+     "facts": {
+      "org": "Landbank"
+     }
     }
    ]
   },
@@ -8401,6 +9726,12 @@
       "org": "Landbank",
       "domain": "landbank-verify.com.ph",
       "official": "landbank.com"
+     }
+    },
+    {
+     "id": "bank_link",
+     "facts": {
+      "org": "Landbank"
      }
     },
     {
@@ -8426,6 +9757,12 @@
      }
     },
     {
+     "id": "bank_link",
+     "facts": {
+      "org": "Landbank"
+     }
+    },
+    {
      "id": "sender_mobile",
      "facts": {
       "org": "Landbank",
@@ -8446,6 +9783,33 @@
       "domain": "landbank-verify.com.ph",
       "official": "landbank.com"
      }
+    },
+    {
+     "id": "bank_link",
+     "facts": {
+      "org": "GCash"
+     }
+    }
+   ]
+  },
+  {
+   "text": "Landbank: I-update ang account mo sa landbank-verify.com.ph",
+   "sender": "BDO Alert",
+   "verdict": "scam",
+   "reasons": [
+    {
+     "id": "link_lookalike",
+     "facts": {
+      "org": "Landbank",
+      "domain": "landbank-verify.com.ph",
+      "official": "landbank.com"
+     }
+    },
+    {
+     "id": "bank_link",
+     "facts": {
+      "org": "BDO"
+     }
     }
    ]
   },
@@ -8460,6 +9824,12 @@
       "org": "Landbank",
       "domain": "landbank-verify.com.ph",
       "official": "landbank.com"
+     }
+    },
+    {
+     "id": "bank_link",
+     "facts": {
+      "org": "Landbank"
      }
     }
    ]
@@ -8506,6 +9876,12 @@
   },
   {
    "text": "From the SSS team: update your record at https://sss.gov.ph",
+   "sender": "BDO Alert",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "From the SSS team: update your record at https://sss.gov.ph",
    "sender": "8080",
    "verdict": "clear",
    "reasons": []
@@ -8536,6 +9912,12 @@
   },
   {
    "text": "Padala mo sa 09171234567 via Palawan Express, salamat",
+   "sender": "BDO Alert",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Padala mo sa 09171234567 via Palawan Express, salamat",
    "sender": "8080",
    "verdict": "clear",
    "reasons": []
@@ -8552,6 +9934,12 @@
       "domain": "secure-wallet-login.com",
       "official": "gcash.com"
      }
+    },
+    {
+     "id": "bank_link",
+     "facts": {
+      "org": "GCash"
+     }
     }
    ]
   },
@@ -8566,6 +9954,12 @@
       "org": "GCash",
       "domain": "secure-wallet-login.com",
       "official": "gcash.com"
+     }
+    },
+    {
+     "id": "bank_link",
+     "facts": {
+      "org": "GCash"
      }
     },
     {
@@ -8591,6 +9985,12 @@
      }
     },
     {
+     "id": "bank_link",
+     "facts": {
+      "org": "GCash"
+     }
+    },
+    {
      "id": "sender_mobile",
      "facts": {
       "org": "GCash",
@@ -8611,6 +10011,33 @@
       "domain": "secure-wallet-login.com",
       "official": "gcash.com"
      }
+    },
+    {
+     "id": "bank_link",
+     "facts": {
+      "org": "GCash"
+     }
+    }
+   ]
+  },
+  {
+   "text": "GCash: I-verify ang account mo sa https://secure-wallet-login.com",
+   "sender": "BDO Alert",
+   "verdict": "scam",
+   "reasons": [
+    {
+     "id": "link_not_official",
+     "facts": {
+      "org": "BDO",
+      "domain": "secure-wallet-login.com",
+      "official": "bdo.com.ph"
+     }
+    },
+    {
+     "id": "bank_link",
+     "facts": {
+      "org": "BDO"
+     }
     }
    ]
   },
@@ -8625,6 +10052,12 @@
       "org": "GCash",
       "domain": "secure-wallet-login.com",
       "official": "gcash.com"
+     }
+    },
+    {
+     "id": "bank_link",
+     "facts": {
+      "org": "GCash"
      }
     }
    ]
@@ -8696,9 +10129,36 @@
     {
      "id": "link_not_official",
      "facts": {
-      "org": "DSWD",
+      "org": "GCash",
       "domain": "ayuda-claim-ph.net",
-      "official": "dswd.gov.ph"
+      "official": "gcash.com"
+     }
+    },
+    {
+     "id": "bank_link",
+     "facts": {
+      "org": "GCash"
+     }
+    }
+   ]
+  },
+  {
+   "text": "Mula sa DSWD, kunin ang ayuda dito: ayuda-claim-ph.net/form",
+   "sender": "BDO Alert",
+   "verdict": "scam",
+   "reasons": [
+    {
+     "id": "link_not_official",
+     "facts": {
+      "org": "BDO",
+      "domain": "ayuda-claim-ph.net",
+      "official": "bdo.com.ph"
+     }
+    },
+    {
+     "id": "bank_link",
+     "facts": {
+      "org": "BDO"
      }
     }
    ]
@@ -8730,6 +10190,12 @@
       "domain": "account-restore.info",
       "official": "bpi.com.ph"
      }
+    },
+    {
+     "id": "bank_link",
+     "facts": {
+      "org": "BPI"
+     }
     }
    ]
   },
@@ -8744,6 +10210,12 @@
       "org": "BPI",
       "domain": "account-restore.info",
       "official": "bpi.com.ph"
+     }
+    },
+    {
+     "id": "bank_link",
+     "facts": {
+      "org": "BPI"
      }
     },
     {
@@ -8769,6 +10241,12 @@
      }
     },
     {
+     "id": "bank_link",
+     "facts": {
+      "org": "BPI"
+     }
+    },
+    {
      "id": "sender_mobile",
      "facts": {
       "org": "BPI",
@@ -8785,9 +10263,36 @@
     {
      "id": "link_not_official",
      "facts": {
-      "org": "BPI",
+      "org": "GCash",
       "domain": "account-restore.info",
-      "official": "bpi.com.ph"
+      "official": "gcash.com"
+     }
+    },
+    {
+     "id": "bank_link",
+     "facts": {
+      "org": "GCash"
+     }
+    }
+   ]
+  },
+  {
+   "text": "Your BPI account mo ay naka-hold. Buksan ang https://account-restore.info",
+   "sender": "BDO Alert",
+   "verdict": "scam",
+   "reasons": [
+    {
+     "id": "link_not_official",
+     "facts": {
+      "org": "BDO",
+      "domain": "account-restore.info",
+      "official": "bdo.com.ph"
+     }
+    },
+    {
+     "id": "bank_link",
+     "facts": {
+      "org": "BDO"
      }
     }
    ]
@@ -8803,6 +10308,12 @@
       "org": "BPI",
       "domain": "account-restore.info",
       "official": "bpi.com.ph"
+     }
+    },
+    {
+     "id": "bank_link",
+     "facts": {
+      "org": "BPI"
      }
     }
    ]
@@ -8849,6 +10360,114 @@
   },
   {
    "text": "GCash: sundan kami sa https://www.youtube.com/watch?v=abc",
+   "sender": "BDO Alert",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "GCash: sundan kami sa https://www.youtube.com/watch?v=abc",
+   "sender": "8080",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Your account is restricted. Open https://account-restore.info now.",
+   "sender": null,
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Your account is restricted. Open https://account-restore.info now.",
+   "sender": "09171234567",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Your account is restricted. Open https://account-restore.info now.",
+   "sender": "+63 917 123 4567",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Your account is restricted. Open https://account-restore.info now.",
+   "sender": "GCash",
+   "verdict": "scam",
+   "reasons": [
+    {
+     "id": "link_not_official",
+     "facts": {
+      "org": "GCash",
+      "domain": "account-restore.info",
+      "official": "gcash.com"
+     }
+    },
+    {
+     "id": "bank_link",
+     "facts": {
+      "org": "GCash"
+     }
+    }
+   ]
+  },
+  {
+   "text": "Your account is restricted. Open https://account-restore.info now.",
+   "sender": "BDO Alert",
+   "verdict": "scam",
+   "reasons": [
+    {
+     "id": "link_not_official",
+     "facts": {
+      "org": "BDO",
+      "domain": "account-restore.info",
+      "official": "bdo.com.ph"
+     }
+    },
+    {
+     "id": "bank_link",
+     "facts": {
+      "org": "BDO"
+     }
+    }
+   ]
+  },
+  {
+   "text": "Your account is restricted. Open https://account-restore.info now.",
+   "sender": "8080",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Your OTP is 123456. Do not share it with anyone.",
+   "sender": null,
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Your OTP is 123456. Do not share it with anyone.",
+   "sender": "09171234567",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Your OTP is 123456. Do not share it with anyone.",
+   "sender": "+63 917 123 4567",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Your OTP is 123456. Do not share it with anyone.",
+   "sender": "GCash",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Your OTP is 123456. Do not share it with anyone.",
+   "sender": "BDO Alert",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Your OTP is 123456. Do not share it with anyone.",
    "sender": "8080",
    "verdict": "clear",
    "reasons": []

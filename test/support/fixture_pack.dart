@@ -419,6 +419,13 @@ CREATE TABLE first_aid_cards (
   meta('link_shorteners', jsonEncode(['bit.ly', 'tinyurl.com']));
   meta('neutral_hosts', jsonEncode(['facebook.com']));
   meta('sender_ids', jsonEncode(['GCash', 'BDO Alert']));
+  meta(
+    'bank_senders',
+    jsonEncode({
+      'GCash': ['GCash'],
+      'BDO': ['BDO', 'BDO Alert'],
+    }),
+  );
   if (gambling) {
     meta(
       'gambling',
@@ -522,6 +529,12 @@ CREATE TABLE first_aid_cards (
   void reason(String id, String tl, String en, String fact) => db.execute(
     'INSERT INTO scam_reasons VALUES (?, ?, ?, ?)',
     [id, tl, en, fact],
+  );
+  reason(
+    'bank_link',
+    'Ayon sa BSP, hindi nagpapadala ng link sa text ang mga bangko.',
+    'The BSP says banks do not send links by text.',
+    'Batayan: BSP Memorandum M-2022-015',
   );
   reason(
     'link_lookalike',

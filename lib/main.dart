@@ -180,6 +180,7 @@ class _HudyatAppState extends State<HudyatApp> with WidgetsBindingObserver {
         shorteners: store.linkShorteners(),
         neutralHosts: store.neutralHosts(),
         gambling: store.gamblingRules(),
+        bankSenders: store.bankSenders(),
         phrases: () => models.scamPhrases,
         classifier: () => models.suspiciousClassifier,
       );

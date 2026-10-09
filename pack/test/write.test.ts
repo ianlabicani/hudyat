@@ -104,6 +104,26 @@ describe("gambling rules", () => {
     db.close();
   });
 
+  test("bank sender names are stored when given, and change the rules version", () => {
+    const meta = { name: "Test", area: "Test", buildDate: "2026-10-09", bbox: [120.9, 14.34, 121.16, 14.8], sources: [] };
+    const read = (name: string, bankSenders?: Record<string, string[]>) => {
+      const path = join(dir, name);
+      writePack(path, { meta, records: [hotline], intents: [], scam: { ...scam, bankSenders } });
+      const db = new Database(path, { readonly: true });
+      const rows = db.query("SELECT key, value FROM meta WHERE key IN ('bank_senders', 'rules_version')").all() as {
+        key: string;
+        value: string;
+      }[];
+      db.close();
+      return Object.fromEntries(rows.map((row) => [row.key, row.value]));
+    };
+    const without = read("no-banks.sqlite");
+    const banks = read("banks.sqlite", { BDO: ["BDO", "BDO Alert"] });
+    expect(without.bank_senders).toBeUndefined();
+    expect(JSON.parse(banks.bank_senders)).toEqual({ BDO: ["BDO", "BDO Alert"] });
+    expect(banks.rules_version).not.toBe(without.rules_version);
+  });
+
   test("reject a brand with nothing to match", () => {
     const bad = { ...gambling, brands: [{ name: "Nameless", aliases: [], domains: [] }] };
     expect(() => validateScamData({ ...scam, gambling: bad })).toThrow("without a name or alias");

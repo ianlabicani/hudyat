@@ -4,6 +4,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import {
   acronymFor,
+  bankSenders,
   convertAgencySenders,
   convertCompanies,
   hostOf,
@@ -90,6 +91,28 @@ describe("convertAgencySenders", () => {
     );
     expect(senders[0].phones).toEqual([{ display: "8922-3293", dial: "0289223293" }]);
     expect(senders[1].phones).toEqual(agency.phones);
+  });
+});
+
+describe("bankSenders", () => {
+  const company = (name: string, extra: object = {}) => ({
+    name,
+    aliases: [name],
+    strict_aliases: [],
+    domains: [`${name.toLowerCase()}.com`],
+    phones: [],
+    source_url: "",
+    ...extra,
+  });
+
+  test("lists each bank's sender names, its own name first", () => {
+    expect(
+      bankSenders([
+        company("BDO", { bank: true, sender_ids: ["BDO", "BDO Alert"] }),
+        company("BPI", { bank: true }),
+        company("Globe", { sender_ids: ["GLOBE"] }),
+      ]),
+    ).toEqual({ BDO: ["BDO", "BDO Alert"], BPI: ["BPI"] });
   });
 });
 

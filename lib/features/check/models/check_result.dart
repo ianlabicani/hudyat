@@ -21,6 +21,7 @@ abstract final class ReasonId {
   static const phrasing = 'phrasing';
   static const linkHidden = 'link_hidden';
   static const gamblingPromo = 'gambling_promo';
+  static const bankLink = 'bank_link';
   static const suspicious = {
     'ask_credentials',
     'ask_money',

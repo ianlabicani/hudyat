@@ -602,7 +602,7 @@ that is not here, add it to the canvas and this section first.
 | Data face | IBM Plex Mono, 400 and 500, for numbers, addresses, badges and footers |
 | Text sizes | 28 screen title, 20 section heading, 16 body, 13 minimum |
 | Shape | Radius 6; badges 3; pills fully round |
-| Borders | 2px solid for primary surfaces, 1.5px solid for secondary |
+| Borders | Ink means "tap me": 2px ink on buttons and text boxes, 1.5px ink on rows that open something. Information that cannot be tapped (notes, facts, plain rows, panels) is boxed in the rule colour, 2px or 1.5px, never ink |
 | Dashed border | Optional, AI-written or locked content only |
 | Touch targets | 44 minimum; Call 48; primary actions 52 to 60 |
 
@@ -621,7 +621,7 @@ submission disclosures.
 | `UnderstoodStrip` | Under Home's box: what the on-device model made of the message, and how long it took |
 | `PlaceRow` | Name, address, distance, chevron; opens the Map |
 | `LevelBadge` | Outlined for the user's city; filled for a province or national fallback |
-| `Notice` | The "!" box: a bold line and one sentence |
+| `Notice` | The "!" box: a bold line and one sentence, in a rule-coloured border so it does not read as a button |
 | `AiNote` | Dashed box labelled "AI-WRITTEN · MAY BE WRONG" |
 | `FirstAidSection` | Primary panel tagged "FIRST AID · FIXED CARD": title with its Filipino gloss, numbered Tagalog steps, and the source name and link as text |
 | `PackFooter` | Hotline source, OpenStreetMap attribution, pack build date |

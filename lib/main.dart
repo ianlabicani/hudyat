@@ -53,6 +53,10 @@ class _HudyatAppState extends State<HudyatApp> with WidgetsBindingObserver {
   ModelManager? _models;
   MessageChecker? _checker;
   FlaggedStore? _flagged;
+
+  /// Where the flagged messages are kept, to read them through a second
+  /// connection when the first cannot see what the phone just wrote.
+  String? _flaggedPath;
   TimedCheck? _timed;
   InboxScanner? _scanner;
   ProtectionController? _protection;
@@ -184,7 +188,9 @@ class _HudyatAppState extends State<HudyatApp> with WidgetsBindingObserver {
         classifier: () => models.suspiciousClassifier,
       );
       // Flagged messages live in their own file, apart from the pack.
-      final kept = sqlite3.open(p.join(support.path, 'flagged.sqlite'));
+      final flaggedPath = p.join(support.path, 'flagged.sqlite');
+      _flaggedPath = flaggedPath;
+      final kept = sqlite3.open(flaggedPath);
       final flagged = FlaggedStore(kept, senders: senders);
       final scanner = InboxScanner(
         inbox: const AndroidSmsInbox(),
@@ -243,7 +249,7 @@ class _HudyatAppState extends State<HudyatApp> with WidgetsBindingObserver {
     if (shared == null || !mounted) return;
     final saved = shared.resultId == null
         ? null
-        : _flagged?.byId(shared.resultId!);
+        : _savedResult(shared.resultId!);
     unawaited(
       _navigator.currentState?.push(
         MaterialPageRoute<void>(
@@ -260,6 +266,32 @@ class _HudyatAppState extends State<HudyatApp> with WidgetsBindingObserver {
         ),
       ),
     );
+  }
+
+  /// The kept message an alert points to. The alert's row is written by the
+  /// Android side through its own connection, and on the phone the app's
+  /// connection has been seen to miss it, so a miss is retried on a fresh
+  /// connection before the result is called unavailable.
+  FlaggedMessage? _savedResult(int id) {
+    final flagged = _flagged;
+    final found = flagged?.byId(id);
+    final path = _flaggedPath;
+    if (found != null || flagged == null || path == null) return found;
+    final fresh = FlaggedStore.open(
+      path,
+      senders: _store?.officialSenders() ?? const [],
+    );
+    try {
+      final again = fresh.byId(id);
+      debugPrint(
+        'Hudyat: result $id is not on the app connection '
+        '(${flagged.count} kept); a fresh connection '
+        '${again == null ? 'lacks it too' : 'has it'} (${fresh.count} kept)',
+      );
+      return again;
+    } finally {
+      fresh.close();
+    }
   }
 
   @override

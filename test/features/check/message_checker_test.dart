@@ -276,6 +276,32 @@ void main() {
       expect(result.reasons.single.facts['sender'], '0917 123 4567');
     });
 
+    const offer =
+        'Earn up to P200 REWARDS with GCash Missions. Cash In, Buy Load, or '
+        'Pay Bills to claim your rewards today. T&Cs apply.';
+
+    test('an offer in a wallet\'s name from a mobile number', () async {
+      final result = await checker.check(offer, sender: '09679502142');
+      expect(result.verdict, Verdict.caution);
+      expect(ids(result), [ReasonId.senderMobile]);
+      expect(result.reasons.single.facts['org'], 'GCash');
+      expect(result.claimed?.short, 'GCash');
+    });
+
+    test('the same offer with no sender or a sender name is left', () async {
+      expect(ids(await checker.check(offer)), isEmpty);
+      expect(ids(await checker.check(offer, sender: 'GCash')), isEmpty);
+    });
+
+    test('naming a wallet in a chat from a mobile number is left', () async {
+      for (final chat in [
+        'Paki-GCash na lang yung bayad, salamat',
+        'Na-claim ko na yung bayad mo sa GCash, salamat',
+      ]) {
+        expect(ids(await checker.check(chat, sender: '09171234567')), isEmpty);
+      }
+    });
+
     test('a sender name gives no reason either way', () async {
       expect(
         (await checker.check(text, sender: 'GCash')).verdict,

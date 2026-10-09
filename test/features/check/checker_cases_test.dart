@@ -56,6 +56,9 @@ void main() {
     'GCash: sundan kami sa https://www.youtube.com/watch?v=abc',
     'Your account is restricted. Open https://account-restore.info now.',
     'Your OTP is 123456. Do not share it with anyone.',
+    'Earn up to P200 REWARDS with GCash Missions. Cash In, Buy Load, or Pay '
+        'Bills to claim your rewards today. T&Cs apply.',
+    'Na-claim ko na yung bayad mo sa GCash, salamat',
   ];
 
   const senders = [

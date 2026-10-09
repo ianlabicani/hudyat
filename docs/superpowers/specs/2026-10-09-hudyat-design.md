@@ -218,6 +218,11 @@ claim, not the mention. A look-alike link needs no claim.
 - The one sender reason: the text claims to be from a listed
   organisation and the sender is an ordinary mobile number (`09…` or
   `+639…`).
+- An offer counts as that claim for banks and e-wallets: a text from a
+  mobile number that names one and uses two different offer words
+  ("rewards", "claim", "promo", "T&Cs apply", "permit no") gets the
+  same reason. Naming a wallet in a chat ("Paki-GCash na lang") does
+  not.
 - A sender name such as "GCash" never clears a message, because sender
   names can be faked.
 - A bank's or e-wallet's sender name counts as a claim to be that bank,
@@ -621,6 +626,7 @@ that is not here, add it to the canvas and this section first.
 | Disabled fill / disabled text | `#CFCCC2` / `#3F3D39` |
 | Call accent | `#B93A0B`, used on Call buttons, the emergency link and the logo's flare on light backgrounds |
 | Danger | `#A31621`, for "Mukhang scam" and the medical and injury icons |
+| Ready | `#1B6E2E`, for the dot and outline of Home's "Ready offline" pill only. It says the app is set up; it is never used on a message verdict |
 | Caution | `#8A5200`, for "Mag-ingat" |
 | No verdict colour | "Walang nakitang problema" stays muted. Green is not in the palette, since it would read as "safe" |
 | Help icons | Flood `#1F5FA8`, fire `#B85300`, police `#1E2F6B`, medicine and clinic `#0F6B63`, shelter `#5B3A8C`. Icons only; labels and borders stay ink |

@@ -151,8 +151,16 @@ class MessageRules(private val data: RuleData) {
             reasons.removeAll { it.id == LINK_NOT_OFFICIAL }
         }
 
-        if (from != null && claimed.isNotEmpty() && Links.isMobileNumber(from)) {
-            add(SENDER_MOBILE, "org" to claimed.first().short, "sender" to from)
+        // An offer in a bank's or e-wallet's name, sent from an ordinary number,
+        // speaks for it without a "GCash:" in front.
+        val speaker = claimed.firstOrNull()
+            ?: if (from != null && Links.isMobileNumber(from) && isOffer(text)) {
+                firstMentionedBank(text)
+            } else {
+                null
+            }
+        if (from != null && speaker != null && Links.isMobileNumber(from)) {
+            add(SENDER_MOBILE, "org" to speaker.short, "sender" to from)
         }
 
         val promo = gamblingSource(text, hosts, from)
@@ -170,6 +178,26 @@ class MessageRules(private val data: RuleData) {
             return Verdict.SCAM
         }
         return Verdict.CAUTION
+    }
+
+    /** Two different offer words, so one "claim" in a chat is not enough. */
+    private fun isOffer(text: String): Boolean =
+        offer.findAll(text).map { it.value.lowercase() }.toSet().size >= 2
+
+    /** The bank or e-wallet named earliest in [text], claimed or not. */
+    private fun firstMentionedBank(text: String): Sender? {
+        var first: Sender? = null
+        var at = text.length
+        for (sender in data.senders) {
+            if (sender.short !in data.bankSenders) continue
+            for (match in mentions(sender, text)) {
+                if (match.first < at) {
+                    at = match.first
+                    first = sender
+                }
+            }
+        }
+        return first
     }
 
     /** Organisations [text] claims to come from, in the order they appear. */
@@ -295,6 +323,12 @@ class MessageRules(private val data: RuleData) {
         private val telltale = Regex(
             "$START(account|wallet|load|sim|promo|postpaid|prepaid|subscriber|bill|" +
                 "data|points|rewards|app|verify|otp)$END",
+            RegexOption.IGNORE_CASE,
+        )
+        /** Wording of an offer made in an organisation's name. */
+        private val offer = Regex(
+            "$START(rewards?|promo|claim|cashback|voucher|prize|premyo|" +
+                "t&cs?\\s+apply|permit\\s+no)$END",
             RegexOption.IGNORE_CASE,
         )
         private val lead = Regex(

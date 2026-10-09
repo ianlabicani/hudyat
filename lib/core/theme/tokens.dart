@@ -16,6 +16,10 @@ abstract final class HudyatColors {
   /// "Mukhang scam", and the icon for medical help.
   static const danger = Color(0xFFA31621);
 
+  /// Home's "Ready offline" pill only: the app is set up. Never used on a
+  /// message verdict.
+  static const ready = Color(0xFF1B6E2E);
+
   /// "Mag-ingat". "Walang nakitang problema" has no colour of its own: it
   /// stays muted and is never green, which would read as "safe".
   static const caution = Color(0xFF8A5200);

@@ -6969,14 +6969,30 @@
   {
    "text": "Earn up to P200 REWARDS with GCash Missions. Cash In, Buy Load, or Pay Bills to claim your rewards today. T&Cs apply.",
    "sender": "09171234567",
-   "verdict": "clear",
-   "reasons": []
+   "verdict": "caution",
+   "reasons": [
+    {
+     "id": "sender_mobile",
+     "facts": {
+      "org": "GCash",
+      "sender": "09171234567"
+     }
+    }
+   ]
   },
   {
    "text": "Earn up to P200 REWARDS with GCash Missions. Cash In, Buy Load, or Pay Bills to claim your rewards today. T&Cs apply.",
    "sender": "+63 917 123 4567",
-   "verdict": "clear",
-   "reasons": []
+   "verdict": "caution",
+   "reasons": [
+    {
+     "id": "sender_mobile",
+     "facts": {
+      "org": "GCash",
+      "sender": "+63 917 123 4567"
+     }
+    }
+   ]
   },
   {
    "text": "Earn up to P200 REWARDS with GCash Missions. Cash In, Buy Load, or Pay Bills to claim your rewards today. T&Cs apply.",
@@ -10468,6 +10484,94 @@
   },
   {
    "text": "Your OTP is 123456. Do not share it with anyone.",
+   "sender": "8080",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Earn up to P200 REWARDS with GCash Missions. Cash In, Buy Load, or Pay Bills to claim your rewards today. T&Cs apply.",
+   "sender": null,
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Earn up to P200 REWARDS with GCash Missions. Cash In, Buy Load, or Pay Bills to claim your rewards today. T&Cs apply.",
+   "sender": "09171234567",
+   "verdict": "caution",
+   "reasons": [
+    {
+     "id": "sender_mobile",
+     "facts": {
+      "org": "GCash",
+      "sender": "09171234567"
+     }
+    }
+   ]
+  },
+  {
+   "text": "Earn up to P200 REWARDS with GCash Missions. Cash In, Buy Load, or Pay Bills to claim your rewards today. T&Cs apply.",
+   "sender": "+63 917 123 4567",
+   "verdict": "caution",
+   "reasons": [
+    {
+     "id": "sender_mobile",
+     "facts": {
+      "org": "GCash",
+      "sender": "+63 917 123 4567"
+     }
+    }
+   ]
+  },
+  {
+   "text": "Earn up to P200 REWARDS with GCash Missions. Cash In, Buy Load, or Pay Bills to claim your rewards today. T&Cs apply.",
+   "sender": "GCash",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Earn up to P200 REWARDS with GCash Missions. Cash In, Buy Load, or Pay Bills to claim your rewards today. T&Cs apply.",
+   "sender": "BDO Alert",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Earn up to P200 REWARDS with GCash Missions. Cash In, Buy Load, or Pay Bills to claim your rewards today. T&Cs apply.",
+   "sender": "8080",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Na-claim ko na yung bayad mo sa GCash, salamat",
+   "sender": null,
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Na-claim ko na yung bayad mo sa GCash, salamat",
+   "sender": "09171234567",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Na-claim ko na yung bayad mo sa GCash, salamat",
+   "sender": "+63 917 123 4567",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Na-claim ko na yung bayad mo sa GCash, salamat",
+   "sender": "GCash",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Na-claim ko na yung bayad mo sa GCash, salamat",
+   "sender": "BDO Alert",
+   "verdict": "clear",
+   "reasons": []
+  },
+  {
+   "text": "Na-claim ko na yung bayad mo sa GCash, salamat",
    "sender": "8080",
    "verdict": "clear",
    "reasons": []

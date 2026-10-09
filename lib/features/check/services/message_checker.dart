@@ -7,7 +7,7 @@ import 'suspicious_classifier.dart';
 
 /// Raise this when the rules in [MessageChecker] change, so texts an inbox
 /// scan checked with the old rules are checked again.
-const checkerVersion = 4;
+const checkerVersion = 5;
 
 /// Stage 1 of the message check (spec 3.4): links, claimed sender, the
 /// BSP's no-links rule for banks, gambling promos and phrasing, giving a verdict and reason ids. One checker serves paste,
@@ -61,6 +61,19 @@ class MessageChecker {
     r'data|points|rewards|app|verify|otp)\b',
     caseSensitive: false,
   );
+
+  /// Wording of an offer made in an organisation's name.
+  static final _offer = RegExp(
+    r'\b(rewards?|promo|claim|cashback|voucher|prize|premyo|'
+    r't&cs?\s+apply|permit\s+no)\b',
+    caseSensitive: false,
+  );
+
+  /// Two different offer words, so one "claim" in a chat is not enough.
+  static bool _isOffer(String text) =>
+      {for (final match in _offer.allMatches(text)) match[0]!.toLowerCase()}
+          .length >=
+      2;
 
   Future<CheckResult> check(
     String text, {
@@ -128,10 +141,20 @@ class MessageChecker {
       reasons.removeWhere((r) => r.id == ReasonId.linkNotOfficial);
     }
 
-    if (from != null && claimed.isNotEmpty && isMobileNumber(from)) {
+    // An offer in a bank's or e-wallet's name, sent from an ordinary number,
+    // speaks for it without a "GCash:" in front.
+    final promoted =
+        from != null &&
+            claimed.isEmpty &&
+            isMobileNumber(from) &&
+            _isOffer(text)
+        ? _firstMentioned(text, banksOnly: true)
+        : null;
+    final speaker = claimed.isNotEmpty ? claimed.first : promoted;
+    if (from != null && speaker != null && isMobileNumber(from)) {
       add(
         CheckReason(ReasonId.senderMobile, {
-          'org': claimed.first.short,
+          'org': speaker.short,
           'sender': from,
         }),
       );
@@ -180,7 +203,9 @@ class MessageChecker {
       app: app,
       claimed: claimed.isNotEmpty
           ? claimed.first
-          : imitated ?? (broken.isEmpty ? null : _firstMentioned(text)),
+          : imitated ??
+                promoted ??
+                (broken.isEmpty ? null : _firstMentioned(text)),
       linkCount: hosts.length,
       truncated: truncated,
     );
@@ -222,10 +247,11 @@ class MessageChecker {
 
   /// The organisation named earliest in [text], claimed or not. Used for
   /// the contact when a hidden link shows the message is not from them.
-  OfficialSender? _firstMentioned(String text) {
+  OfficialSender? _firstMentioned(String text, {bool banksOnly = false}) {
     OfficialSender? first;
     var at = text.length;
     for (final sender in _senders) {
+      if (banksOnly && !_banks.contains(sender.short)) continue;
       for (final match in _mentions(sender, text)) {
         if (match.start < at) {
           at = match.start;

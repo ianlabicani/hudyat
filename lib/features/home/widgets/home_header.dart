@@ -13,12 +13,18 @@ class StatusPill extends StatelessWidget {
   Widget build(BuildContext context) {
     return OutlinedButton.icon(
       onPressed: onPressed,
-      icon: Icon(ready ? Icons.circle : Icons.circle_outlined, size: 12),
+      icon: Icon(
+        ready ? Icons.circle : Icons.circle_outlined,
+        size: 12,
+        color: ready ? HudyatColors.ready : null,
+      ),
       label: Text(ready ? 'Ready offline' : 'Finish setup'),
       style: OutlinedButton.styleFrom(
         backgroundColor: HudyatColors.surface,
         foregroundColor: HudyatColors.ink,
-        side: HudyatShape.secondaryBorder,
+        side: ready
+            ? HudyatShape.secondaryBorder.copyWith(color: HudyatColors.ready)
+            : HudyatShape.secondaryBorder,
         minimumSize: const Size(48, 44),
         padding: const EdgeInsets.symmetric(horizontal: 12),
         shape: const StadiumBorder(),

@@ -1,0 +1,237 @@
+{
+  "about": "Scam SMS texts collected verbatim from published warnings and reports, for the suspicious-request classifier's calibration and final-test sets. Never use these for training. Keep texts from the same campaign_id in the same split. Collected 2026-10-09 from public sources; see source_url per message. Labels are suggestions under the suspicious-request definition and must be reviewed before use.",
+  "provenance_notes": "source_kind 'official' means a government agency or the named company published or quoted the text. 'news' means a news organization quoted it. 'blog' means a personal blog or comment thread reproduced a received text; weaker provenance, decide before using in the final test. completeness 'fragment' means the article quoted only part of the message.",
+  "known_gaps": "The set skews toward prize-bait campaigns. Campaigns described but not quoted in official advisories (PHLPost P17.05 address-fee, LBC redelivery fee, SSS benefit-claim links, PhilHealth info-update site, Smart fake SIM re-registration, MMDA NCAP violations, BDO account-on-hold) are listed in reconstruction_candidates and may only be paraphrased for training, never for calibration or final testing.",
+  "messages": [
+    {
+      "text": "The globe points service reminds you that your current points account (3,022 points) will expire today. Redeem your points as soon as possible: https://globeeph.top/i Please reply Y then exit SMS, open the SMS to activate the link again, or copy the link to the Safari browser and open it.",
+      "campaign_id": "globe-points-2024",
+      "suggested_labels": ["action", "pressure", "bait"],
+      "source_kind": "official",
+      "source_name": "CICC via Philippine News Agency",
+      "source_url": "https://www.pna.gov.ph/articles/1223193",
+      "source_date": "2024-04",
+      "completeness": "full"
+    },
+    {
+      "text": "Dear, I am a human resources manager. You have been selected for a part-time/full-time job. Now you can reach P800-P10,000/day",
+      "campaign_id": "job-hr-2021",
+      "suggested_labels": ["bait", "action"],
+      "source_kind": "news",
+      "source_name": "Inquirer, on the November 2021 job-offer text wave",
+      "source_url": "https://newsinfo.inquirer.net/1520290/cyber-criminals-run-rampant-via-sms-prey-on-filipinos-in-need-of-jobs",
+      "source_date": "2021-11",
+      "completeness": "fragment"
+    },
+    {
+      "text": "Your employment CV sent to the POEA has been approved",
+      "campaign_id": "poea-cv-2022",
+      "suggested_labels": ["bait", "action"],
+      "source_kind": "official",
+      "source_name": "POEA advisory via Philstar",
+      "source_url": "https://qa.philstar.com/headlines/2022/06/14/2188305/poea-text-blasts-offering-jobs-are-phishing-scams",
+      "source_date": "2022-06",
+      "completeness": "fragment"
+    },
+    {
+      "text": "Good day! Your UnionBank account has been flagged for fraudulent transaction. Your account will be disabled in 24 hours.",
+      "campaign_id": "unionbank-flag-2022",
+      "suggested_labels": ["pressure", "action"],
+      "source_kind": "news",
+      "source_name": "UnionBank advisory via BitPinas",
+      "source_url": "https://bitpinas.com/news/unionbank-phishing-text-scam-message/",
+      "source_date": "2022-06",
+      "completeness": "fragment"
+    },
+    {
+      "text": "Good day from GCash, we would like to inform you that your account is under review, we request you to verify your account to continually access our eWallet services.",
+      "campaign_id": "gcash-review-2024",
+      "suggested_labels": ["credentials", "action"],
+      "source_kind": "official",
+      "source_name": "CICC via Philippine News Agency",
+      "source_url": "https://www.pna.gov.ph/articles/1224894",
+      "source_date": "2024-05",
+      "completeness": "full"
+    },
+    {
+      "text": "Congratulations! Ur sim no. won (P650,000) thru electronic raffle draw fr: PGMA's charity foundation w/ Bangko Sentral ng Pilipinas 'Handog Pangkabuhayan'! To claim ur prize, cal me now!",
+      "campaign_id": "pgma-raffle-2008",
+      "suggested_labels": ["bait"],
+      "source_kind": "news",
+      "source_name": "NBI AFCCD via Philstar",
+      "source_url": "https://www.philstar.com/news-commentary/2008/05/12/61694/beware-txt-scams",
+      "source_date": "2008-05",
+      "completeness": "full"
+    },
+    {
+      "text": "Congratulations! Last Jun/29/2011 Ur Cell# had Won! P750,000+N95:frm-PCCNS DTI NCR Permit#1948-S'of11-to Claim Ur Prize! Pls Call me Now! IM ATTY.MARK Mendez",
+      "campaign_id": "dti-permit-prize-2011",
+      "suggested_labels": ["bait"],
+      "source_kind": "blog",
+      "source_name": "The Filipino Scribe, received text",
+      "source_url": "https://www.filipinoscribe.com/2012/01/22/beware-of-text-scams-using-fake-dti-promo-numbers/",
+      "source_date": "2011-06",
+      "completeness": "full"
+    },
+    {
+      "text": "(Congrats)!Ur SIMcard#won Php880,000.2nd prize winner draw last night.To claim ur prize,pls call me now!I'm Atty.Miguel A.Lopez.,Per DTI#5247seriEs of 2012.",
+      "campaign_id": "dti-permit-prize-2012",
+      "suggested_labels": ["bait"],
+      "source_kind": "blog",
+      "source_name": "The Filipino Scribe, received text",
+      "source_url": "https://www.filipinoscribe.com/2012/01/22/beware-of-text-scams-using-fake-dti-promo-numbers/",
+      "source_date": "2012-01",
+      "completeness": "full"
+    },
+    {
+      "text": "MA'AM/SIR Ur Sim# had won! Php.850,000.00 From: VILLAR FOUNDATION. Handog Pang-Kabuhayan.To Claim ur prize, Pls call me now! I'm Sec.JHON DE LARA DTI#6849s'13",
+      "campaign_id": "villar-foundation",
+      "suggested_labels": ["bait"],
+      "source_kind": "blog",
+      "source_name": "Blogged Philippines, received text",
+      "source_url": "https://www.bloggedphilippines.com/2013/06/scam-villar-foundation-text.html",
+      "source_date": "2013-06",
+      "completeness": "full"
+    },
+    {
+      "text": "Congratulations YOUR #HAD WON [PHP500,000.00] FROM:Villar foundation Plz'Text ur Full:NAME/ADD/AGE/WORK. I'm ATTY.RICARDO F. GONZALES /DTI'NCR# 1843/s2021. Thank You",
+      "campaign_id": "villar-foundation",
+      "suggested_labels": ["bait", "credentials"],
+      "source_kind": "blog",
+      "source_name": "Blogged Philippines, reader-reported text",
+      "source_url": "https://www.bloggedphilippines.com/2013/06/scam-villar-foundation-text.html",
+      "source_date": "2021",
+      "completeness": "full"
+    },
+    {
+      "text": "Ma'am/Sir. Congrat's You are the lucky winner of' [Php650,000] from. (VILLAR FOUNDATION) Handog Pangkabuhayan. To Claim Pls txt ur- NAME/ADD/AGE/WORK/&Call me now Im Atty.Herbert C. Gonzales .DTI#6642'S20.",
+      "campaign_id": "villar-foundation",
+      "suggested_labels": ["bait", "credentials"],
+      "source_kind": "blog",
+      "source_name": "Blogged Philippines, reader-reported text",
+      "source_url": "https://www.bloggedphilippines.com/2013/06/scam-villar-foundation-text.html",
+      "source_date": "2020",
+      "completeness": "full"
+    },
+    {
+      "text": "Ma'am/Sir. Congrat's You are the lucky winner of' [Php580,000] from. (VILLAR FOUNDATION) Handog Pangkabuhayan To Claim Pls txt ur- NAME/ADD/AGE/WORK/&Call me now Im ATTY.PATRICK B DIZON DTI#6642'S19.",
+      "campaign_id": "villar-foundation",
+      "suggested_labels": ["bait", "credentials"],
+      "source_kind": "blog",
+      "source_name": "Blogged Philippines, reader-reported text",
+      "source_url": "https://www.bloggedphilippines.com/2013/06/scam-villar-foundation-text.html",
+      "source_date": "2019",
+      "completeness": "full"
+    },
+    {
+      "text": "Ma'am/sir congrats ur sim# had won!Handog Pamasko. From:VILLAR Foundation. Worth of (Php.580,000.00) To Claim Ur Prize. Pls Just Call me now. Im ATTY:LEA A.GALVEZ. PerDTI#6657,s2015.",
+      "campaign_id": "villar-foundation",
+      "suggested_labels": ["bait"],
+      "source_kind": "blog",
+      "source_name": "Blogged Philippines, reader-reported text",
+      "source_url": "https://www.bloggedphilippines.com/2013/06/scam-villar-foundation-text.html",
+      "source_date": "2015",
+      "completeness": "full"
+    },
+    {
+      "text": "Notice! Ur sim# had won (php780,000.00) from VILLAR FOUNDATION.to claim ur prize cAll me nw! I'm Atty.REY S SALAZAR.DTI permit #14626. s2016.",
+      "campaign_id": "villar-foundation",
+      "suggested_labels": ["bait"],
+      "source_kind": "blog",
+      "source_name": "Blogged Philippines, reader-reported text",
+      "source_url": "https://www.bloggedphilippines.com/2013/06/scam-villar-foundation-text.html",
+      "source_date": "2016",
+      "completeness": "full"
+    },
+    {
+      "text": "Congratulations! Ursim# Hadwon PHP850,000 From(GMA KAPUSO FOUNDATION) To Claim Send Ur (NAME/ADD/AGE) &Call Me Now Im Atty;JHON ACOSTA DTI#0391s2018 Thankyou,",
+      "campaign_id": "gma-kapuso",
+      "suggested_labels": ["bait", "credentials"],
+      "source_kind": "blog",
+      "source_name": "Blogged Philippines, received text",
+      "source_url": "https://www.bloggedphilippines.com/2018/01/scam-text-gma-kapuso-foundation.html",
+      "source_date": "2018-01",
+      "completeness": "full"
+    },
+    {
+      "text": "Ma'am/Sir.Congratulations! UR SIm Card# had w0nPHP580,000 2ND Prize winner.FRom-(GMA Kapuso foundation)Sponsored by:MR.WiLLIE Revillame/Claim ur prize.PLs TexT Ur NAME/ADDRES/AGE/WORK/ call me now!Im Atty Henry R.Ching.DTI#12278 S'19.",
+      "campaign_id": "gma-kapuso",
+      "suggested_labels": ["bait", "credentials"],
+      "source_kind": "blog",
+      "source_name": "Blogged Philippines, reader-reported text",
+      "source_url": "https://www.bloggedphilippines.com/2018/01/scam-text-gma-kapuso-foundation.html",
+      "source_date": "2019",
+      "completeness": "full"
+    },
+    {
+      "text": "Ma'am/Sir Congrat's your Sim#had WIN,2nd,PRIZE Winner worth of (Php550,000.00) Raffle Promo Sponsored by: GMA KAPUSO, FOUNDATION, To claim you're 'Prize PLs Txt Ur NAME/ADD/ Please Call me now I'm Atty.HENRY B. CHUA. DTI-NTC Permit No.0459s'19",
+      "campaign_id": "gma-kapuso",
+      "suggested_labels": ["bait", "credentials"],
+      "source_kind": "blog",
+      "source_name": "Blogged Philippines, reader-reported text",
+      "source_url": "https://www.bloggedphilippines.com/2018/01/scam-text-gma-kapuso-foundation.html",
+      "source_date": "2019",
+      "completeness": "full"
+    },
+    {
+      "text": "FROM: (GMA'7 Wowowin) Your SIM# had won worth of (Php850,000.00) 2nd prize winner of Sim raffle draw. Sponsored by: Mr.Willie Revillame. For more info. Pls call me now! Im sec.Ramon lopez. DTI#9162s'19.",
+      "campaign_id": "gma-kapuso",
+      "suggested_labels": ["bait"],
+      "source_kind": "blog",
+      "source_name": "Blogged Philippines, reader-reported text",
+      "source_url": "https://www.bloggedphilippines.com/2018/01/scam-text-gma-kapuso-foundation.html",
+      "source_date": "2019",
+      "completeness": "full"
+    },
+    {
+      "text": "Maam/sir Ur sim card# won! Php.850.000.00 As 2nd prize From:GMA KAPUSO FOUNDATION.To claim ur prize,Pls call me Now I'm Sec.Ramon M. Lopez DTI Permit#7165s'18.",
+      "campaign_id": "gma-kapuso",
+      "suggested_labels": ["bait"],
+      "source_kind": "blog",
+      "source_name": "Blogged Philippines, reader-reported text",
+      "source_url": "https://www.bloggedphilippines.com/2018/01/scam-text-gma-kapuso-foundation.html",
+      "source_date": "2018",
+      "completeness": "full"
+    },
+    {
+      "text": "Congratulations! You have won PHP50,000 in the Lazada 2026 Mid-Year Sale. Claim your prize: [link].",
+      "campaign_id": "lazada-prize-2026",
+      "suggested_labels": ["bait", "action", "money"],
+      "source_kind": "blog",
+      "source_name": "worldngayon.com smishing guide",
+      "source_url": "https://worldngayon.com/smishing-text-scam-philippines/",
+      "source_date": "2026",
+      "completeness": "full"
+    }
+  ],
+  "reconstruction_candidates": [
+    {
+      "campaign": "PHLPost undelivered parcel, update address and pay P17.05",
+      "source_url": "https://phlpost.gov.ph/cpt-press-releases/phlpost-warns-of-fake-messages-using-phlpost-and-other-delivery-services/"
+    },
+    {
+      "campaign": "LBC failed delivery, pay redelivery fee via GCash or bank",
+      "source_url": "https://milyonaryo.com.ph/expecting-a-parcel-from-lbc-beware-of-this-text-scam/"
+    },
+    {
+      "campaign": "SSS benefit claims, expiring contributions or My.SSS registration with link",
+      "source_url": "https://www.sss.gov.ph/news-and-updates/sss-warns-members-the-public-on-fake-text-alerts/"
+    },
+    {
+      "campaign": "PhilHealth, update health insurance identification information via fake site",
+      "source_url": "https://www.philhealth.gov.ph/advisories/2026/PA2026-0032.pdf"
+    },
+    {
+      "campaign": "Smart/TNT fake SIM re-registration portal",
+      "source_url": "https://technology.inquirer.net/137801/smart-and-tnt-warn-customers-against-fake-sim-registration-portal-scam"
+    },
+    {
+      "campaign": "MMDA NCAP traffic violation texts",
+      "source_url": "https://www.gmanetwork.com/news/topstories/nation/911505/cicc-warns-of-new-wave-of-text-scams/story/"
+    },
+    {
+      "campaign": "BDO account on hold due to suspicious activities, verify via link",
+      "source_url": "https://www.pna.gov.ph/articles/1179416"
+    }
+  ]
+}

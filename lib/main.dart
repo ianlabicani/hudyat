@@ -83,6 +83,8 @@ class _HudyatAppState extends State<HudyatApp> with WidgetsBindingObserver {
         cacheFile: File(p.join(support.path, 'intent-vectors.json')),
         scamExamples: store.scamExamples(),
         scamCacheFile: File(p.join(support.path, 'scam-vectors.json')),
+        firstAidCards: store.firstAidCards(),
+        firstAidCacheFile: File(p.join(support.path, 'first-aid-vectors.json')),
       );
       final senders = store.officialSenders();
       final checker = MessageChecker(

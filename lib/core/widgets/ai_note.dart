@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
-import '../../../core/theme/tokens.dart';
-import '../../../core/widgets/dashed_panel.dart';
+import '../theme/tokens.dart';
+import 'dashed_panel.dart';
 
 /// The AI-written sentences under a card, always labelled. Takes no space
 /// until the first words arrive, and disappears if the stream ends empty.

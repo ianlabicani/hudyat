@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 
 import '../../../core/app_scope.dart';
 import '../../../core/calls.dart';
+import '../../../core/pack/first_aid_card.dart';
 import '../../../core/pack/pack_record.dart';
 import '../../../core/pack/pack_store.dart';
 import '../../../core/theme/tokens.dart';
+import '../../../core/widgets/ai_note.dart';
 import '../../../core/widgets/buttons.dart';
 import '../../../core/widgets/panels.dart';
 import '../../../core/widgets/rows.dart';
@@ -15,15 +17,23 @@ import '../../map/services/map_file.dart';
 import '../card_labels.dart';
 import '../models/help_card.dart';
 import '../services/explainer.dart';
-import '../widgets/ai_note.dart';
 import '../widgets/card_header.dart';
+import '../widgets/first_aid_section.dart';
 
 /// The help card for one intent. It is built from the pack alone and shows
 /// at once; nothing here waits for a model.
 class CardScreen extends StatefulWidget {
-  const CardScreen({required this.intent, this.message, super.key});
+  const CardScreen({
+    required this.intent,
+    this.message,
+    this.firstAid,
+    super.key,
+  });
 
   final IntentDef intent;
+
+  /// The first-aid card [message] matched, shown under the hotlines.
+  final FirstAidCard? firstAid;
 
   /// What the user typed, when the card came from a message rather than a
   /// quick button. Only the AI note uses it.
@@ -67,9 +77,11 @@ class _CardScreenState extends State<CardScreen> {
   /// The AI note, started once for the first card shown.
   Stream<String>? _note;
 
+  /// Null on a card with first aid: generated sentences never sit next to
+  /// fixed first-aid steps.
   Stream<String>? _noteFor(HelpCard card) {
     final generator = AppScope.of(context).models.generator;
-    if (generator == null) return null;
+    if (generator == null || card.firstAid != null) return null;
     return _note ??= Explainer(generator)
         .explain(card: card, message: widget.message)
         .asBroadcastStream();
@@ -92,6 +104,7 @@ class _CardScreenState extends State<CardScreen> {
           city: location.city!,
           citySource: location.source!,
           position: location.position,
+          firstAid: widget.firstAid,
         );
         return Scaffold(
           appBar: const TopBar(title: 'Help card'),
@@ -107,6 +120,10 @@ class _CardScreenState extends State<CardScreen> {
                 if (card.hotlines.isNotEmpty) ...[
                   const SizedBox(height: 22),
                   ..._hotlineSection(card),
+                ],
+                if (card.firstAid case final firstAid?) ...[
+                  const SizedBox(height: 22),
+                  FirstAidSection(card: firstAid),
                 ],
                 if (card.intent.placeKinds.isNotEmpty) ...[
                   const SizedBox(height: 22),

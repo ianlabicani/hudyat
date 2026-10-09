@@ -3,9 +3,12 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 
 import '../../features/check/services/scam_phrases.dart';
+import '../../features/intent/services/first_aid_matcher.dart';
 import '../../features/intent/services/intent_matcher.dart';
+import '../pack/first_aid_card.dart';
 import '../pack/pack_record.dart';
 import '../pack/scam_records.dart';
+import 'last_query_embedder.dart';
 import 'model_runtime.dart';
 
 enum ModelState { checking, preparing, missing, downloading, ready, failed }
@@ -20,11 +23,17 @@ class ModelManager extends ChangeNotifier {
     this.cacheFile,
     this.scamExamples = const [],
     this.scamCacheFile,
+    this.firstAidCards = const [],
+    this.firstAidCacheFile,
   });
 
   final ModelRuntime _runtime;
   final List<IntentDef> _intents;
   final File? cacheFile;
+
+  /// The pack's first-aid cards, matched against a typed message.
+  final List<FirstAidCard> firstAidCards;
+  final File? firstAidCacheFile;
 
   /// Scam wording for the message check's phrasing step.
   final List<ScamExample> scamExamples;
@@ -42,6 +51,10 @@ class ModelManager extends ChangeNotifier {
 
   IntentMatcher? matcher;
   TextGenerator? generator;
+
+  /// The first-aid match, set once its examples are embedded. Until then,
+  /// and whenever that fails, cards show without a first-aid section.
+  FirstAidMatcher? firstAid;
 
   /// The phrasing check, set once its examples are embedded. That happens
   /// after everything else, so it never delays "Find help".
@@ -80,7 +93,27 @@ class ModelManager extends ChangeNotifier {
     }
     await _embedding(_runtime.loadEmbedder);
     await _chat(_runtime.loadGenerator);
+    await _firstAid();
     await _scam();
+  }
+
+  /// Embeds the first-aid examples with whichever embedder is loaded. A
+  /// failure leaves cards without a first-aid section and nothing else.
+  Future<void> _firstAid() async {
+    final embedder = _embedder;
+    if (embedder == null || firstAidCards.isEmpty) return;
+    final prepared = FirstAidMatcher(
+      embedder: embedder,
+      cards: firstAidCards,
+      cacheFile: firstAidCacheFile,
+    );
+    try {
+      await prepared.prepare();
+      firstAid = prepared;
+    } on Object {
+      firstAid = null;
+    }
+    notifyListeners();
   }
 
   /// Embeds the scam examples with whichever embedder is loaded. A failure
@@ -118,6 +151,7 @@ class ModelManager extends ChangeNotifier {
       }),
       downloading: true,
     );
+    await _firstAid();
     await _scam();
   }
 
@@ -137,7 +171,10 @@ class ModelManager extends ChangeNotifier {
     embeddingError = null;
     notifyListeners();
     try {
-      final embedder = await obtain();
+      final loaded = await obtain();
+      // One message is matched against intents and first-aid cards; the
+      // wrapper lets the second match reuse the first one's vector.
+      final embedder = loaded == null ? null : LastQueryEmbedder(loaded);
       _embedder = embedder;
       if (embedder == null) {
         embeddingState = ModelState.missing;
@@ -164,6 +201,7 @@ class ModelManager extends ChangeNotifier {
       }
     } on Object catch (error) {
       matcher = null;
+      firstAid = null;
       _embedder = null;
       embeddingState = ModelState.failed;
       embeddingError = '$error';

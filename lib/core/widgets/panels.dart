@@ -166,25 +166,25 @@ class SectionHeading extends StatelessWidget {
   Widget build(BuildContext context) {
     final gloss = this.gloss;
     final trailing = this.trailing;
-    return Row(
-      crossAxisAlignment: .start,
+    // A Wrap, so with large text the trailing label drops below the title
+    // instead of running off the screen.
+    return Wrap(
+      alignment: .spaceBetween,
+      spacing: 8,
+      runSpacing: 6,
       children: [
-        Expanded(
-          child: Semantics(
-            header: true,
-            child: Column(
-              crossAxisAlignment: .start,
-              children: [
-                Text(title, style: HudyatText.section),
-                if (gloss != null) Text(gloss, style: HudyatText.gloss),
-              ],
-            ),
+        Semantics(
+          header: true,
+          child: Column(
+            crossAxisAlignment: .start,
+            children: [
+              Text(title, style: HudyatText.section),
+              if (gloss != null) Text(gloss, style: HudyatText.gloss),
+            ],
           ),
         ),
-        if (trailing != null) ...[
-          const SizedBox(width: 8),
+        if (trailing != null)
           Padding(padding: const EdgeInsets.only(top: 2), child: trailing),
-        ],
       ],
     );
   }

@@ -1,0 +1,186 @@
+[
+  {
+    "id": "bleeding",
+    "title": "Severe bleeding",
+    "title_tl": "Malakas na pagdurugo",
+    "steps": [
+      "Diinan nang mariin ang sugat gamit ang malinis na tela o anumang hawak mo.",
+      "Tumawag agad sa hotline sa itaas, o ipatawag sa iba.",
+      "Huwag bitawan ang diin hanggang dumating ang tulong.",
+      "Kung may bagay na nakabaon sa sugat, huwag itong hugutin.",
+      "Huwag hugasan ang sugat na malakas ang dugo. Baka lalo itong dumugo."
+    ],
+    "source_name": "British Red Cross",
+    "source_url": "https://www.redcross.org.uk/first-aid/learn-first-aid/bleeding-heavily",
+    "examples": [
+      "ang daming dugo, ayaw tumigil",
+      "malalim ang hiwa sa braso, dumudugo nang malakas",
+      "nasugatan ng bubog, tuloy-tuloy ang dugo",
+      "tinamaan ng lumipad na yero, duguan",
+      "malalim ang sugat, ayaw tumigil ng dugo",
+      "nasaksak siya, ang lakas ng dugo",
+      "bleeding badly from a deep cut"
+    ]
+  },
+  {
+    "id": "puncture_wound",
+    "title": "Wound or nail puncture",
+    "title_tl": "Sugat o natusok ng pako",
+    "steps": [
+      "Maghugas muna ng kamay kung kaya.",
+      "Banlawan ang sugat sa malinis na umaagos na tubig nang 5 minuto, saka sabunin.",
+      "Kung may bagay na nakabaon, huwag itong hugutin o sundutin. Pumunta sa ospital.",
+      "Takpan ang sugat ng malinis na benda o tela.",
+      "Magpatingin sa doktor kung pako o kalawanging bagay ang nakasugat, o kung higit 10 taon na ang huli mong bakuna sa tetano."
+    ],
+    "source_name": "MedlinePlus (U.S. National Library of Medicine)",
+    "source_url": "https://medlineplus.gov/ency/article/000043.htm",
+    "examples": [
+      "natusok ng pako ang paa ko habang baha",
+      "natapakan ko ang kalawanging pako",
+      "nasugatan ang paa ko habang lumulusong sa baha",
+      "may sugat ako sa paa tapos nabasa ng tubig-baha",
+      "natusok ng alambre ang kamay ko",
+      "nahiwa ng yero ang paa ko, maliit lang",
+      "stepped on a rusty nail"
+    ]
+  },
+  {
+    "id": "burn",
+    "title": "Burn",
+    "title_tl": "Paso",
+    "steps": [
+      "Palamigin ang paso sa malamig na umaagos na tubig nang hindi bababa sa 20 minuto.",
+      "Huwag tanggalin ang damit o anumang nakadikit sa paso.",
+      "Pagkatapos palamigin, takpan ito nang maluwag ng cling film o malinis na plastic bag.",
+      "Huwag lagyan ng toothpaste, mantikilya o cream.",
+      "Tumawag sa hotline sa itaas kung sa tingin mo ay malala ang paso."
+    ],
+    "source_name": "British Red Cross",
+    "source_url": "https://www.redcross.org.uk/first-aid/learn-first-aid/burns",
+    "examples": [
+      "napaso ng kumukulong tubig ang bata",
+      "nasunog ang kamay ko sa kalan",
+      "nabanlian ng mainit na sabaw",
+      "natalsikan ng mainit na mantika ang braso ko",
+      "napaso sa kandila habang brownout",
+      "nalapnos ang balat niya sa init",
+      "burned my hand on the stove"
+    ]
+  },
+  {
+    "id": "broken_bone",
+    "title": "Broken bone",
+    "title_tl": "Bali sa buto",
+    "steps": [
+      "Huwag igalaw ang nasaktang bahagi kung hindi kailangan.",
+      "Suportahan ito ng kamay, unan o nakatuping damit para hindi gumalaw.",
+      "Huwag piliting ituwid o ibalik sa puwesto.",
+      "Dalhin siya sa ospital, o tumawag sa hotline sa itaas.",
+      "Ituloy ang pagsuporta hanggang may tumingin nang doktor."
+    ],
+    "source_name": "British Red Cross",
+    "source_url": "https://www.redcross.org.uk/first-aid/learn-first-aid/broken-bone",
+    "examples": [
+      "nabalian ng buto ang kapatid ko",
+      "nahulog sa hagdan, hindi makatayo",
+      "nabagsakan ng puno ang binti niya",
+      "baluktot ang braso niya pagkadapa",
+      "nadulas sa baha, namamaga ang bukung-bukong",
+      "na-dislocate ang balikat ko",
+      "I think my arm is broken"
+    ]
+  },
+  {
+    "id": "animal_bite",
+    "title": "Animal bite",
+    "title_tl": "Kagat ng hayop",
+    "steps": [
+      "Hugasan agad ang sugat ng sabon at umaagos na tubig nang hindi bababa sa 15 minuto.",
+      "Pumunta agad sa ospital o health center, kahit maliit ang sugat o kalmot lang.",
+      "Itanong doon ang bakuna laban sa rabies."
+    ],
+    "source_name": "World Health Organization",
+    "source_url": "https://www.who.int/news-room/fact-sheets/detail/rabies",
+    "examples": [
+      "nakagat ng aso ang anak ko",
+      "kinagat ako ng asong gala",
+      "kinalmot ako ng pusa, dumugo",
+      "nakagat ng daga sa evacuation center",
+      "kinagat ng aso ng kapitbahay ang binti ko",
+      "dog bite sa kamay",
+      "bitten by a stray dog"
+    ]
+  },
+  {
+    "id": "electric_shock",
+    "title": "Electric shock",
+    "title_tl": "Nakuryente",
+    "steps": [
+      "Huwag siyang hawakan habang nakadikit pa siya sa kuryente.",
+      "Patayin ang kuryente kung ligtas itong gawin.",
+      "Kung hindi mapatay, itulak siya palayo gamit ang tuyong bagay na hindi metal, tulad ng kahoy na walis.",
+      "Lumayo nang hindi bababa sa 6 na metro sa naputol na kawad na may malakas na kuryente.",
+      "Tumawag agad sa hotline sa itaas.",
+      "Kung wala siyang malay at walang pulso, simulan ang CPR."
+    ],
+    "source_name": "MedlinePlus (U.S. National Library of Medicine)",
+    "source_url": "https://medlineplus.gov/ency/article/000053.htm",
+    "examples": [
+      "nakuryente ang kapitbahay namin",
+      "nakuryente siya sa baha",
+      "may naputol na kawad ng kuryente, may natumba",
+      "na-ground siya sa saksakan",
+      "nakuryente habang nag-aayos ng ilaw",
+      "natumba pagkahawak sa basang poste",
+      "someone got an electric shock"
+    ]
+  },
+  {
+    "id": "drowning",
+    "title": "Drowning",
+    "title_tl": "Nalunod",
+    "steps": [
+      "Huwag ilagay sa panganib ang sarili mo para sumagip. Baka malunod ka rin.",
+      "Kapag ligtas na siyang naiahon, tingnan kung humihinga siya.",
+      "Ipatawag sa iba ang hotline sa itaas.",
+      "Kung hindi humihinga: itingala ang ulo niya, pisilin ang ilong, at bugahan ng hangin ang bibig nang 5 beses.",
+      "Diinan nang malakas at mabilis ang gitna ng dibdib nang 30 beses.",
+      "Ituloy ang pagbuga at pagdiin hanggang gumalaw siya o dumating ang tulong.",
+      "Kapag nagkamalay na siya, panatilihin siyang mainit at tuyo."
+    ],
+    "source_name": "British Red Cross",
+    "source_url": "https://www.redcross.org.uk/first-aid/learn-first-aid/drowning",
+    "examples": [
+      "nalunod ang bata sa baha",
+      "inanod ng tubig, naiahon na pero hindi gumagalaw",
+      "nahulog sa ilog ang kapatid ko",
+      "muntik malunod ang anak ko",
+      "naiahon mula sa creek, nakainom ng maraming tubig",
+      "lumubog siya sa baha, hinila namin paahon",
+      "he was drowning in the flood"
+    ]
+  },
+  {
+    "id": "head_injury",
+    "title": "Head injury",
+    "title_tl": "Tama sa ulo",
+    "steps": [
+      "Paupuin siya at pagpahingahin.",
+      "Lagyan ng malamig ang tinamaan, tulad ng yelong binalot sa tela.",
+      "Bantayan siya. Tumawag sa hotline sa itaas kung inaantok, nagsusuka o nalilito siya.",
+      "Tumawag din kung nawalan siya ng malay, nangisay, namanhid o nanghina ang bahagi ng katawan niya, o may dugo o malinaw na likido sa tainga o ilong."
+    ],
+    "source_name": "British Red Cross",
+    "source_url": "https://www.redcross.org.uk/first-aid/learn-first-aid/head-injury",
+    "examples": [
+      "nabagsakan ng sanga ang ulo niya",
+      "nauntog nang malakas, nahihilo siya",
+      "nadulas at tumama ang ulo sa semento",
+      "tinamaan ng yero sa ulo",
+      "nabukulan ang bata pagkahulog",
+      "may tumama sa ulo niya",
+      "hit his head and seems confused"
+    ]
+  }
+]

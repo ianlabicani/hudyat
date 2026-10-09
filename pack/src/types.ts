@@ -32,6 +32,20 @@ export interface Intent {
   examples: string[];
 }
 
+/** A fixed first-aid card. Its text is checked by hand against its source. */
+export interface FirstAidCard {
+  id: string;
+  title: string;
+  /** The title in Filipino, shown as the gloss under it. */
+  title_tl: string;
+  /** Plain Tagalog, one action per step. */
+  steps: string[];
+  source_name: string;
+  source_url: string;
+  /** Taglish messages this card should match. */
+  examples: string[];
+}
+
 /** An organisation scammers imitate: who it is, where it really lives. */
 export interface OfficialSender {
   name: string;

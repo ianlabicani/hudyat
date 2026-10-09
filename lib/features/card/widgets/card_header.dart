@@ -25,24 +25,27 @@ class CardHeader extends StatelessWidget {
           header: true,
           child: Text(card.intent.label, style: HudyatText.title),
         ),
-        Row(
+        // A Wrap, so with large text or a long city name the button drops
+        // below the line instead of squeezing it.
+        Wrap(
+          alignment: .spaceBetween,
+          crossAxisAlignment: .center,
+          spacing: 8,
+          runSpacing: 8,
           children: [
-            Expanded(
-              child: Text.rich(
-                TextSpan(
-                  text: 'Near ',
-                  style: HudyatText.body.copyWith(fontSize: 15),
-                  children: [
-                    TextSpan(
-                      text: card.city,
-                      style: const TextStyle(fontWeight: .w700),
-                    ),
-                    TextSpan(text: ' · $how'),
-                  ],
-                ),
+            Text.rich(
+              TextSpan(
+                text: 'Near ',
+                style: HudyatText.body.copyWith(fontSize: 15),
+                children: [
+                  TextSpan(
+                    text: card.city,
+                    style: const TextStyle(fontWeight: .w700),
+                  ),
+                  TextSpan(text: ' · $how'),
+                ],
               ),
             ),
-            const SizedBox(width: 8),
             SecondaryButton(
               label: 'Change city',
               expand: false,

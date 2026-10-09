@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import '../../../core/app_scope.dart';
 import '../../../core/calls.dart';
 import '../../../core/models/model_manager.dart';
+import '../../../core/pack/first_aid_card.dart';
 import '../../../core/pack/pack_record.dart';
 import '../../../core/theme/tokens.dart';
 import '../../../core/widgets/buttons.dart';
@@ -42,7 +43,11 @@ class _HomeScreenState extends State<HomeScreen> {
     super.dispose();
   }
 
-  Future<void> _openCard(IntentDef intent, {String? message}) async {
+  Future<void> _openCard(
+    IntentDef intent, {
+    String? message,
+    FirstAidCard? firstAid,
+  }) async {
     final location = AppScope.of(context).location;
     final navigator = Navigator.of(context);
     if (location.city == null) {
@@ -62,7 +67,8 @@ class _HomeScreenState extends State<HomeScreen> {
     }
     await navigator.push<void>(
       MaterialPageRoute(
-        builder: (_) => CardScreen(intent: intent, message: message),
+        builder: (_) =>
+            CardScreen(intent: intent, message: message, firstAid: firstAid),
       ),
     );
   }
@@ -92,12 +98,22 @@ class _HomeScreenState extends State<HomeScreen> {
     } on Object {
       match = null;
     }
+    // Only a message that opens a card can carry first aid. A failure here
+    // means a card without it, never no card.
+    FirstAidCard? firstAid;
+    if (match != null) {
+      try {
+        firstAid = await scope.models.firstAid?.match(text);
+      } on Object {
+        firstAid = null;
+      }
+    }
     if (!mounted) return;
     setState(() => _matching = false);
 
     final intent = match == null ? null : scope.store.intent(match.intentId);
     if (intent == null) return _search(query: text, fromMessage: true);
-    await _openCard(intent, message: text);
+    await _openCard(intent, message: text, firstAid: firstAid);
   }
 
   // Back here would close the app and stop automatic checking, so it sends

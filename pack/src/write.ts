@@ -1,7 +1,7 @@
 import { Database } from "bun:sqlite";
 import { existsSync, mkdirSync, rmSync } from "node:fs";
 import { dirname } from "node:path";
-import type { Intent, PackRecord, ScamData } from "./types";
+import type { FirstAidCard, Intent, PackRecord, ScamData } from "./types";
 
 export interface PackMeta {
   name: string;
@@ -19,6 +19,8 @@ export interface PackContents {
   intents: Intent[];
   /** Data for the message check. The tables are created empty without it. */
   scam?: ScamData;
+  /** First-aid cards. The table is created empty without them. */
+  firstAid?: FirstAidCard[];
 }
 
 const SCHEMA = `
@@ -60,6 +62,7 @@ CREATE TABLE intents (
 CREATE TABLE first_aid_cards (
   id TEXT PRIMARY KEY,
   title TEXT NOT NULL,
+  title_tl TEXT NOT NULL,
   steps TEXT NOT NULL,
   source_name TEXT NOT NULL,
   source_url TEXT NOT NULL,
@@ -118,6 +121,29 @@ export function validateScamData(scam: ScamData): void {
   }
 }
 
+/** Throws on a first-aid card the app could not show, cite or match. */
+export function validateFirstAid(cards: FirstAidCard[]): void {
+  const seen = new Set<string>();
+  for (const card of cards) {
+    if (!card.id?.trim() || seen.has(card.id)) {
+      throw new Error(`First-aid card with a missing or repeated id: ${card.id}`);
+    }
+    seen.add(card.id);
+    if (!card.title?.trim() || !card.title_tl?.trim()) {
+      throw new Error(`First-aid card without a title: ${card.id}`);
+    }
+    if (card.steps.length < 2 || card.steps.some((step) => !step.trim())) {
+      throw new Error(`First-aid card without steps: ${card.id}`);
+    }
+    if (!card.source_name?.trim() || !card.source_url?.startsWith("https://")) {
+      throw new Error(`First-aid card without a source: ${card.id}`);
+    }
+    if (card.examples.length < 3 || card.examples.some((example) => !example.trim())) {
+      throw new Error(`First-aid card with too few examples: ${card.id}`);
+    }
+  }
+}
+
 /** Throws on the first record the app could not show or locate. */
 export function validateRecords(records: PackRecord[]): void {
   for (const record of records) {
@@ -133,6 +159,7 @@ export function validateRecords(records: PackRecord[]): void {
 export function writePack(path: string, contents: PackContents): void {
   validateRecords(contents.records);
   if (contents.scam) validateScamData(contents.scam);
+  if (contents.firstAid) validateFirstAid(contents.firstAid);
   if (path !== ":memory:") {
     mkdirSync(dirname(path), { recursive: true });
     if (existsSync(path)) rmSync(path);
@@ -205,6 +232,21 @@ export function writePack(path: string, contents: PackContents): void {
       for (const e of scam.examples) insertExample.run(e.text, e.type, e.type_label);
       const insertReason = db.prepare("INSERT INTO scam_reasons (id, tl, en, fact) VALUES (?, ?, ?, ?)");
       for (const r of scam.reasons) insertReason.run(r.id, r.tl, r.en, r.fact);
+    }
+    const insertFirstAid = db.prepare(
+      `INSERT INTO first_aid_cards (id, title, title_tl, steps, source_name, source_url, examples)
+       VALUES (?, ?, ?, ?, ?, ?, ?)`,
+    );
+    for (const card of contents.firstAid ?? []) {
+      insertFirstAid.run(
+        card.id,
+        card.title,
+        card.title_tl,
+        JSON.stringify(card.steps),
+        card.source_name,
+        card.source_url,
+        JSON.stringify(card.examples),
+      );
     }
     for (const intent of contents.intents) {
       insertIntent.run(

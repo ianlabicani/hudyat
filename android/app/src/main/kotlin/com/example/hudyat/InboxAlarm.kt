@@ -53,12 +53,12 @@ class InboxAlarmReceiver : BroadcastReceiver() {
         if (intent.action != null || !InboxCheck.isOn(app)) return
         Log.i(InboxAlarm.TAG, "alarm fired")
         val pending = goAsync()
-        Thread {
+        ProtectionEngine.execute(app) {
             try {
                 InboxCheck.run(app, alert = true)
             } finally {
                 pending.finish()
             }
-        }.start()
+        }
     }
 }

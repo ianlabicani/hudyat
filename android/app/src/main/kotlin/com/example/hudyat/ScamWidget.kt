@@ -47,7 +47,7 @@ class ScamWidget : AppWidgetProvider() {
                     ""
                 } else {
                     val time = DateFormat.getTimeFormat(context).format(Date(counts.checkedAt))
-                    "${counts.total} texts checked · $time"
+                    "7-day SMS · ${counts.total} checked · $time"
                 },
             )
             views.setOnClickPendingIntent(R.id.widget_root, InboxCheck.openFlagged(context, 4401))

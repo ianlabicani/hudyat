@@ -9,9 +9,12 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
     <!-- "Scan my messages": asked for only when the user starts a scan. -->
     <uses-permission android:name="android.permission.READ_SMS"/>
+    <uses-permission android:name="android.permission.RECEIVE_SMS"/>
     <application
         android:label="Hudyat"
         android:name="${applicationName}"
+        android:fullBackupContent="@xml/backup_rules"
+        android:dataExtractionRules="@xml/data_extraction_rules"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
@@ -65,6 +68,23 @@
             </intent-filter>
         </receiver>
         <receiver
+            android:name=".LiveSmsReceiver"
+            android:exported="true"
+            android:permission="android.permission.BROADCAST_SMS">
+            <intent-filter>
+                <action android:name="android.provider.Telephony.SMS_RECEIVED"/>
+            </intent-filter>
+        </receiver>
+        <service
+            android:name=".ScamNotificationListener"
+            android:label="Hudyat message protection"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService"/>
+            </intent-filter>
+        </service>
+        <receiver
             android:name=".ScamWidget"
             android:exported="false"
             android:label="Hudyat">
@@ -87,6 +107,14 @@
 
          In particular, this is used by the Flutter engine in io.flutter.plugin.text.ProcessTextPlugin. -->
     <queries>
+        <package android:name="com.google.android.apps.messaging"/>
+        <package android:name="com.android.mms"/>
+        <package android:name="com.samsung.android.messaging"/>
+        <package android:name="com.facebook.orca"/>
+        <package android:name="com.whatsapp"/>
+        <package android:name="com.viber.voip"/>
+        <package android:name="org.telegram.messenger"/>
+        <package android:name="org.telegram.messenger.web"/>
         <!-- Tap-to-call opens the dialer; the user still presses call. -->
         <intent>
             <action android:name="android.intent.action.DIAL"/>

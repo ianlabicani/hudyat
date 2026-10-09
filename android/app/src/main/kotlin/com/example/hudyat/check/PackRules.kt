@@ -7,7 +7,11 @@ import org.json.JSONArray
 import org.json.JSONObject
 
 /** The message-check lists and reason wording, read from the pack in app storage. */
-class PackRules(val data: RuleData, private val wording: Map<String, String>) {
+class PackRules(
+    val data: RuleData,
+    private val wording: Map<String, String>,
+    val version: String,
+) {
     /** The fixed Tagalog wording for [reason], with its facts filled in. */
     fun describe(reason: Reason): String {
         val template = wording[reason.id] ?: return "Mukhang scam"
@@ -50,7 +54,7 @@ class PackRules(val data: RuleData, private val wording: Map<String, String>) {
                     val meta = HashMap<String, String>()
                     db.rawQuery(
                         "SELECT key, value FROM meta WHERE key IN " +
-                            "('link_shorteners', 'neutral_hosts', 'gambling')",
+                            "('link_shorteners', 'neutral_hosts', 'gambling', 'rules_version')",
                         null,
                     ).use { rows ->
                         while (rows.moveToNext()) meta[rows.getString(0)] = rows.getString(1)
@@ -67,6 +71,7 @@ class PackRules(val data: RuleData, private val wording: Map<String, String>) {
                             meta["gambling"]?.let(::JSONObject),
                         ),
                         wording,
+                        "${meta["rules_version"] ?: "unknown"}-3",
                     )
                 }
             } catch (error: Exception) {

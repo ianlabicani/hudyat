@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<full-backup-content>
+    <exclude domain="file" path="flagged.sqlite"/>
+    <exclude domain="file" path="flagged.sqlite-wal"/>
+    <exclude domain="file" path="flagged.sqlite-shm"/>
+</full-backup-content>

@@ -7,6 +7,13 @@
     <string name="widget_no_access">Open Hudyat to check your texts</string>
     <string name="widget_not_checked">Not checked yet. Open Hudyat.</string>
     <string name="widget_footer">%1$d texts checked · %2$s</string>
+    <!-- Labels for a tile too narrow for the full verdict words. -->
+    <string name="widget_scam_short">Scam</string>
+    <string name="widget_caution_short">Ingat</string>
+    <string name="widget_gambling_short">Sugal</string>
+    <!-- What a screen reader says for the whole tile. -->
+    <string name="widget_summary">Hudyat, huling 7 araw: %1$d Mukhang scam, %2$d Mag-ingat, %3$d Sugal promo. %4$s</string>
+    <string name="widget_summary_message">Hudyat: %1$s</string>
     <string name="widget_scam">Mukhang scam</string>
     <string name="widget_caution">Mag-ingat</string>
     <string name="widget_gambling">Sugal promo</string>

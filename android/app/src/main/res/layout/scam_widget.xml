@@ -32,6 +32,7 @@
             android:textSize="15sp"
             android:textStyle="bold"/>
         <TextView
+            android:id="@+id/widget_period"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/widget_pill"
@@ -117,6 +118,7 @@
                     android:importantForAccessibility="no"
                     android:src="@drawable/widget_mark_scam"/>
                 <TextView
+                    android:id="@+id/widget_scam_label"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="6dp"
@@ -164,6 +166,7 @@
                     android:importantForAccessibility="no"
                     android:src="@drawable/widget_mark_caution"/>
                 <TextView
+                    android:id="@+id/widget_caution_label"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="6dp"
@@ -195,6 +198,7 @@
                     android:importantForAccessibility="no"
                     android:src="@drawable/widget_mark_gambling"/>
                 <TextView
+                    android:id="@+id/widget_gambling_label"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="6dp"

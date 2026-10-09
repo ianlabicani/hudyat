@@ -692,6 +692,9 @@ submission disclosures.
 | Widget | All zero | A check-mark icon, "Walang nakitang scam" and "sa huling 7 araw", with the checked line | `Widget` |
 | Widget | SMS access not given | A lock icon and "Open Hudyat to check your texts" | `Widget` |
 | Widget | Not checked yet | A clock icon and "Not checked yet. Open Hudyat." | `Widget` |
+| Widget | Narrow tile, under 290 dp wide | The labels shorten to "Scam", "Ingat" and "Sugal" and the "huling 7 araw" pill is hidden. Every number stays | Rule only |
+| Widget | Short tile, under 140 dp high | The footer is hidden and the headline number is smaller | Rule only |
+| Widget | Read by a screen reader | The whole tile is one sentence: the three counts with their verdict words and the checked line, or the message | Rule only |
 | Scan | Ready | What is read and kept; range chips; "n not yet checked in this range · Already checked: n"; wording switch; Scan | `Scan` |
 | Scan | SMS access not yet given | No pending count, since counting needs the inbox; Scan asks for access | Rule only |
 | Scan | SMS access refused | Notice with the restricted-settings hint; Scan stays available | Rule only |

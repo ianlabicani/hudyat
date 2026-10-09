@@ -15,9 +15,11 @@ import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
 import android.provider.Telephony
+import android.util.Log
 import com.example.hudyat.check.Links
 import com.example.hudyat.check.MessageRules
 import com.example.hudyat.check.PackRules
+import com.example.hudyat.check.Verdict
 import java.io.File
 import java.security.MessageDigest
 import java.util.concurrent.Executors
@@ -30,6 +32,7 @@ internal object ProtectionEngine {
     private val worker = Executors.newSingleThreadExecutor()
     private val main = Handler(Looper.getMainLooper())
     private var cachedPack: PackRules? = null
+    private var cachedChecker: MessageRules? = null
     private var packStamp: Pair<Long, Long>? = null
 
     @Volatile var listenerConnected = false
@@ -159,9 +162,15 @@ internal object ProtectionEngine {
         if (cachedPack != null && stamp == packStamp) return cachedPack
         val pack = PackRules.load(context) ?: return null
         cachedPack = pack
+        // Built once per pack: it compiles a pattern for every promo term.
+        cachedChecker = MessageRules(pack.data)
         packStamp = stamp
         return pack
     }
+
+    /** The rules for [pack], compiled once and kept beside it. */
+    private fun checker(pack: PackRules): MessageRules =
+        cachedChecker?.takeIf { cachedPack === pack } ?: MessageRules(pack.data)
 
     fun fingerprint(sender: String?, text: String): String = digest(
         "${sender?.trim()?.lowercase() ?: ""}\u0000$text",
@@ -171,33 +180,48 @@ internal object ProtectionEngine {
         .digest(value.toByteArray(Charsets.UTF_8))
         .joinToString("") { "%02x".format(it) }
 
-    /** Caller is on [worker]. */
-    fun process(context: Context, incoming: ProtectionStore.Incoming, alert: Boolean) {
+    /**
+     * Caller is on [worker]. An inbox scan hands in the [verdict] it has
+     * already worked out and marks the run itself, so a message is checked
+     * once and the settings are written once.
+     */
+    fun process(
+        context: Context,
+        incoming: ProtectionStore.Incoming,
+        alert: Boolean,
+        verdict: Verdict? = null,
+    ) {
         if (incoming.text.isBlank()) return
         val pack = rules(context) ?: run {
             prefs(context).edit().putString("failure", "pack_unavailable").apply()
             return
         }
-        val verdict = MessageRules(pack.data).check(incoming.text, incoming.sender)
+        val inScan = verdict != null
+        val verdict = verdict ?: checker(pack).check(incoming.text, incoming.sender)
         val linkCount = (Links.linkHosts(incoming.text) +
             Links.brokenLinkHosts(incoming.text)).distinct().size
         val saved = ProtectionStore.record(
             context, incoming, verdict, pack.version, linkCount, alert,
         )
-        prefs(context).edit()
-            .putLong("last_processed", System.currentTimeMillis())
-            .remove("failure")
-            .apply()
+        if (!inScan) markProcessed(context)
         if (saved.changed) main.post { resultsChanged?.invoke() }
         if (saved.alert && saved.resultId != null && canAlert(context)) {
             notify(context, saved.resultId, incoming.sender, pack.describe(verdict.reasons.first()))
         }
     }
 
+    private fun markProcessed(context: Context) {
+        prefs(context).edit()
+            .putLong("last_processed", System.currentTimeMillis())
+            .remove("failure")
+            .apply()
+    }
+
     /** Incremental SMS recovery and a full seven-day recount on rule changes. */
     fun scanInbox(context: Context, alert: Boolean) {
         if (!InboxCheck.canReadSms(context)) return
         val pack = rules(context) ?: return
+        val checker = checker(pack)
         val saved = prefs(context)
         // The first scan into an empty store only takes stock: every text
         // already in the inbox would otherwise raise an alert at once.
@@ -205,34 +229,52 @@ internal object ProtectionEngine {
             !ProtectionStore.smsStateEmpty(context)
         val scanAt = System.nanoTime()
         val started = System.currentTimeMillis()
-        var afterId = 0L
-        do {
-            val page = SmsReader.read(context, started - SEVEN_DAYS, afterId, 200)
-            for (sms in page) {
-                val id = sms["id"] as Long
-                val sender = sms["sender"] as String
-                val text = sms["body"] as String
-                val arrivedAt = sms["date"] as Long
-                val hash = fingerprint(sender, text)
-                if (ProtectionStore.smsUnchanged(context, id, hash, pack.version)) {
-                    ProtectionStore.markSmsSeen(context, id, scanAt)
-                } else if (text.isNotBlank()) {
-                    val incoming = ProtectionStore.Incoming(
-                        "sms:$id", "sms", null, "Messages", sender, text,
-                        arrivedAt, false, hash,
-                    )
-                    process(context, incoming, mayAlert && InboxCheck.isOn(context))
-                    val verdict = MessageRules(pack.data).check(text, sender)
-                    ProtectionStore.saveSmsState(
-                        context, id, hash, arrivedAt, pack.version, verdict, scanAt,
-                    )
+        val alertNow = mayAlert && InboxCheck.isOn(context)
+        // What earlier scans already judged, read once for the whole inbox.
+        val known = ProtectionStore.smsStates(context)
+        var read = 0
+        var checked = 0
+        // One transaction for the scan: hundreds of texts are one write to
+        // disk, not one each.
+        val counts = ProtectionStore.inTransaction(context) {
+            var afterId = 0L
+            do {
+                val page = SmsReader.read(context, started - SEVEN_DAYS, afterId, 200)
+                for (sms in page) {
+                    val id = sms["id"] as Long
+                    val sender = sms["sender"] as String
+                    val text = sms["body"] as String
+                    val arrivedAt = sms["date"] as Long
+                    val hash = fingerprint(sender, text)
+                    read++
+                    if (known[id] == hash to pack.version) {
+                        ProtectionStore.markSmsSeen(context, id, scanAt)
+                    } else if (text.isNotBlank()) {
+                        val incoming = ProtectionStore.Incoming(
+                            "sms:$id", "sms", null, "Messages", sender, text,
+                            arrivedAt, false, hash,
+                        )
+                        val verdict = checker.check(text, sender)
+                        process(context, incoming, alertNow, verdict)
+                        ProtectionStore.saveSmsState(
+                            context, id, hash, arrivedAt, pack.version, verdict, scanAt,
+                        )
+                        checked++
+                    }
                 }
-            }
-            if (page.isEmpty()) break
-            afterId = page.last()["id"] as Long
-            if (page.size < 200) break
-        } while (true)
-        val counts = ProtectionStore.finishSmsScan(context, scanAt)
+                if (page.isEmpty()) break
+                afterId = page.last()["id"] as Long
+                if (page.size < 200) break
+            } while (true)
+            ProtectionStore.finishSmsScan(context, scanAt)
+        }
+        markProcessed(context)
+        // Counts and timing only: never a message or a sender.
+        Log.i(
+            "Hudyat",
+            "inbox scan: $read texts read, $checked checked, " +
+                "${System.currentTimeMillis() - started} ms",
+        )
         InboxCheck.saveCounts(context, counts[1], counts[2], counts[3], counts[0], started)
         saved.edit().putBoolean("sms_recovery_initialized", true).apply()
     }

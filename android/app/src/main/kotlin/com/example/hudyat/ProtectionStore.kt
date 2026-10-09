@@ -139,12 +139,31 @@ internal object ProtectionStore {
         return found
     }
 
-    fun smsUnchanged(context: Context, id: Long, fingerprint: String, rules: String): Boolean {
+    /** Each known text's fingerprint and the rules that judged it, by SMS id. */
+    fun smsStates(context: Context): Map<Long, Pair<String, String>> {
+        val states = HashMap<Long, Pair<String, String>>()
         database(context).rawQuery(
-            "SELECT 1 FROM protection_sms WHERE sms_id=? AND fingerprint=? " +
-                "AND rules_version=?",
-            arrayOf(id.toString(), fingerprint, rules),
-        ).use { return it.moveToFirst() }
+            "SELECT sms_id, fingerprint, rules_version FROM protection_sms",
+            null,
+        ).use { rows ->
+            while (rows.moveToNext()) {
+                states[rows.getLong(0)] = rows.getString(1) to rows.getString(2)
+            }
+        }
+        return states
+    }
+
+    /** Runs [work] as one transaction, so a whole scan is one write to disk. */
+    fun <T> inTransaction(context: Context, work: () -> T): T {
+        val db = database(context)
+        db.beginTransaction()
+        try {
+            val result = work()
+            db.setTransactionSuccessful()
+            return result
+        } finally {
+            db.endTransaction()
+        }
     }
 
     fun markSmsSeen(context: Context, id: Long, scanAt: Long) {

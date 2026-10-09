@@ -150,6 +150,25 @@ did not wait for it." Do not read the sentences out.
 | Result screen, "Walang nakitang problema" with the "This is not a guarantee" notice | "Hudyat never tells you a message is safe. It tells you what it found, and who to really call." |
 | Credits: BetterGov open data, OpenStreetMap contributors, first-aid sources, Claude Code, Devin, Codex | "Built in one night on open data. Hudyat." |
 
+## If asked how Hudyat differs
+
+For the three minutes of questions. Each line is in the README under
+"What makes Hudyat different" and is backed by a story.
+
+- **Against other scam checkers:** "Ours knows who the message is
+  pretending to be. It compares the link with that organisation's real
+  website and gives you its real number to call."
+- **Against chat assistants:** "The model never writes a number or a
+  first-aid step. It picks; the pack answers."
+- **Against laptop or desktop entries:** "This runs on the phone of the
+  person in the flood, not on a responder's laptop."
+- **If the model is doubted:** "Take the models away and the buttons,
+  search, cards and every scam rule still work."
+
+Do not name another team's app, and do not say Hudyat is the only one
+doing any of this: the other entries were read from their READMEs, not
+run.
+
 ## Lines that must not be said
 
 - "Safe", "legit" or "verified" about any message.

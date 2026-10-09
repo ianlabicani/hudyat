@@ -29,6 +29,39 @@ emergency, and warn you when a message looks like a scam.
 - **Everyday lookup.** Search national agencies, local officials,
   hotlines and government services.
 
+## What makes Hudyat different
+
+- **One pack answers both questions.** The same official data that finds
+  a hotline also checks a message. When a text pretends to be GCash or
+  the DSWD, Hudyat compares its link with that organisation's real
+  website and shows its real number with a Call button. A scam checker
+  without that data can say "suspicious"; it cannot say who to call
+  instead.
+- **The AI never writes the answer.** A chat assistant answers from the
+  model, and a small model makes things up. Here the model only picks
+  the need or the card. Every number, address, website and first-aid
+  step is copied from the pack, with its source and build date shown.
+- **Rules you can check, not a score.** Each verdict lists its reasons
+  in fixed wording: the link imitates an organisation, the link is
+  broken up to get past filters, the text claims a bank and carries a
+  link (the BSP tells banks not to send links by text). The AI wording
+  check is a second signal and cannot call a message a scam alone.
+- **It runs on the phone in the flood, not on a laptop.** Both models
+  run on a budget Android. There is no desktop, no local server and no
+  account, so the person who lost the signal is the one holding it.
+- **It still works with no model at all.** The quick buttons, keyword
+  search, hotline cards, first-aid cards and every rule in the message
+  check work before the models are copied over.
+- **Built for how texts arrive here.** Taglish in, sender names that can
+  be faked, short links, links split with a space, and online gambling
+  promos, which get their own group with a way to block the sender and
+  a line to call.
+- **It never says "safe".** The best result is "Walang nakitang
+  problema", with a note that this is not a guarantee.
+- **It says what it cannot do.** Where each kind of user is let down is
+  written out in [the user stories](docs/superpowers/stories/2026-10-09-user-stories.md)
+  and under [Limitations](#limitations).
+
 ## Try it in two minutes
 
 You need an Android phone running Android 11 or later.
@@ -241,10 +274,14 @@ with credit and is not endorsed by BetterGov or any agency.
 - **The wording check is modest.** In an early test on the phone it
   caught 12 of 20 synthetic scam examples at a threshold that flagged
   none of 25 ordinary messages. This is not a real-world accuracy figure.
-- **A trained five-label classifier is included but switched off.** It
-  has not been measured on independent real messages, so the app ships
-  with the simpler wording check. The details are in
+- **A five-label classifier is built but switched off.** The pipeline
+  and its release gates exist, but no model has been fitted or measured
+  on independent real messages, so the app ships with the simpler
+  wording check. The details are in
   [pack/classifier/README.md](pack/classifier/README.md).
+- **Search matches names, not acronyms.** "Social welfare" finds the
+  DSWD; "DSWD" or "SSS" finds only online services. Most agencies and
+  officials in the pack have no phone number listed.
 - **First-aid cards** are reworded from the cited sources and are not a
   substitute for emergency care.
 

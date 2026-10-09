@@ -19,6 +19,7 @@ abstract final class ReasonId {
   static const senderMobile = 'sender_mobile';
   static const linkShortener = 'link_shortener';
   static const phrasing = 'phrasing';
+  static const gamblingPromo = 'gambling_promo';
 }
 
 /// One finding: a reason id plus the facts that fill its fixed wording.
@@ -28,7 +29,7 @@ class CheckReason {
   final String id;
 
   /// Values for the wording's placeholders: `org`, `domain`, `official`,
-  /// `sender`, `type`.
+  /// `sender`, `type`, `source`.
   final Map<String, String> facts;
 
   /// [template] with its placeholders filled in.

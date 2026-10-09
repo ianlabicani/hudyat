@@ -61,6 +61,7 @@ writePack(OUT, {
       { name: "OpenStreetMap contributors", used_for: "Places and map", licence: "ODbL" },
       { name: "bettergovph/bettergov websites list", used_for: "Official agency websites", licence: "CC0-1.0" },
       { name: "Company websites", used_for: "Official company websites and hotlines", licence: "Facts, cited per company" },
+      { name: "Hand-made gambling list", used_for: "Online gambling brands, domains and promo wording", licence: "Own work" },
     ],
   },
   records,
@@ -70,6 +71,7 @@ writePack(OUT, {
     examples: data("scam_examples.json"),
     reasons: data("scam_reasons.json"),
     shorteners: senderRules.shorteners,
+    gambling: data("gambling.json"),
   },
 });
 

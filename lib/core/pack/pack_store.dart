@@ -70,6 +70,16 @@ class PackStore {
     return (jsonDecode(rows.first['value'] as String) as List).cast<String>();
   }
 
+  /// Online gambling brands and wording, or nothing in an older pack.
+  GamblingRules gamblingRules() {
+    final rows = _db.select("SELECT value FROM meta WHERE key = 'gambling'");
+    if (rows.isEmpty) return GamblingRules.none;
+    return GamblingRules.fromJson(
+      (jsonDecode(rows.first['value'] as String) as Map)
+          .cast<String, dynamic>(),
+    );
+  }
+
   IntentDef? intent(String id) {
     final rows = _db.select('SELECT * FROM intents WHERE id = ?', [id]);
     return rows.isEmpty ? null : IntentDef.fromRow(rows.first);

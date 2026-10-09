@@ -157,6 +157,7 @@ model.
 |---|---|---|
 | Links | Each link's domain is compared with the official domains in the pack | No |
 | Claimed sender | Agency or company names in the text are matched to the pack; the sender is checked for being an ordinary mobile number | No |
+| Gambling promo | Brand names, link domains and promo wording are compared with the pack's gambling list | No |
 | Phrasing | The text is embedded and compared with scam example phrases | EmbeddingGemma |
 
 - **Output:** a verdict and a list of reason ids. No free text.
@@ -207,6 +208,31 @@ also ordinary words are left out, and a three-letter acronym counts only
 in capitals. Smart, Globe, Maya and DITO count only when capitalised and
 the message also has a word such as "account", "load" or "SIM".
 
+**Gambling promos.** Online gambling promos are flagged as their own
+reason, since they are not scams in the usual sense and some operators
+are licensed. The reason text does not call the operator illegal. The
+list (brands with aliases and known domains, host words, promo terms) is
+hand-made and ships in the pack. It was drawn up from the builder's own
+inbox on 2026-10-09: 9 of 615 texts were gambling promos, all from sender
+names and all with a link. A message gets the reason when any of these
+holds:
+
+- **Brand link:** a link is on a listed brand domain, or its host with
+  punctuation removed contains a brand alias of five or more characters
+  (`bingoplus.com`).
+- **Brand named:** the sender name starts with a brand alias
+  (`789BIngo 3`); or the text names a brand as a whole word, has a link
+  and has at least one promo term.
+- **Gambling word in the link:** the host contains a listed word such as
+  "casino", "bingo" or "slot".
+- **Promo wording:** the text has two different promo terms (rebate,
+  cashback, jackpot, top up, welcome bonus and similar) and a link that
+  is not an official domain. This catches brands not yet listed.
+
+Words such as "free", "bonus", "win" and "play" are not on the list,
+because telcos, banks and e-wallets use them. The reason's fact line
+names the brand, or the link's domain when the brand is not listed.
+
 **From reasons to a verdict.**
 
 | Finding | Verdict |
@@ -214,7 +240,7 @@ the message also has a word such as "account", "load" or "SIM".
 | A look-alike link | Mukhang scam |
 | An organisation is claimed and a link is not theirs | Mukhang scam |
 | Any two different reasons | Mukhang scam |
-| Exactly one of: organisation claimed from a mobile number, phrasing match, shortener link | Mag-ingat |
+| Exactly one of: organisation claimed from a mobile number, phrasing match, shortener link, gambling promo | Mag-ingat |
 | Nothing found | Walang nakitang problema |
 
 The phrasing check alone never gives "Mukhang scam".
@@ -291,6 +317,7 @@ the Flagged list holds manually checked messages only.
 | DOH, Red Cross, WHO guidance | Text of first-aid cards | Cited per card |
 | `bettergovph/bettergov` websites list | Official websites, emails and contacts of 723 agencies, for the message check | CC0 |
 | Hand-made company list | About 15 commonly impersonated companies (e-wallets, banks, couriers, telcos) with official websites, each verified when added | Own work |
+| Hand-made gambling list | About 15 online gambling brands with aliases, the domains seen in their texts, and promo wording | Own work |
 | Hand-written scam examples | About 40 Taglish scam phrasings (locked e-wallet, fake ayuda, parcel fees, job offers, loans, prizes) | Own work |
 
 BetterGov's own ScamCheck is an online service calling a cloud-hosted
@@ -306,7 +333,7 @@ One SQLite file per pack, built on the laptop by a script.
 
 | Table | Contents |
 |---|---|
-| `meta` | Pack name, area, build date, sources, licences |
+| `meta` | Pack name, area, build date, sources, licences; also the link shorteners and the gambling list, each as one JSON value |
 | `records` | One row per hotline, agency, official, service or place |
 | `records_fts` | FTS5 keyword index over `records` |
 | `intents` | Intent id, label, example phrases, linked record kinds |
@@ -482,12 +509,14 @@ submission disclosures.
 | Result | Mag-ingat | Outlined verdict, reasons, real contact with Call, `AiNote` | `CheckResultCaution` |
 | Result | Walang nakitang problema | Dashed verdict, "Hindi ito garantiya" Notice, list of checks run | `CheckResultClear` |
 | Result | No official sender matched | No contact section; one line says why | `CheckResultClear` |
+| Result | Gambling promo | "Mag-ingat" with the fixed gambling reason; the fact line names the brand or the link's domain. No contact section | Rule only |
+| Result | Flagged, sender given | "Open in Messages / Buksan sa Messages" opens that sender's conversation in the SMS app, with one line saying Hudyat cannot delete texts. A snackbar if it cannot open | Rule only |
 | Result | No sender given | The Sender row reads "Not given / Hindi ibinigay" | Rule only |
 | Result | Scam phrases not ready | The Phrasing row reads "Not ready yet"; the verdict comes from links and sender | Rule only |
 | Result | Message read from a notification | `MessageQuote` says it may be cut short | `CheckResultCaution` |
 | Result | Chat model missing or slow | No `AiNote`; nothing else changes | Rule only |
 | Alert | Mukhang scam on an incoming message | Standard Android notification: sender in the title, first reason in the body, one "Tingnan" action that opens the result | `ScamAlert` |
-| Flagged | Has messages | Grouped by verdict; each row opens its result; Clear all | `Flagged` |
+| Flagged | Has messages | Grouped by verdict; each row opens its result and has a "Remove from this list" icon button; Clear all. One line says removing does not delete the text from the SMS app | `Flagged` |
 | Flagged | Empty | "No flagged messages" and a link to Watcher setup | Rule only |
 | Watcher setup | Off, access not granted | What is read, kept and sent; Notice about Android settings; Turn on | `WatcherSetup` |
 | Watcher setup | On | Badge reads ON; the button reads "Turn off"; no Notice | Rule only |
@@ -546,7 +575,9 @@ Gemma terms on Hugging Face personally.
 - **MessageChecker:** unit tests with a fixture pack and a written list
   of scam and ordinary messages, covering each check, each verdict and
   the no-model fallback. Ordinary messages from real agencies must not
-  come out as "Mukhang scam".
+  come out as "Mukhang scam". Gambling cases cover each of the four
+  rules with real promo texts, and telco, e-wallet and bank promos that
+  must stay clear.
 - **Automatic path on device:** send test messages to the Infinix by SMS
   and Messenger with airplane mode off for delivery, then confirm the
   check itself makes no network request.
@@ -618,3 +649,8 @@ checkpoint.
 ## 11. Parked
 
 The demo script is deferred until the build works on the phone.
+
+Blocking or deleting gambling and scam texts is parked. Android lets only
+the default SMS app delete or block texts, so Hudyat would need a full
+inbox of its own. Until then a result opens the conversation in the SMS
+app.

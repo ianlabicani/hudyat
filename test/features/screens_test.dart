@@ -35,6 +35,7 @@ void main() {
     checker = MessageChecker(
       senders: store.officialSenders(),
       shorteners: store.linkShorteners(),
+      gambling: store.gamblingRules(),
       phrases: () => models.scamPhrases,
     );
     flagged = FlaggedStore(

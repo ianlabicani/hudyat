@@ -106,6 +106,16 @@ export function validateScamData(scam: ScamData): void {
       throw new Error(`Company number without a source: ${sender.name}`);
     }
   }
+  const gambling = scam.gambling;
+  if (!gambling) return;
+  for (const brand of gambling.brands) {
+    if (!brand.name.trim() || brand.aliases.length === 0 || brand.aliases.some((alias) => !alias.trim())) {
+      throw new Error(`Gambling brand without a name or alias: ${JSON.stringify(brand)}`);
+    }
+  }
+  if ([...gambling.host_words, ...gambling.terms].some((word) => !word.trim())) {
+    throw new Error("Empty gambling word");
+  }
 }
 
 /** Throws on the first record the app could not show or locate. */
@@ -168,6 +178,7 @@ export function writePack(path: string, contents: PackContents): void {
     const scam = contents.scam;
     if (scam) {
       insertMeta.run("link_shorteners", JSON.stringify(scam.shorteners));
+      if (scam.gambling) insertMeta.run("gambling", JSON.stringify(scam.gambling));
       const insertSender = db.prepare(
         `INSERT INTO official_senders
            (name, short, kind, aliases, strict_aliases, domains, phones, source_url)

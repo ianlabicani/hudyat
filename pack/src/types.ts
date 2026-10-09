@@ -60,9 +60,27 @@ export interface ScamReason {
   fact: string;
 }
 
+/** An online gambling operator that advertises by text. */
+export interface GamblingBrand {
+  name: string;
+  /** Names it goes by, matched in the sender, the text and link hosts. */
+  aliases: string[];
+  /** Domains seen in its messages. May be empty: aliases also match hosts. */
+  domains: string[];
+}
+
+export interface GamblingRules {
+  brands: GamblingBrand[];
+  /** Words that mark a link host as a gambling site on their own. */
+  host_words: string[];
+  /** Promo wording; two different ones plus a link mark a message. */
+  terms: string[];
+}
+
 export interface ScamData {
   senders: OfficialSender[];
   examples: ScamExample[];
   reasons: ScamReason[];
   shorteners: string[];
+  gambling?: GamblingRules;
 }

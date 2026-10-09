@@ -18,6 +18,7 @@ void main() {
     checker = MessageChecker(
       senders: store.officialSenders(),
       shorteners: store.linkShorteners(),
+      gambling: store.gamblingRules(),
       phrases: () => phrases,
     );
   });
@@ -148,6 +149,118 @@ void main() {
       final result = await checker.check('Tingnan mo to bit.ly/3xYz');
       expect(result.verdict, Verdict.caution);
       expect(ids(result), [ReasonId.linkShortener]);
+    });
+  });
+
+  group('gambling', () {
+    String? source(CheckResult result) => result.reasons
+        .where((r) => r.id == ReasonId.gamblingPromo)
+        .firstOrNull
+        ?.facts['source'];
+
+    test('a link on a listed brand domain', () async {
+      final result = await checker.check(
+        'Fight for the Top! Get UP TO 1.5% Rebate and compete for P100K in '
+        'Super Ace Jackpot Pacquiao Ranking! bingoplus.com/channels/slot',
+        sender: 'BingoPlus',
+      );
+      expect(result.verdict, Verdict.caution);
+      expect(ids(result), [ReasonId.gamblingPromo]);
+      expect(source(result), 'BingoPlus');
+    });
+
+    test('a brand name inside an unlisted domain', () async {
+      final result = await checker.check('Laro na! arenaplus-ph.vip/join');
+      expect(ids(result), [ReasonId.gamblingPromo]);
+      expect(source(result), 'ArenaPlus');
+    });
+
+    test('a brand as the sender name, with or without a link', () async {
+      final result = await checker.check(
+        'PHP 789.00 Successful Released! Pwede mo i-transfer.',
+        sender: '789BIngo 2',
+      );
+      expect(ids(result), [ReasonId.gamblingPromo]);
+      expect(source(result), '789Bingo');
+    });
+
+    test('a gambling word in the link', () async {
+      final result = await checker.check('Laro na dito: ph-casino88.top');
+      expect(ids(result), [ReasonId.gamblingPromo]);
+      expect(source(result), 'ph-casino88.top');
+    });
+
+    test('promo wording with a link of an unknown brand', () async {
+      final result = await checker.check(
+        'Claim na ng 18P bonos and 2.70 percent daily rebate! Enjoy our 30K '
+        'top-up reward. 100% Legit. Click dito: tbwin5.com',
+        sender: 'TBWin5',
+      );
+      expect(result.verdict, Verdict.caution);
+      expect(source(result), 'tbwin5.com');
+    });
+
+    test('with a shortened link it becomes Mukhang scam', () async {
+      final result = await checker.check(
+        'Sali na sa Lucky Cola, may cashback araw-araw! bit.ly/3xYz',
+      );
+      expect(result.verdict, Verdict.scam);
+      expect(ids(result), [ReasonId.linkShortener, ReasonId.gamblingPromo]);
+      expect(source(result), 'Lucky Cola');
+    });
+
+    test('ordinary promos and alerts stay clear', () async {
+      const ordinary = [
+        (
+          'Earn up to P200 REWARDS with GCash Missions. Cash In, Buy Load, '
+              'or Pay Bills to claim your rewards today. T&Cs apply.',
+          'GCash',
+        ),
+        (
+          'Yehey! Thanks for loading, ka-TM! Meron ka nang FREE 100MB '
+              'pang-internet, valid for 1 day.',
+          '8080',
+        ),
+        ('Your Play Console verification code is 123456', 'Google'),
+        (
+          'You have a transaction using your BDO Debit Card at Google Play '
+              'for USD 25.00.',
+          'BDO Alert',
+        ),
+        ('May cashback sa Shopee ngayon shopee.ph/sale', 'Shopee'),
+        (
+          'GCash: Get cashback and a rebate on your next bill. '
+              'gcash.com/promos',
+          'GCash',
+        ),
+      ];
+      for (final (text, sender) in ordinary) {
+        final result = await checker.check(text, sender: sender);
+        expect(result.verdict, Verdict.clear, reason: text);
+      }
+    });
+
+    test('a friend naming a brand without a link is not flagged', () async {
+      final result = await checker.check(
+        'Tara Lucky Cola mamaya, may jackpot daw',
+        sender: '0917 123 4567',
+      );
+      expect(result.verdict, Verdict.clear);
+    });
+
+    test('an older pack without the list flags nothing', () async {
+      final older = MessageChecker(senders: store.officialSenders());
+      final result = await older.check('Laro na dito: ph-casino88.top');
+      expect(result.verdict, Verdict.clear);
+    });
+
+    test('the reason names where the promo is from', () {
+      const reason = CheckReason(ReasonId.gamblingPromo, {
+        'source': 'BingoPlus',
+      });
+      final wording = store.scamReasons()[reason.id]!;
+      expect(reason.fill(wording.tl), 'Promo ito ng online na sugal.');
+      expect(reason.fill(wording.fact), 'Mula sa: BingoPlus');
     });
   });
 

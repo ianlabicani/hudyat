@@ -122,7 +122,7 @@ class FakeRuntime implements ModelRuntime {
 
 /// A small in-memory pack with the same tables as the real one. Tests never
 /// open the real pack.
-PackStore fixtureStore() {
+PackStore fixtureStore({bool gambling = true}) {
   final db = sqlite3.openInMemory()
     ..execute('''
 CREATE TABLE meta (key TEXT PRIMARY KEY, value TEXT NOT NULL);
@@ -364,6 +364,37 @@ CREATE TABLE scam_reasons (
   db.execute("INSERT INTO records_fts (records_fts) VALUES ('rebuild')");
 
   meta('link_shorteners', jsonEncode(['bit.ly', 'tinyurl.com']));
+  if (gambling) {
+    meta(
+      'gambling',
+      jsonEncode({
+        'brands': [
+          {
+            'name': 'BingoPlus',
+            'aliases': ['BingoPlus'],
+            'domains': ['bingoplus.com'],
+          },
+          {
+            'name': '789Bingo',
+            'aliases': ['789Bingo'],
+            'domains': ['789bingo.com'],
+          },
+          {
+            'name': 'ArenaPlus',
+            'aliases': ['ArenaPlus'],
+            'domains': <String>[],
+          },
+          {
+            'name': 'Lucky Cola',
+            'aliases': ['LuckyCola', 'Lucky Cola'],
+            'domains': <String>[],
+          },
+        ],
+        'host_words': ['casino', 'bingo'],
+        'terms': ['rebate', 'cashback', 'jackpot', 'top up', 'casino', 'slot'],
+      }),
+    );
+  }
   void sender(
     String name,
     String kind,
@@ -459,6 +490,12 @@ CREATE TABLE scam_reasons (
     'Kahawig ito ng mga kilalang scam.',
     'Close to known scam messages.',
     'Uri: {type}',
+  );
+  reason(
+    'gambling_promo',
+    'Promo ito ng online na sugal.',
+    'This is an online gambling promo.',
+    'Mula sa: {source}',
   );
   return PackStore(db);
 }

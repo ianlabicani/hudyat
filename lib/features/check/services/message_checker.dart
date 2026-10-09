@@ -1,20 +1,24 @@
 import '../../../core/pack/scam_records.dart';
 import '../models/check_result.dart';
+import 'gambling.dart';
 import 'links.dart';
 import 'scam_phrases.dart';
 
-/// Stage 1 of the message check (spec 3.4): links, claimed sender and
-/// phrasing, giving a verdict and reason ids. One checker serves paste,
+/// Stage 1 of the message check (spec 3.4): links, claimed sender,
+/// gambling promos and phrasing, giving a verdict and reason ids. One checker serves paste,
 /// share, selection and notifications.
 class MessageChecker {
   MessageChecker({
     required this._senders,
     List<String> shorteners = const [],
+    GamblingRules gambling = GamblingRules.none,
     this.phrases,
-  }) : _shorteners = shorteners.toSet();
+  }) : _shorteners = shorteners.toSet(),
+       _gambling = GamblingMatcher(gambling);
 
   final List<OfficialSender> _senders;
   final Set<String> _shorteners;
+  final GamblingMatcher _gambling;
 
   /// Returns the phrasing check once its examples are embedded, else null.
   final ScamPhrases? Function()? phrases;
@@ -79,6 +83,16 @@ class MessageChecker {
           'sender': from,
         }),
       );
+    }
+
+    final promo = _gambling.match(
+      text,
+      hosts,
+      sender: from,
+      isOfficial: _isOfficial,
+    );
+    if (promo != null) {
+      add(CheckReason(ReasonId.gamblingPromo, {'source': promo}));
     }
 
     final phrasing = phrases?.call();

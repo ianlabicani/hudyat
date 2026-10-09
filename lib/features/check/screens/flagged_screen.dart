@@ -63,11 +63,12 @@ class FlaggedScreen extends StatelessWidget {
                     ],
                   ),
                   for (final verdict in [Verdict.scam, Verdict.caution])
-                    ..._group(context, verdict, all),
+                    ..._group(verdict, all, flagged.remove),
                 ],
                 const SizedBox(height: 20),
                 const Text(
-                  'Other messages are discarded after the check.',
+                  'Other messages are discarded after the check. Removing '
+                  'one here does not delete it from your SMS app.',
                   style: HudyatText.data,
                 ),
               ],
@@ -79,9 +80,9 @@ class FlaggedScreen extends StatelessWidget {
   }
 
   List<Widget> _group(
-    BuildContext context,
     Verdict verdict,
     List<FlaggedMessage> all,
+    void Function(int id) onRemove,
   ) {
     final items = [
       for (final item in all)
@@ -97,16 +98,17 @@ class FlaggedScreen extends StatelessWidget {
       for (final item in items)
         Padding(
           padding: const EdgeInsets.only(top: 10),
-          child: _FlaggedRow(item: item),
+          child: _FlaggedRow(item: item, onRemove: () => onRemove(item.id)),
         ),
     ];
   }
 }
 
 class _FlaggedRow extends StatelessWidget {
-  const _FlaggedRow({required this.item});
+  const _FlaggedRow({required this.item, required this.onRemove});
 
   final FlaggedMessage item;
+  final VoidCallback onRemove;
 
   static String _two(int value) => value.toString().padLeft(2, '0');
 
@@ -155,7 +157,12 @@ class _FlaggedRow extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(width: 12),
+              IconButton(
+                onPressed: onRemove,
+                tooltip: 'Remove from this list',
+                color: HudyatColors.ink,
+                icon: const Icon(Icons.delete_outline),
+              ),
               const Icon(Icons.chevron_right, color: HudyatColors.ink),
             ],
           ),

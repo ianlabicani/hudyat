@@ -28,5 +28,11 @@
     "tl": "Kahawig ito ng mga kilalang scam na mensahe.",
     "en": "The wording is close to known scam messages.",
     "fact": "Uri: {type}"
+  },
+  {
+    "id": "gambling_promo",
+    "tl": "Promo ito ng online na sugal.",
+    "en": "This is an online gambling promo.",
+    "fact": "Mula sa: {source}"
   }
 ]

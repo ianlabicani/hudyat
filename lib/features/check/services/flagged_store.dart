@@ -111,6 +111,12 @@ CREATE TABLE IF NOT EXISTS flagged (
       ),
   ];
 
+  /// Drops one kept message. The text in the SMS app is untouched.
+  void remove(int id) {
+    _db.execute('DELETE FROM flagged WHERE id = ?', [id]);
+    notifyListeners();
+  }
+
   void clear() {
     _db.execute('DELETE FROM flagged');
     notifyListeners();

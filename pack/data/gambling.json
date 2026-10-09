@@ -1,0 +1,34 @@
+{
+  "brands": [
+    { "name": "BingoPlus", "aliases": ["BingoPlus", "Bingo Plus"], "domains": ["bingoplus.com"] },
+    { "name": "789Bingo", "aliases": ["789Bingo", "789play", "789games"], "domains": ["789bingo.com", "789games.com"] },
+    { "name": "FBM Play", "aliases": ["FBMplay", "FBM Play"], "domains": ["fbmplay.com"] },
+    { "name": "NWR Play", "aliases": ["NWRPlay", "NWR Play"], "domains": ["nwrplay.com"] },
+    { "name": "TablePlus", "aliases": ["TablePlus", "Table Plus", "tbpluswin"], "domains": ["tbpluswin.com"] },
+    { "name": "ArenaPlus", "aliases": ["ArenaPlus", "Arena Plus"], "domains": [] },
+    { "name": "Casino Plus", "aliases": ["CasinoPlus", "Casino Plus"], "domains": [] },
+    { "name": "OKBet", "aliases": ["OKBet", "OK Bet"], "domains": [] },
+    { "name": "BetSo88", "aliases": ["BetSo88"], "domains": [] },
+    { "name": "Bet88", "aliases": ["Bet88"], "domains": [] },
+    { "name": "Jiliko", "aliases": ["Jiliko"], "domains": [] },
+    { "name": "PeryaGame", "aliases": ["PeryaGame", "Perya Game"], "domains": [] },
+    { "name": "PlayTime", "aliases": ["PlayTime"], "domains": [] },
+    { "name": "GameZone", "aliases": ["GameZone"], "domains": [] },
+    { "name": "Lucky Cola", "aliases": ["LuckyCola", "Lucky Cola"], "domains": [] }
+  ],
+  "host_words": ["bingo", "casino", "jili", "sabong", "baccarat", "poker", "slot"],
+  "terms": [
+    "rebate",
+    "cashback",
+    "jackpot",
+    "casino",
+    "slot",
+    "bingo",
+    "top up",
+    "welcome bonus",
+    "new player",
+    "free spin",
+    "sabong",
+    "baccarat"
+  ]
+}

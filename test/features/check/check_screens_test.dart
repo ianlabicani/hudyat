@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hudyat/core/app_scope.dart';
 import 'package:hudyat/core/models/model_manager.dart';
@@ -38,6 +39,7 @@ void main() {
     checker = MessageChecker(
       senders: store.officialSenders(),
       shorteners: store.linkShorteners(),
+      gambling: store.gamblingRules(),
       phrases: () => models.scamPhrases,
     );
     flagged = FlaggedStore(
@@ -212,6 +214,55 @@ void main() {
       expect(find.byType(CallButton), findsNothing);
     });
 
+    testWidgets('a gambling promo names its source and offers Messages', (
+      tester,
+    ) async {
+      final result = await checker.check(
+        'Get UP TO 1.5% Rebate! bingoplus.com/channels/slot',
+        sender: 'BingoPlus',
+      );
+      await pump(tester, ResultScreen(result: result));
+      expect(find.text('Mag-ingat'), findsOneWidget);
+      expect(find.text('Promo ito ng online na sugal.'), findsOneWidget);
+      expect(find.text('Mula sa: BingoPlus'), findsOneWidget);
+      // The fake launcher refuses, as a phone with no SMS app would.
+      final opened = <Object?>[];
+      const launcher = MethodChannel('plugins.flutter.io/url_launcher');
+      tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(launcher, (
+        call,
+      ) async {
+        opened.add((call.arguments as Map)['url']);
+        return false;
+      });
+      addTearDown(
+        () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+          launcher,
+          null,
+        ),
+      );
+      await tester.tap(find.text('Open in Messages'));
+      await tester.pumpAndSettle();
+      expect(opened, ['sms:BingoPlus']);
+      expect(find.textContaining('Could not open Messages'), findsOneWidget);
+    });
+
+    testWidgets('no Messages button without a sender or a finding', (
+      tester,
+    ) async {
+      await pump(
+        tester,
+        ResultScreen(result: await checker.check('Tingnan mo bit.ly/abc')),
+      );
+      expect(find.text('Open in Messages'), findsNothing);
+      await pump(
+        tester,
+        ResultScreen(
+          result: await checker.check('Ma, pauwi na ako.', sender: 'Mama'),
+        ),
+      );
+      expect(find.text('Open in Messages'), findsNothing);
+    });
+
     testWidgets('a clear result is never called safe', (tester) async {
       await pump(
         tester,
@@ -254,6 +305,18 @@ void main() {
       await tester.tap(find.text('Clear all'));
       await tester.pump();
       expect(find.text('No flagged messages'), findsOneWidget);
+    });
+
+    testWidgets('one message can be removed from the list', (tester) async {
+      flagged
+        ..keep(await checker.check(scamText, sender: 'GCASH'))
+        ..keep(await checker.check('Tingnan mo bit.ly/abc'));
+      await pump(tester, const FlaggedScreen());
+      await tester.tap(find.byTooltip('Remove from this list').first);
+      await tester.pump();
+      expect(find.text('1 message kept'), findsOneWidget);
+      expect(find.text('GCASH'), findsNothing);
+      expect(find.text('Sender not given'), findsOneWidget);
     });
   });
 }

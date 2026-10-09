@@ -17,6 +17,19 @@ void main() {
     expect(store.meta.covers(10.31, 123.89), isFalse);
   });
 
+  test('reads the gambling list, or none from an older pack', () {
+    final rules = store.gamblingRules();
+    expect(rules.brands.first.name, 'BingoPlus');
+    expect(rules.brands.first.domains, ['bingoplus.com']);
+    expect(rules.hostWords, contains('casino'));
+    expect(rules.terms, contains('rebate'));
+
+    final older = fixtureStore(gambling: false);
+    addTearDown(older.close);
+    expect(older.gamblingRules().brands, isEmpty);
+    expect(older.gamblingRules().terms, isEmpty);
+  });
+
   test('lists cities that have places, and their province', () {
     expect(store.cities(), ['Marikina', 'Pasig']);
     expect(store.provinceOf('Pasig'), 'Metro Manila');

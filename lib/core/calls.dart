@@ -13,6 +13,17 @@ Future<bool> dial(String number) async {
   }
 }
 
+/// Opens the phone's SMS app at [sender]'s conversation, where the user can
+/// delete the text or block the sender. Only the default SMS app may delete
+/// texts, so Hudyat cannot do it itself.
+Future<bool> openSmsThread(String sender) async {
+  try {
+    return await launchUrl(Uri(scheme: 'sms', path: sender));
+  } on Exception {
+    return false;
+  }
+}
+
 /// Dials the record's number, or asks which one when it has several.
 Future<void> callRecord(BuildContext context, PackRecord record) =>
     callNumbers(context, record.name, record.dialable);

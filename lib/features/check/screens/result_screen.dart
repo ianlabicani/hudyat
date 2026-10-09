@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../core/app_scope.dart';
 import '../../../core/calls.dart';
 import '../../../core/theme/tokens.dart';
+import '../../../core/widgets/buttons.dart';
 import '../../../core/widgets/panels.dart';
 import '../models/check_result.dart';
 import '../widgets/result_rows.dart';
@@ -24,6 +25,18 @@ class ResultScreen extends StatelessWidget {
   String get _sender {
     if (result.sender == null) return 'Not given / Hindi ibinigay';
     return result.claimed == null ? 'No claim found' : 'No problem found';
+  }
+
+  Future<void> _openThread(BuildContext context, String sender) async {
+    final messenger = ScaffoldMessenger.of(context);
+    if (await openSmsThread(sender)) return;
+    messenger.showSnackBar(
+      const SnackBar(
+        content: Text(
+          'Could not open Messages. Open it yourself to delete the text.',
+        ),
+      ),
+    );
   }
 
   @override
@@ -105,6 +118,20 @@ class ResultScreen extends StatelessWidget {
               const Text(
                 'No official sender matched this message, so no contact is '
                 'shown.',
+                style: HudyatText.gloss,
+              ),
+            ],
+            if (result.sender case final from? when result.isFlagged) ...[
+              const SizedBox(height: 22),
+              SecondaryButton(
+                label: 'Open in Messages',
+                gloss: 'Buksan sa Messages',
+                onPressed: () => _openThread(context, from),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'Hudyat cannot delete texts. Delete this one or block the '
+                'sender there.',
                 style: HudyatText.gloss,
               ),
             ],

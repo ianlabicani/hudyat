@@ -4,7 +4,7 @@ import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import type { PackRecord } from "../src/types";
-import { validateRecords, writePack } from "../src/write";
+import { validateRecords, validateScamData, writePack } from "../src/write";
 
 const dir = mkdtempSync(join(tmpdir(), "hudyat-pack-"));
 afterAll(() => rmSync(dir, { recursive: true, force: true }));
@@ -78,5 +78,37 @@ describe("writePack", () => {
 
   test("has an empty first-aid table ready for the cards", () => {
     expect(db.query("SELECT count(*) AS n FROM first_aid_cards").get()).toEqual({ n: 0 });
+  });
+});
+
+describe("gambling rules", () => {
+  const gambling = {
+    brands: [{ name: "BingoPlus", aliases: ["BingoPlus"], domains: ["bingoplus.com"] }],
+    host_words: ["casino"],
+    terms: ["rebate", "cashback"],
+  };
+  const scam = { senders: [], examples: [], reasons: [], shorteners: [], gambling };
+
+  test("are stored under one meta key", () => {
+    const path = join(dir, "gambling.sqlite");
+    writePack(path, {
+      meta: { name: "Test", area: "Test", buildDate: "2026-10-09", bbox: [120.9, 14.34, 121.16, 14.8], sources: [] },
+      records: [hotline],
+      intents: [],
+      scam,
+    });
+    const db = new Database(path, { readonly: true });
+    const row = db.query("SELECT value FROM meta WHERE key = 'gambling'").get() as { value: string };
+    expect(JSON.parse(row.value)).toEqual(gambling);
+    db.close();
+  });
+
+  test("reject a brand with nothing to match", () => {
+    const bad = { ...gambling, brands: [{ name: "Nameless", aliases: [], domains: [] }] };
+    expect(() => validateScamData({ ...scam, gambling: bad })).toThrow("without a name or alias");
+  });
+
+  test("reject an empty word", () => {
+    expect(() => validateScamData({ ...scam, gambling: { ...gambling, terms: [" "] } })).toThrow("Empty gambling word");
   });
 });

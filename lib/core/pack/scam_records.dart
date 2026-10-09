@@ -47,6 +47,58 @@ class OfficialSender {
   ];
 }
 
+/// One online gambling operator that advertises by text.
+class GamblingBrand {
+  const GamblingBrand({
+    required this.name,
+    required this.aliases,
+    this.domains = const [],
+  });
+
+  factory GamblingBrand.fromJson(Map<String, dynamic> json) => GamblingBrand(
+    name: json['name'] as String,
+    aliases: (json['aliases'] as List).cast<String>(),
+    domains: (json['domains'] as List? ?? const []).cast<String>(),
+  );
+
+  final String name;
+
+  /// Names matched in the sender, the text and link hosts.
+  final List<String> aliases;
+
+  /// Domains seen in its messages. Often empty: aliases match hosts too.
+  final List<String> domains;
+}
+
+/// The pack's `gambling` meta value: what marks a gambling promo.
+class GamblingRules {
+  const GamblingRules({
+    this.brands = const [],
+    this.hostWords = const [],
+    this.terms = const [],
+  });
+
+  factory GamblingRules.fromJson(Map<String, dynamic> json) => GamblingRules(
+    brands: [
+      for (final brand in json['brands'] as List)
+        GamblingBrand.fromJson((brand as Map).cast<String, dynamic>()),
+    ],
+    hostWords: (json['host_words'] as List).cast<String>(),
+    terms: (json['terms'] as List).cast<String>(),
+  );
+
+  /// For a pack built before the list existed: nothing is flagged.
+  static const none = GamblingRules();
+
+  final List<GamblingBrand> brands;
+
+  /// Words that mark a link host as a gambling site on their own.
+  final List<String> hostWords;
+
+  /// Promo wording. Two different ones plus a link mark a message.
+  final List<String> terms;
+}
+
 /// One row of `scam_examples`.
 class ScamExample {
   const ScamExample({required this.text, required this.typeLabel});

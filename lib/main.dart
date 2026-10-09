@@ -67,6 +67,7 @@ class _HudyatAppState extends State<HudyatApp> {
       final checker = MessageChecker(
         senders: senders,
         shorteners: store.linkShorteners(),
+        gambling: store.gamblingRules(),
         phrases: () => models.scamPhrases,
       );
       // Flagged messages live in their own file, apart from the pack.

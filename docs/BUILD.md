@@ -59,14 +59,19 @@ cd ..
 ## 3. Build
 
 ```sh
-flutter build apk --debug
+flutter build apk --release
 ```
 
-The APK is written to `build/app/outputs/flutter-apk/app-debug.apk`.
+The APK is written to `build/app/outputs/flutter-apk/app-release.apk`.
 
-Use the debug build for a demo: its recovery check for texts runs every
-2 minutes instead of about every 12 hours. `flutter build apk` (release)
-also works and is signed with the debug key in this project.
+Use the release build: it is compiled ahead of time, so the app starts
+faster and runs more smoothly. In this project it is signed with the
+debug key, so it installs over a debug copy and the other way round.
+
+Build debug (`flutter build apk --debug`, written to `app-debug.apk`)
+only to work on the app, or to watch the recovery check for texts: in a
+debug build it runs every 2 minutes, in a release build about every 12
+hours. A text is still checked as it arrives in both.
 
 ## 4. Install on the phone
 
@@ -81,14 +86,17 @@ Install over whatever is already there. The `-r` flag keeps the app's
 data, which is where the models and the flagged messages live:
 
 ```sh
-adb install -r build/app/outputs/flutter-apk/app-debug.apk
+adb install -r build/app/outputs/flutter-apk/app-release.apk
 ```
 
-Or build, install and start in one step, with logs and hot reload:
+Or build, install and start a release build in one step:
 
 ```sh
-flutter run
+flutter run --release
 ```
+
+Plain `flutter run` does the same with a debug build, with logs and hot
+reload.
 
 **Do not uninstall first.** `adb uninstall`, `flutter install`,
 `flutter run --uninstall-first`, `adb shell pm clear` and "Clear storage"
@@ -127,7 +135,7 @@ folder it reads.
 A build can instead download the models itself on first run:
 
 ```sh
-flutter build apk --debug --dart-define=HUGGINGFACE_TOKEN=your-token
+flutter build apk --release --dart-define=HUGGINGFACE_TOKEN=your-token
 ```
 
 Never commit or share a build that contains a private token.

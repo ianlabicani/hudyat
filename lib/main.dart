@@ -15,6 +15,9 @@ import 'core/widgets/buttons.dart';
 import 'features/card/services/resolver.dart';
 import 'features/check/services/flagged_store.dart';
 import 'features/check/screens/check_screen.dart';
+import 'features/check/screens/result_screen.dart';
+import 'features/check/services/android_watcher.dart';
+import 'features/check/services/message_watcher.dart';
 import 'features/check/services/message_checker.dart';
 import 'features/check/services/share_entry.dart';
 import 'features/home/screens/home_screen.dart';
@@ -39,6 +42,7 @@ class _HudyatAppState extends State<HudyatApp> {
   ModelManager? _models;
   MessageChecker? _checker;
   FlaggedStore? _flagged;
+  MessageWatcher? _watcher;
   Object? _error;
 
   final _navigator = GlobalKey<NavigatorState>();
@@ -75,6 +79,15 @@ class _HudyatAppState extends State<HudyatApp> {
         p.join(support.path, 'flagged.sqlite'),
         senders: senders,
       );
+      final watcher = MessageWatcher(
+        source: const AndroidNotificationSource(),
+        alerter: LocalAlerter(),
+        checker: checker,
+        flagged: flagged,
+        wording: store.scamReasons(),
+        settingsFile: File(p.join(support.path, 'automatic-checking')),
+      );
+      unawaited(watcher.start(_openFlagged));
       // Models load in the background; the app is usable before they do.
       unawaited(models.load());
       setState(() {
@@ -86,6 +99,7 @@ class _HudyatAppState extends State<HudyatApp> {
         _models = models;
         _checker = checker;
         _flagged = flagged;
+        _watcher = watcher;
       });
       // Text shared while the app was closed, then anything shared later.
       _share.listen(_openShared);
@@ -111,8 +125,22 @@ class _HudyatAppState extends State<HudyatApp> {
     );
   }
 
+  /// Opens the result behind a tapped scam alert.
+  void _openFlagged(int id) {
+    final message = _flagged?.byId(id);
+    if (message == null) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _navigator.currentState?.push(
+        MaterialPageRoute<void>(
+          builder: (_) => ResultScreen(result: message.result),
+        ),
+      );
+    });
+  }
+
   @override
   void dispose() {
+    _watcher?.dispose();
     _share.dispose();
     _location?.dispose();
     _models?.dispose();
@@ -128,11 +156,13 @@ class _HudyatAppState extends State<HudyatApp> {
     final models = _models;
     final checker = _checker;
     final flagged = _flagged;
+    final watcher = _watcher;
     if (store == null ||
         location == null ||
         models == null ||
         checker == null ||
-        flagged == null) {
+        flagged == null ||
+        watcher == null) {
       return MaterialApp(
         title: 'Hudyat',
         theme: hudyatTheme(),
@@ -146,6 +176,7 @@ class _HudyatAppState extends State<HudyatApp> {
       models: models,
       checker: checker,
       flagged: flagged,
+      watcher: watcher,
       child: MaterialApp(
         title: 'Hudyat',
         navigatorKey: _navigator,

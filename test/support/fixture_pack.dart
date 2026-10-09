@@ -1,8 +1,10 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:hudyat/core/geo.dart';
 import 'package:hudyat/core/models/model_runtime.dart';
 import 'package:hudyat/core/pack/pack_store.dart';
+import 'package:hudyat/features/check/services/message_watcher.dart';
 import 'package:hudyat/features/location/services/location_service.dart';
 import 'package:sqlite3/sqlite3.dart';
 
@@ -498,4 +500,47 @@ CREATE TABLE scam_reasons (
     'Mula sa: {source}',
   );
   return PackStore(db);
+}
+
+/// Notification access that is granted or refused as the test says, with a
+/// stream the test feeds.
+class FakeNotificationSource implements NotificationSource {
+  FakeNotificationSource({this.granted = false, this.grantsOnRequest = true});
+
+  bool granted;
+  bool grantsOnRequest;
+  int requests = 0;
+  final controller = StreamController<IncomingNotification>.broadcast();
+
+  @override
+  Future<bool> isGranted() async => granted;
+
+  @override
+  Future<bool> requestAccess() async {
+    requests++;
+    return granted = grantsOnRequest;
+  }
+
+  @override
+  Stream<IncomingNotification> get notifications => controller.stream;
+}
+
+/// Records the alerts that would have been posted.
+class FakeAlerter implements Alerter {
+  final alerts = <({int id, String title, String body})>[];
+  void Function(int flaggedId)? onOpen;
+
+  @override
+  Future<void> start(void Function(int flaggedId) onOpen) async =>
+      this.onOpen = onOpen;
+
+  @override
+  Future<void> requestPermission() async {}
+
+  @override
+  Future<void> alert({
+    required int flaggedId,
+    required String title,
+    required String body,
+  }) async => alerts.add((id: flaggedId, title: title, body: body));
 }

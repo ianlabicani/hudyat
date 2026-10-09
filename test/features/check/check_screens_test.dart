@@ -11,8 +11,10 @@ import 'package:hudyat/features/check/models/check_result.dart';
 import 'package:hudyat/features/check/screens/check_screen.dart';
 import 'package:hudyat/features/check/screens/flagged_screen.dart';
 import 'package:hudyat/features/check/screens/result_screen.dart';
+import 'package:hudyat/features/check/screens/watcher_setup_screen.dart';
 import 'package:hudyat/features/check/services/flagged_store.dart';
 import 'package:hudyat/features/check/services/message_checker.dart';
+import 'package:hudyat/features/check/services/message_watcher.dart';
 import 'package:hudyat/features/home/screens/home_screen.dart';
 import 'package:hudyat/features/location/state/location_controller.dart';
 import 'package:sqlite3/sqlite3.dart' show sqlite3;
@@ -25,6 +27,9 @@ void main() {
   late ModelManager models;
   late MessageChecker checker;
   late FlaggedStore flagged;
+  late MessageWatcher watcher;
+  late FakeNotificationSource notifications;
+  late FakeAlerter alerter;
 
   ModelManager manager(FakeRuntime runtime) => ModelManager(
     runtime: runtime,
@@ -46,8 +51,18 @@ void main() {
       sqlite3.openInMemory(),
       senders: store.officialSenders(),
     );
+    notifications = FakeNotificationSource();
+    alerter = FakeAlerter();
+    watcher = MessageWatcher(
+      source: notifications,
+      alerter: alerter,
+      checker: checker,
+      flagged: flagged,
+      wording: store.scamReasons(),
+    );
   });
   tearDown(() {
+    watcher.dispose();
     location.dispose();
     models.dispose();
     flagged.close();
@@ -66,6 +81,7 @@ void main() {
         models: models,
         checker: checker,
         flagged: flagged,
+        watcher: watcher,
         child: MaterialApp(theme: hudyatTheme(), home: home),
       ),
     );
@@ -279,6 +295,108 @@ void main() {
         find.textContaining(RegExp('safe|legit', caseSensitive: false)),
         findsNothing,
       );
+    });
+  });
+
+  group('MessageWatcher', () {
+    IncomingNotification sms(String content, {String from = '09171234567'}) =>
+        IncomingNotification(
+          package: 'com.transsion.smartmessage',
+          title: from,
+          content: content,
+        );
+
+    test('is off until turned on, and asks for access', () async {
+      await watcher.start((_) {});
+      expect(watcher.isOn, isFalse);
+      expect(await watcher.turnOn(), isTrue);
+      expect(notifications.requests, 1);
+      expect(watcher.isOn, isTrue);
+      watcher.turnOff();
+      expect(watcher.isOn, isFalse);
+    });
+
+    test('stays off when access is refused', () async {
+      notifications.grantsOnRequest = false;
+      expect(await watcher.turnOn(), isFalse);
+      expect(watcher.isOn, isFalse);
+    });
+
+    test('alerts for Mukhang scam with the sender and first reason', () async {
+      final result = await watcher.handle(sms(scamText));
+      expect(result?.verdict, Verdict.scam);
+      expect(result?.app, 'Messages');
+      final alert = alerter.alerts.single;
+      expect(alert.title, 'Mukhang scam ang mensahe mula kay 09171234567');
+      expect(alert.body, 'Ginagaya ng link na gcash-verify.com ang GCash.');
+      expect(flagged.byId(alert.id)?.result.sender, '09171234567');
+    });
+
+    test('keeps Mag-ingat quietly and discards the rest', () async {
+      await watcher.handle(sms('GCash: Na-hold ang iyong wallet.'));
+      await watcher.handle(sms('Ma, pauwi na ako.'));
+      expect(alerter.alerts, isEmpty);
+      expect(flagged.count, 1);
+      expect(flagged.all().single.result.verdict, Verdict.caution);
+    });
+
+    test('ignores other apps, empty text and repeats', () async {
+      expect(
+        await watcher.handle(
+          const IncomingNotification(
+            package: 'com.facebook.katana',
+            title: 'GCash',
+            content: scamText,
+          ),
+        ),
+        isNull,
+      );
+      expect(await watcher.handle(sms('  ')), isNull);
+      expect(await watcher.handle(sms(scamText)), isNotNull);
+      expect(await watcher.handle(sms(scamText)), isNull);
+      expect(alerter.alerts, hasLength(1));
+    });
+
+    test('marks a message the notification cut short', () async {
+      final result = await watcher.handle(sms('$scamText and then some...'));
+      expect(result?.truncated, isTrue);
+    });
+
+    test('reads the stream once on', () async {
+      await watcher.turnOn();
+      notifications.controller.add(sms(scamText));
+      await Future<void>.delayed(Duration.zero);
+      await Future<void>.delayed(Duration.zero);
+      expect(alerter.alerts, hasLength(1));
+    });
+  });
+
+  group('Watcher setup', () {
+    testWidgets('explains, turns on, then offers Turn off', (tester) async {
+      await pump(tester, const WatcherSetupScreen());
+      expect(find.text('OFF'), findsOneWidget);
+      expect(find.text('What Hudyat reads'), findsOneWidget);
+      expect(find.text('What it keeps'), findsOneWidget);
+      expect(find.text('What leaves the phone'), findsOneWidget);
+      await tester.tap(find.byType(PrimaryButton));
+      await tester.pumpAndSettle();
+      expect(find.text('ON'), findsOneWidget);
+      expect(
+        find.textContaining('Turn off', findRichText: true),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('says so when access was not granted', (tester) async {
+      notifications.grantsOnRequest = false;
+      await pump(tester, const WatcherSetupScreen());
+      await tester.tap(find.byType(PrimaryButton));
+      await tester.pumpAndSettle();
+      expect(
+        find.text('Notification access was not turned on'),
+        findsOneWidget,
+      );
+      expect(find.text('OFF'), findsOneWidget);
     });
   });
 

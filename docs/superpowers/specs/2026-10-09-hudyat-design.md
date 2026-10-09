@@ -251,6 +251,10 @@ delivery notices, family texts, promos). It is the lowest score at which
 no ordinary message is flagged. The check stays in as a second signal
 even if it then catches under half of the scam phrases.
 
+Measured on 2026-10-09: the closest ordinary message scored 0.546, so
+the threshold is 0.56, which catches 12 of the 20 held-out scam
+messages.
+
 **Preparation.** Scam phrases are embedded after the intent phrases, as
 a separate step, so "Find help" is not delayed. Until they are ready the
 checker runs the link and sender checks, and the result says the
@@ -301,7 +305,12 @@ explanation in an `AiNote`.
 
 **Before building the automatic path:** a 20-minute throwaway test of
 notification access on the Infinix, since Android adds an "Allow
-restricted settings" step for sideloaded apps. If the test fails, the
+restricted settings" step for sideloaded apps. The test passed on
+2026-10-09: access was granted, the Infinix SMS app
+(`com.transsion.smartmessage`) gives the sender as the title, text is cut
+at about 500 characters, and the same notification is posted more than
+once, so repeats are dropped. Notifications are read only while the app
+is open or in the background. If the test fails, the
 automatic path is dropped: Watcher setup and the alert are hidden, and
 the Flagged list holds manually checked messages only.
 

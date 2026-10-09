@@ -53,10 +53,11 @@ CREATE TABLE IF NOT EXISTS flagged (
   int get count =>
       _db.select('SELECT count(*) AS n FROM flagged').first['n'] as int;
 
-  /// Keeps [result] if it is flagged; anything else is ignored. The same
-  /// text from the same sender is kept once, with the latest time.
-  void keep(CheckResult result, {DateTime? at}) {
-    if (!result.isFlagged) return;
+  /// Keeps [result] if it is flagged and returns its id; anything else is
+  /// ignored and gives null. The same text from the same sender is kept
+  /// once, with the latest time.
+  int? keep(CheckResult result, {DateTime? at}) {
+    if (!result.isFlagged) return null;
     _db
       ..execute('DELETE FROM flagged WHERE text = ? AND sender IS ?', [
         result.text,
@@ -79,7 +80,17 @@ CREATE TABLE IF NOT EXISTS flagged (
           (at ?? DateTime.now()).millisecondsSinceEpoch,
         ],
       );
+    final id = _db.lastInsertRowId;
     notifyListeners();
+    return id;
+  }
+
+  /// The kept message with [id], if it has not been cleared.
+  FlaggedMessage? byId(int id) {
+    for (final message in all()) {
+      if (message.id == id) return message;
+    }
+    return null;
   }
 
   /// Newest first.

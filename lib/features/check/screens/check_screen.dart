@@ -6,6 +6,7 @@ import '../../../core/widgets/buttons.dart';
 import '../../../core/widgets/panels.dart';
 import 'flagged_screen.dart';
 import 'result_screen.dart';
+import 'watcher_setup_screen.dart';
 
 /// Paste a message and check it. Also where a message shared or selected in
 /// another app lands: it arrives as [initialText] and is checked at once.
@@ -198,6 +199,19 @@ class _CheckScreenState extends State<CheckScreen> {
                 onPressed: () => Navigator.of(context).push(
                   MaterialPageRoute<void>(
                     builder: (_) => const FlaggedScreen(),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
+            ListenableBuilder(
+              listenable: scope.watcher,
+              builder: (context, _) => SecondaryButton(
+                label: 'Automatic checking',
+                gloss: scope.watcher.isOn ? 'ON' : 'OFF',
+                onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => const WatcherSetupScreen(),
                   ),
                 ),
               ),

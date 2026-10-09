@@ -17,9 +17,11 @@ class ScamPhrases {
          cacheFile: cacheFile,
        );
 
-  /// Placeholder until the export run on the Infinix. It has to be the
-  /// lowest score at which none of the ordinary test messages is flagged.
-  static const defaultThreshold = 0.62;
+  /// Measured on the Infinix on 2026-10-09 with 20 held-out scam messages
+  /// and 25 ordinary ones: the closest ordinary message scored 0.546, and
+  /// 12 of the 20 scam messages scored above this. Measure again if the
+  /// examples or the model change.
+  static const defaultThreshold = 0.56;
 
   final List<ScamExample> _examples;
   final ExampleVectors _vectors;

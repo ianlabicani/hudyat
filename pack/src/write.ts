@@ -8,6 +8,8 @@ export interface PackMeta {
   area: string;
   /** ISO date, shown on every card. */
   buildDate: string;
+  /** West, south, east, north of the area the places and map cover. */
+  bbox: [number, number, number, number];
   sources: { name: string; used_for: string; licence: string }[];
 }
 
@@ -99,6 +101,7 @@ export function writePack(path: string, contents: PackContents): void {
     insertMeta.run("name", contents.meta.name);
     insertMeta.run("area", contents.meta.area);
     insertMeta.run("build_date", contents.meta.buildDate);
+    insertMeta.run("bbox", contents.meta.bbox.join(","));
     insertMeta.run("sources", JSON.stringify(contents.meta.sources));
 
     for (const r of contents.records) {

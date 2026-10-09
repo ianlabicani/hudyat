@@ -42,7 +42,7 @@ describe("validateRecords", () => {
 describe("writePack", () => {
   const path = join(dir, "pack.sqlite");
   writePack(path, {
-    meta: { name: "Test", area: "Test", buildDate: "2026-10-09", sources: [] },
+    meta: { name: "Test", area: "Test", buildDate: "2026-10-09", bbox: [120.9, 14.34, 121.16, 14.8], sources: [] },
     records: [hotline, place],
     intents: [
       { id: "fire", label: "Fire", hotline_categories: ["fire"], place_kinds: ["fire_station"], examples: ["may sunog"] },
@@ -52,6 +52,7 @@ describe("writePack", () => {
 
   test("stores meta, records and intents", () => {
     expect(db.query("SELECT value FROM meta WHERE key = 'build_date'").get()).toEqual({ value: "2026-10-09" });
+    expect(db.query("SELECT value FROM meta WHERE key = 'bbox'").get()).toEqual({ value: "120.9,14.34,121.16,14.8" });
     expect(db.query("SELECT count(*) AS n FROM records").get()).toEqual({ n: 2 });
     const intent = db.query("SELECT examples FROM intents WHERE id = 'fire'").get() as { examples: string };
     expect(JSON.parse(intent.examples)).toEqual(["may sunog"]);

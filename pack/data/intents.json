@@ -2,7 +2,7 @@
   {
     "id": "medical_emergency",
     "label": "Medical emergency",
-    "hotline_categories": ["emergency", "medical"],
+    "hotline_categories": ["medical", "disaster", "emergency"],
     "place_kinds": ["hospital"],
     "examples": [
       "inatake sa puso ang tatay ko",
@@ -20,7 +20,7 @@
   {
     "id": "injury",
     "label": "Injury",
-    "hotline_categories": ["emergency", "medical"],
+    "hotline_categories": ["medical", "disaster", "emergency"],
     "place_kinds": ["hospital"],
     "examples": [
       "nasugatan ang kamay ko, ang daming dugo",
@@ -38,7 +38,7 @@
   {
     "id": "fire",
     "label": "Fire",
-    "hotline_categories": ["fire", "emergency"],
+    "hotline_categories": ["fire", "disaster", "emergency"],
     "place_kinds": ["fire_station"],
     "examples": [
       "may sunog sa kapitbahay namin",
@@ -56,7 +56,7 @@
   {
     "id": "flood_rescue",
     "label": "Flood rescue",
-    "hotline_categories": ["disaster", "rescue", "emergency"],
+    "hotline_categories": ["disaster", "emergency"],
     "place_kinds": ["shelter"],
     "examples": [
       "binabaha na dito sa amin, may matanda na hindi makalabas",

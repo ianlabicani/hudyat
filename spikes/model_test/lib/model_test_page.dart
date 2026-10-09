@@ -239,6 +239,53 @@ class _ModelTestPageState extends State<ModelTestPage>
     );
   });
 
+  /// Writes every example and test-message vector to a file, so scoring
+  /// rules can be compared on the laptop against this phone's real output.
+  Future<void> _exportVectors() => _guard(() async {
+    final dir = _modelsDir!;
+    final intents = await _json('assets/intents.json');
+    final tests = await _json('assets/test_messages.json');
+    await FlutterEdgeAi.installEmbedder()
+        .modelFromFile('$dir/$embedFile')
+        .tokenizerFromFile('$dir/$tokenizerFile')
+        .install();
+    final embedder = await FlutterEdgeAi.getActiveEmbedder();
+    final watch = Stopwatch()..start();
+
+    final examples = <Map<String, Object>>[];
+    for (final intent in intents) {
+      final texts = (intent['examples'] as List).cast<String>();
+      final vectors = await embedder.generateEmbeddings(
+        texts,
+        taskType: TaskType.retrievalDocument,
+      );
+      for (var i = 0; i < texts.length; i++) {
+        examples.add({
+          'intent': intent['id'] as String,
+          'text': texts[i],
+          'vector': vectors[i],
+        });
+      }
+      _say('examples ${examples.length} (${watch.elapsed.inSeconds}s)');
+    }
+    final messages = <Map<String, Object>>[];
+    for (final test in tests) {
+      messages.add({
+        'intent': test['intent'] as String,
+        'text': test['text'] as String,
+        'vector': await embedder.generateEmbedding(test['text'] as String),
+      });
+    }
+    final out = File('${Directory(dir).parent.path}/vectors.json');
+    await out.writeAsString(
+      jsonEncode({'examples': examples, 'messages': messages}),
+    );
+    _say(
+      'RESULT export: ${examples.length} examples and ${messages.length} '
+      'messages in ${watch.elapsed.inSeconds}s\n${out.path}',
+    );
+  });
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -261,6 +308,10 @@ class _ModelTestPageState extends State<ModelTestPage>
               FilledButton(
                 onPressed: _running ? null : _chatTest,
                 child: const Text('2. Chat test'),
+              ),
+              FilledButton(
+                onPressed: _running ? null : _exportVectors,
+                child: const Text('3. Export vectors'),
               ),
               OutlinedButton(
                 onPressed: () =>

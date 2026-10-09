@@ -10,7 +10,9 @@ The design spec is `docs/superpowers/specs/2026-10-09-hudyat-design.md`. Read it
 
 ## Current state
 
-The repo is still the unmodified `flutter create` scaffold: `lib/main.dart` is the counter demo and `test/widget_test.dart` tests that counter. Nothing in the spec is implemented yet, and none of the planned packages (`flutter_edge_ai`, `sqlite3`, `maplibre_gl`, `llamadart`) are in `pubspec.yaml`. Everything under "Planned architecture" below describes the target, not existing code.
+Built on branch `feat/mvp`, with Dart tests: the pack builder (`pack/`), `PackStore`, `Resolver`, `LocationService`, keyword search, the model layer (`ModelManager`, `IntentMatcher`, `Explainer`) and the Home, Card, city picker, Search, No match, Setup and Map screens. Not built yet: the message check (spec 3.4) and first-aid cards. `IntentMatcher` uses threshold 0.49 and an escalation margin of 0.04, both measured on the phone (28 of 33 test messages).
+
+The pack and map ship as assets (`assets/pack/`). The 53 MB map file is git-ignored; rebuild it with `bun run map` in `pack/`. The throwaway model and map test app is in `spikes/model_test/` and is excluded from analysis.
 
 ## Commands
 
@@ -19,10 +21,16 @@ flutter pub get
 flutter run                                   # on the attached device
 flutter analyze                               # lints: flutter_lints via analysis_options.yaml
 flutter test                                  # all tests
-flutter test test/widget_test.dart            # one file
-flutter test --plain-name "Counter increments smoke test"   # one test by name
+flutter test test/features/screens_test.dart  # one file
+flutter test --plain-name "falls back to national"          # one test by name
 flutter build apk
+
+cd pack && bun test                           # pack builder tests
+bun run fetch && bun run build                # re-download sources, rebuild the pack
+bun run map                                   # re-cut the Metro Manila map (needs `pmtiles`)
 ```
+
+Android builds need JDK 21 for `maplibre_gl`; `android/gradle.properties` points Gradle at Homebrew's `openjdk@21`.
 
 Dart SDK constraint is `^3.13.1` (Flutter 3.47). The code uses dot shorthands (e.g. `colorScheme: .fromSeed(...)`), so keep that style.
 

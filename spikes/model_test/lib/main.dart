@@ -26,17 +26,21 @@ class SpikeApp extends StatelessWidget {
     return MaterialApp(
       title: 'Hudyat model test',
       theme: ThemeData(colorScheme: .fromSeed(seedColor: Colors.brown)),
-      home: const DefaultTabController(
+      home: DefaultTabController(
         length: 2,
         child: Scaffold(
-          appBar: TabBar(
-            labelColor: Colors.black,
-            tabs: [
-              Tab(text: 'Models'),
-              Tab(text: 'Map'),
-            ],
+          // The AppBar keeps the tabs below the status bar.
+          appBar: AppBar(
+            toolbarHeight: 0,
+            bottom: const TabBar(
+              labelColor: Colors.black,
+              tabs: [
+                Tab(text: 'Models'),
+                Tab(text: 'Map'),
+              ],
+            ),
           ),
-          body: SafeArea(
+          body: const SafeArea(
             child: TabBarView(
               physics: NeverScrollableScrollPhysics(),
               children: [ModelTestPage(), MapTestPage()],

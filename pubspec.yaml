@@ -1,5 +1,5 @@
 name: hudyat
-description: "A new Flutter project."
+description: "Offline emergency help for the Philippines: hotlines, nearest facilities and first aid."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -34,6 +34,15 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
+  sqlite3: ^3.7.0
+  path_provider: ^2.1.6
+  path: ^1.9.1
+  geolocator: ^14.1.1
+  url_launcher: ^6.3.3
+  flutter_edge_ai: ^2.1.1
+  flutter_edge_ai_litertlm: ^1.10.1
+  flutter_edge_ai_embeddings: ^2.2.2
+  maplibre_gl: ^0.27.1
 
 dev_dependencies:
   flutter_test:
@@ -56,6 +65,20 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+  assets:
+    # The whole folder, so the git-ignored map file is included when present.
+    - assets/pack/
+  fonts:
+    - family: AtkinsonHyperlegible
+      fonts:
+        - asset: assets/fonts/AtkinsonHyperlegible-Regular.ttf
+        - asset: assets/fonts/AtkinsonHyperlegible-Bold.ttf
+          weight: 700
+    - family: IBMPlexMono
+      fonts:
+        - asset: assets/fonts/IBMPlexMono-Regular.ttf
+        - asset: assets/fonts/IBMPlexMono-Medium.ttf
+          weight: 500
 
   # To add assets to your application, add an assets section, like this:
   # assets:

@@ -46,6 +46,7 @@ writePack(OUT, {
     name: "Metro Manila",
     area: "Metro Manila",
     buildDate: new Date().toISOString().slice(0, 10),
+    bbox: [120.9, 14.34, 121.16, 14.8],
     sources: [
       { name: "bettergovph/bettergov", used_for: "Agencies, officials, services, national hotlines", licence: "CC0-1.0" },
       { name: "bettergovph/hotlines", used_for: "City hotlines", licence: "None listed" },

@@ -2,19 +2,45 @@ import 'package:flutter/material.dart';
 
 import '../../../core/app_scope.dart';
 import '../../../core/calls.dart';
+import '../../../core/pack/scam_records.dart';
 import '../../../core/theme/tokens.dart';
+import '../../../core/widgets/ai_note.dart';
 import '../../../core/widgets/buttons.dart';
 import '../../../core/widgets/panels.dart';
 import '../models/check_result.dart';
+import '../services/result_explainer.dart';
 import '../widgets/result_rows.dart';
 import '../widgets/verdict_badge.dart';
 
 /// One checked message: the verdict, why, and the real contact of whoever
-/// it claims to be. Every word here is fixed text or a fact from the pack.
-class ResultScreen extends StatelessWidget {
+/// it claims to be. Every word here is fixed text or a fact from the pack,
+/// except the labelled AI note under a flagged result.
+class ResultScreen extends StatefulWidget {
   const ResultScreen({required this.result, super.key});
 
   final CheckResult result;
+
+  @override
+  State<ResultScreen> createState() => _ResultScreenState();
+}
+
+class _ResultScreenState extends State<ResultScreen> {
+  CheckResult get result => widget.result;
+
+  /// The AI note, started once when the result opens.
+  Stream<String>? _note;
+
+  /// Null for a result with nothing flagged, and whenever the chat model is
+  /// not there: the screen then shows exactly what it did before.
+  Stream<String>? _noteFor(Map<String, ScamReasonText> wording) {
+    final generator = AppScope.of(context).models.generator;
+    if (!ResultExplainer.enabled || generator == null || !result.isFlagged) {
+      return null;
+    }
+    return _note ??= ResultExplainer(generator)
+        .explain(result, wording)
+        .asBroadcastStream();
+  }
 
   String get _links => switch (result.linkCount) {
     0 => 'None found',
@@ -148,6 +174,8 @@ class ResultScreen extends StatelessWidget {
                 style: HudyatText.gloss,
               ),
             ],
+            // Last, so text arriving here never moves a button.
+            if (_noteFor(wording) case final note?) AiNote(text: note),
             const SizedBox(height: 22),
             CheckFooter(buildDate: scope.store.meta.buildDate),
           ],

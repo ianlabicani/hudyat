@@ -5,6 +5,7 @@ import '../../../core/calls.dart';
 import '../../../core/pack/pack_record.dart';
 import '../../../core/pack/pack_store.dart';
 import '../../../core/theme/tokens.dart';
+import '../../../core/widgets/ai_note.dart';
 import '../../../core/widgets/buttons.dart';
 import '../../../core/widgets/panels.dart';
 import '../../../core/widgets/rows.dart';
@@ -15,7 +16,6 @@ import '../../map/services/map_file.dart';
 import '../card_labels.dart';
 import '../models/help_card.dart';
 import '../services/explainer.dart';
-import '../widgets/ai_note.dart';
 import '../widgets/card_header.dart';
 
 /// The help card for one intent. It is built from the pack alone and shows

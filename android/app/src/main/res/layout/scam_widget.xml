@@ -1,29 +1,85 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- The home screen widget, 4 x 2 cells: board "Widget" on the wireframe
+     canvas. Only view types that RemoteViews allows. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/widget_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/widget_background"
     android:orientation="vertical"
-    android:padding="12dp">
+    android:paddingStart="16dp"
+    android:paddingTop="14dp"
+    android:paddingEnd="16dp"
+    android:paddingBottom="14dp">
 
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/widget_title"
-        android:textColor="#1B1B19"
-        android:textSize="13sp"
-        android:textStyle="bold"/>
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+        <ImageView
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:importantForAccessibility="no"
+            android:src="@drawable/ic_widget_logo"/>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_weight="1"
+            android:text="@string/widget_app"
+            android:textColor="@color/widget_text"
+            android:textSize="15sp"
+            android:textStyle="bold"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/widget_pill"
+            android:paddingStart="10dp"
+            android:paddingTop="2dp"
+            android:paddingEnd="10dp"
+            android:paddingBottom="2dp"
+            android:text="@string/widget_title"
+            android:textColor="@color/widget_muted"
+            android:textSize="12sp"/>
+    </LinearLayout>
 
-    <TextView
+    <!-- One state at a time: a message with its icon, or the counts. -->
+    <LinearLayout
         android:id="@+id/widget_message"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:gravity="center_vertical"
-        android:textColor="#1B1B19"
-        android:textSize="15sp"
-        android:visibility="gone"/>
+        android:orientation="horizontal"
+        android:visibility="gone">
+        <ImageView
+            android:id="@+id/widget_message_icon"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:importantForAccessibility="no"
+            android:src="@drawable/ic_widget_waiting"/>
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="14dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/widget_message_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/widget_text"
+                android:textSize="17sp"
+                android:textStyle="bold"/>
+            <TextView
+                android:id="@+id/widget_message_detail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/widget_muted"
+                android:textSize="13sp"/>
+        </LinearLayout>
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/widget_counts"
@@ -34,64 +90,119 @@
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
+        <!-- The headline number. Sized in dp: the tile's height is fixed,
+             so a large system font must not push it out. -->
         <LinearLayout
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:orientation="vertical">
             <TextView
                 android:id="@+id/widget_scam"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="#1B1B19"
-                android:textSize="26sp"
+                android:includeFontPadding="false"
+                android:text="0"
+                android:textColor="@color/widget_accent"
+                android:textSize="48dp"
                 android:textStyle="bold"/>
-            <TextView
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/widget_scam"
-                android:textColor="#1B1B19"
-                android:textSize="12sp"/>
+                android:layout_marginTop="2dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+                <ImageView
+                    android:layout_width="10dp"
+                    android:layout_height="10dp"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/widget_mark_scam"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:maxLines="1"
+                    android:text="@string/widget_scam"
+                    android:textColor="@color/widget_text"
+                    android:textSize="13sp"/>
+            </LinearLayout>
         </LinearLayout>
+
+        <ImageView
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="6dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="6dp"
+            android:background="@color/widget_divider"
+            android:importantForAccessibility="no"/>
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:orientation="vertical">
-            <TextView
-                android:id="@+id/widget_caution"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="#1B1B19"
-                android:textSize="26sp"
-                android:textStyle="bold"/>
-            <TextView
-                android:layout_width="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+                <TextView
+                    android:id="@+id/widget_caution"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:includeFontPadding="false"
+                    android:minWidth="30dp"
+                    android:text="0"
+                    android:textColor="@color/widget_text"
+                    android:textSize="24dp"
+                    android:textStyle="bold"/>
+                <ImageView
+                    android:layout_width="10dp"
+                    android:layout_height="10dp"
+                    android:layout_marginStart="10dp"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/widget_mark_caution"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:maxLines="1"
+                    android:text="@string/widget_caution"
+                    android:textColor="@color/widget_text"
+                    android:textSize="13sp"/>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/widget_caution"
-                android:textColor="#1B1B19"
-                android:textSize="12sp"/>
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
-            <TextView
-                android:id="@+id/widget_gambling"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="#1B1B19"
-                android:textSize="26sp"
-                android:textStyle="bold"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/widget_gambling"
-                android:textColor="#1B1B19"
-                android:textSize="12sp"/>
+                android:layout_marginTop="8dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+                <TextView
+                    android:id="@+id/widget_gambling"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:includeFontPadding="false"
+                    android:minWidth="30dp"
+                    android:text="0"
+                    android:textColor="@color/widget_text"
+                    android:textSize="24dp"
+                    android:textStyle="bold"/>
+                <ImageView
+                    android:layout_width="10dp"
+                    android:layout_height="10dp"
+                    android:layout_marginStart="10dp"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/widget_mark_gambling"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:maxLines="1"
+                    android:text="@string/widget_gambling"
+                    android:textColor="@color/widget_text"
+                    android:textSize="13sp"/>
+            </LinearLayout>
         </LinearLayout>
     </LinearLayout>
 
@@ -99,6 +210,7 @@
         android:id="@+id/widget_footer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="#55534D"
-        android:textSize="11sp"/>
+        android:maxLines="1"
+        android:textColor="@color/widget_muted"
+        android:textSize="12sp"/>
 </LinearLayout>

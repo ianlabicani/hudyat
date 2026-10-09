@@ -609,6 +609,7 @@ that is not here, add it to the canvas and this section first.
 | Caution | `#8A5200`, for "Mag-ingat" |
 | No verdict colour | "Walang nakitang problema" stays muted. Green is not in the palette, since it would read as "safe" |
 | Help icons | Flood `#1F5FA8`, fire `#B85300`, police `#1E2F6B`, medicine and clinic `#0F6B63`, shelter `#5B3A8C`. Icons only; labels and borders stay ink |
+| Widget | A tile of its own, outside the app: ground `#1B1B19`, text `#F2F1EC`, muted `#B8B5AC`, accent `#F26A2E` in dark mode; white, ink, muted and the call accent `#B93A0B` in light mode. The one place the call accent marks a count |
 | Text face | Atkinson Hyperlegible, 400 and 700 |
 | Data face | IBM Plex Mono, 400 and 500, for numbers, addresses, badges and footers |
 | Text sizes | 28 screen title, 20 section heading, 16 body, 13 minimum |
@@ -687,10 +688,10 @@ submission disclosures.
 | Automatic checking | On | Badge reads ON; a panel with the three counts, texts checked and the time; "Turn off" | `WatcherSetup` |
 | Automatic checking | On, alerts not allowed | As On, with a Notice that alerts are off and texts are still counted | Rule only |
 | Automatic checking | On, SMS access taken away | As On, with a Notice to turn it off and on again | Rule only |
-| Widget | Counts | Title "Hudyat · huling 7 araw"; three numbers with labels; "n texts checked · time" | `Widget` |
-| Widget | All zero | "Walang nakitang scam sa huling 7 araw" and the checked line | `Widget` |
-| Widget | SMS access not given | "Open Hudyat to check your texts" | `Widget` |
-| Widget | Not checked yet | "Not checked yet. Open Hudyat." | `Widget` |
+| Widget | Counts | A rounded tile, dark in dark mode and white in light mode. Header: the signal mark, "Hudyat", and a "huling 7 araw" pill. The "Mukhang scam" count is the headline number in the widget accent; "Mag-ingat" and "Sugal promo" are smaller, stacked beside it. Each count has its own marker (filled circle, ring, square). Footer: "n texts checked · time" | `Widget` |
+| Widget | All zero | A check-mark icon, "Walang nakitang scam" and "sa huling 7 araw", with the checked line | `Widget` |
+| Widget | SMS access not given | A lock icon and "Open Hudyat to check your texts" | `Widget` |
+| Widget | Not checked yet | A clock icon and "Not checked yet. Open Hudyat." | `Widget` |
 | Scan | Ready | What is read and kept; range chips; "n not yet checked in this range · Already checked: n"; wording switch; Scan | `Scan` |
 | Scan | SMS access not yet given | No pending count, since counting needs the inbox; Scan asks for access | Rule only |
 | Scan | SMS access refused | Notice with the restricted-settings hint; Scan stays available | Rule only |

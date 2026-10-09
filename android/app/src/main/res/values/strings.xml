@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="widget_title">Hudyat · huling 7 araw</string>
+    <string name="widget_app">Hudyat</string>
+    <string name="widget_title">huling 7 araw</string>
+    <string name="widget_clear">Walang nakitang scam</string>
+    <string name="widget_clear_detail">sa huling 7 araw</string>
+    <string name="widget_no_access">Open Hudyat to check your texts</string>
+    <string name="widget_not_checked">Not checked yet. Open Hudyat.</string>
+    <string name="widget_footer">%1$d texts checked · %2$s</string>
     <string name="widget_scam">Mukhang scam</string>
     <string name="widget_caution">Mag-ingat</string>
     <string name="widget_gambling">Sugal promo</string>

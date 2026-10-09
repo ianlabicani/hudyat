@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The Hudyat signal mark. A vector cannot dash a stroke, so the dotted
+     outer arc is drawn as separate dots along the same curve. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="22dp" android:height="22dp"
+    android:viewportWidth="96" android:viewportHeight="96">
+    <path android:fillColor="@color/widget_accent"
+        android:pathData="M11.00,75.00a10,10 0 1,0 20,0a10,10 0 1,0 -20,0z"/>
+    <path android:strokeColor="@color/widget_text" android:strokeWidth="9"
+        android:strokeLineCap="round"
+        android:pathData="M45,75A24,24 0 0 0 21,51"/>
+    <path android:strokeColor="@color/widget_text" android:strokeWidth="9"
+        android:strokeLineCap="round"
+        android:pathData="M63,75A42,42 0 0 0 21,33"/>
+    <path android:fillColor="@color/widget_text"
+        android:pathData="M76.50,75.00a4.5,4.5 0 1,0 9.0,0a4.5,4.5 0 1,0 -9.0,0zM74.99,61.61a4.5,4.5 0 1,0 9.0,0a4.5,4.5 0 1,0 -9.0,0zM70.53,48.90a4.5,4.5 0 1,0 9.0,0a4.5,4.5 0 1,0 -9.0,0zM63.34,37.51a4.5,4.5 0 1,0 9.0,0a4.5,4.5 0 1,0 -9.0,0zM53.80,28.00a4.5,4.5 0 1,0 9.0,0a4.5,4.5 0 1,0 -9.0,0zM42.37,20.86a4.5,4.5 0 1,0 9.0,0a4.5,4.5 0 1,0 -9.0,0zM29.64,16.46a4.5,4.5 0 1,0 9.0,0a4.5,4.5 0 1,0 -9.0,0zM16.25,15.00a4.5,4.5 0 1,0 9.0,0a4.5,4.5 0 1,0 -9.0,0z"/>
+</vector>

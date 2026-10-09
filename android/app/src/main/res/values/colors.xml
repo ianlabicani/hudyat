@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The home screen widget in light mode. values-night has the dark tile. -->
+<resources>
+    <color name="widget_bg">#FFFFFF</color>
+    <color name="widget_text">#1B1B19</color>
+    <color name="widget_muted">#55534D</color>
+    <color name="widget_accent">#B93A0B</color>
+    <color name="widget_divider">#CFCCC2</color>
+    <color name="widget_pill_border">#CFCCC2</color>
+</resources>

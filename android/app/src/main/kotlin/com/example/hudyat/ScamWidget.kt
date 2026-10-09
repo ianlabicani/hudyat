@@ -21,6 +21,9 @@ class ScamWidget : AppWidgetProvider() {
         redraw(context.applicationContext)
     }
 
+    /** What the tile says when it has no counts to show. */
+    private class Message(val title: Int, val icon: Int, val detail: Int? = null)
+
     companion object {
         fun redraw(context: Context) {
             val manager = AppWidgetManager.getInstance(context)
@@ -28,16 +31,34 @@ class ScamWidget : AppWidgetProvider() {
             if (ids.isEmpty()) return
             val counts = InboxCheck.counts(context)
             val views = RemoteViews(context.packageName, R.layout.scam_widget)
+            // A message with its icon stands in for the counts: a tile of
+            // three zeros says less than "nothing found".
             val message = when {
-                counts.state == InboxCheck.NO_ACCESS -> "Open Hudyat to check your texts"
-                counts.state == InboxCheck.NOT_CHECKED -> "Not checked yet. Open Hudyat."
-                counts.scam + counts.caution + counts.gambling == 0 ->
-                    "Walang nakitang scam sa huling 7 araw"
+                counts.state == InboxCheck.NO_ACCESS ->
+                    Message(R.string.widget_no_access, R.drawable.ic_widget_locked)
+                counts.state == InboxCheck.NOT_CHECKED ->
+                    Message(R.string.widget_not_checked, R.drawable.ic_widget_waiting)
+                counts.scam + counts.caution + counts.gambling == 0 -> Message(
+                    R.string.widget_clear,
+                    R.drawable.ic_widget_clear,
+                    R.string.widget_clear_detail,
+                )
                 else -> null
             }
             views.setViewVisibility(R.id.widget_counts, if (message == null) View.VISIBLE else View.GONE)
             views.setViewVisibility(R.id.widget_message, if (message == null) View.GONE else View.VISIBLE)
-            views.setTextViewText(R.id.widget_message, message ?: "")
+            if (message != null) {
+                views.setImageViewResource(R.id.widget_message_icon, message.icon)
+                views.setTextViewText(R.id.widget_message_title, context.getString(message.title))
+                views.setTextViewText(
+                    R.id.widget_message_detail,
+                    message.detail?.let(context::getString) ?: "",
+                )
+                views.setViewVisibility(
+                    R.id.widget_message_detail,
+                    if (message.detail == null) View.GONE else View.VISIBLE,
+                )
+            }
             views.setTextViewText(R.id.widget_scam, counts.scam.toString())
             views.setTextViewText(R.id.widget_caution, counts.caution.toString())
             views.setTextViewText(R.id.widget_gambling, counts.gambling.toString())
@@ -47,7 +68,7 @@ class ScamWidget : AppWidgetProvider() {
                     ""
                 } else {
                     val time = DateFormat.getTimeFormat(context).format(Date(counts.checkedAt))
-                    "7-day SMS · ${counts.total} checked · $time"
+                    context.getString(R.string.widget_footer, counts.total, time)
                 },
             )
             views.setOnClickPendingIntent(R.id.widget_root, InboxCheck.openFlagged(context, 4401))

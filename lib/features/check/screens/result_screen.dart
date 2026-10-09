@@ -8,7 +8,9 @@ import '../../../core/widgets/ai_note.dart';
 import '../../../core/widgets/buttons.dart';
 import '../../../core/widgets/panels.dart';
 import '../models/check_result.dart';
+import '../services/flagged_store.dart';
 import '../services/result_explainer.dart';
+import '../widgets/gambling_help.dart';
 import '../widgets/result_rows.dart';
 import '../widgets/verdict_badge.dart';
 
@@ -71,11 +73,33 @@ class _ResultScreenState extends State<ResultScreen> {
     );
   }
 
+  /// The sender whose conversation the SMS app can open: a flagged text
+  /// that came by SMS and has one.
+  String? get _smsSender =>
+      result.isFlagged && (result.app == null || result.app == 'Messages')
+      ? result.sender
+      : null;
+
+  /// Kept gambling promos from this result's sender, this one included.
+  int _promosFrom(List<FlaggedMessage> kept) {
+    final sender = result.sender;
+    if (sender == null) return 0;
+    return kept
+        .where(
+          (item) =>
+              item.result.sender == sender && item.result.hasGamblingPromo,
+        )
+        .length;
+  }
+
   @override
   Widget build(BuildContext context) {
     final scope = AppScope.of(context);
     final wording = scope.store.scamReasons();
     final claimed = result.claimed;
+    final crisisLine = result.hasGamblingPromo
+        ? scope.store.crisisLine()
+        : null;
     final wordingNotice = switch (result.phrasing) {
       PhrasingState.notReady =>
         'The wording check is not ready yet, so only the rules were checked.',
@@ -140,6 +164,20 @@ class _ResultScreenState extends State<ResultScreen> {
                 },
               ),
             ],
+            if (result.hasGamblingPromo) ...[
+              const SizedBox(height: 22),
+              GamblingHelp(
+                promosFromSender: _promosFrom(scope.flagged.all()),
+                onBlock: _smsSender == null
+                    ? null
+                    : () => _openThread(context, _smsSender!),
+                crisisLine: crisisLine,
+                onCallCrisisLine: crisisLine == null
+                    ? null
+                    : () => callRecord(context, crisisLine),
+                regulatorSite: scope.store.gamblingRegulatorSite(),
+              ),
+            ],
             if (claimed != null) ...[
               const SizedBox(height: 22),
               const SectionHeading(title: 'The real contact'),
@@ -151,7 +189,7 @@ class _ResultScreenState extends State<ResultScreen> {
                     : () =>
                           callNumbers(context, claimed.name, claimed.dialable),
               ),
-            ] else ...[
+            ] else if (!result.hasGamblingPromo) ...[
               const SizedBox(height: 10),
               const Text(
                 'No official sender matched this message, so no contact is '
@@ -159,9 +197,8 @@ class _ResultScreenState extends State<ResultScreen> {
                 style: HudyatText.gloss,
               ),
             ],
-            if (result.sender case final from?
-                when result.isFlagged &&
-                    (result.app == null || result.app == 'Messages')) ...[
+            // A gambling promo offers this inside its help section instead.
+            if (_smsSender case final from? when !result.hasGamblingPromo) ...[
               const SizedBox(height: 22),
               SecondaryButton(
                 label: 'Open in Messages',

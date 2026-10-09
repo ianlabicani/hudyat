@@ -293,10 +293,61 @@ void main() {
           null,
         ),
       );
-      await tester.tap(find.text('Open in Messages'));
+      // A promo offers a way out in place of the empty contact line.
+      expect(find.text('Want fewer of these?'), findsOneWidget);
+      expect(find.textContaining('No official sender matched'), findsNothing);
+      expect(find.text('Open in Messages'), findsNothing);
+      await tester.tap(find.text('Block this sender in Messages'));
       await tester.pumpAndSettle();
       expect(opened, ['sms:BingoPlus']);
       expect(find.textContaining('Could not open Messages'), findsOneWidget);
+    });
+
+    testWidgets('a gambling promo offers someone to talk to, from the pack', (
+      tester,
+    ) async {
+      final result = await checker.check(
+        'Get UP TO 1.5% Rebate! bingoplus.com/channels/slot',
+      );
+      await pump(tester, ResultScreen(result: result));
+      expect(find.text('Mental Health Crisis Line'), findsOneWidget);
+      expect(find.text('0917-899-8727'), findsOneWidget);
+      expect(find.text('Call'), findsOneWidget);
+      expect(find.textContaining('See pagcor.ph'), findsOneWidget);
+      // Pasted with no sender: there is nobody to block.
+      expect(find.text('Block this sender in Messages'), findsNothing);
+      expect(find.textContaining('has sent you'), findsNothing);
+    });
+
+    testWidgets('says how many promos the same sender has sent', (
+      tester,
+    ) async {
+      final first = await checker.check(
+        'Get UP TO 1.5% Rebate! bingoplus.com/channels/slot',
+        sender: 'BingoPlus',
+      );
+      final second = await checker.check(
+        'Jackpot cashback today! bingoplus.com/promo',
+        sender: 'BingoPlus',
+      );
+      flagged
+        ..keep(first)
+        ..keep(second);
+      await pump(tester, ResultScreen(result: second));
+      expect(
+        find.text('This sender has sent you 2 promos that Hudyat kept.'),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('a scam with no gambling in it gets no gambling help', (
+      tester,
+    ) async {
+      final result = await checker.check(scamText, sender: '0917 123 4567');
+      await pump(tester, ResultScreen(result: result));
+      expect(find.text('Want fewer of these?'), findsNothing);
+      expect(find.text('Mental Health Crisis Line'), findsNothing);
+      expect(find.text('Open in Messages'), findsOneWidget);
     });
 
     testWidgets('no Messages button without a sender or a finding', (
@@ -456,6 +507,20 @@ void main() {
       expect(find.text('No flagged messages'), findsOneWidget);
     });
 
+    testWidgets('gambling promos get a group of their own', (tester) async {
+      flagged
+        ..keep(await checker.check('Tingnan mo bit.ly/abc'))
+        ..keep(
+          await checker.check(
+            'Get UP TO 1.5% Rebate! bingoplus.com/channels/slot',
+            sender: 'BingoPlus',
+          ),
+        );
+      await pump(tester, const FlaggedScreen());
+      expect(find.text('Mag-ingat · 1'), findsOneWidget);
+      expect(find.text('Sugal promo · 1'), findsOneWidget);
+    });
+
     testWidgets('groups by verdict, opens a result, clears', (tester) async {
       flagged
         ..keep(await checker.check(scamText, sender: 'GCASH'))
@@ -464,6 +529,9 @@ void main() {
       expect(find.text('2 messages kept'), findsOneWidget);
       expect(find.text('SCAM'), findsOneWidget);
       expect(find.text('MAG-INGAT'), findsOneWidget);
+      expect(find.text('Mukhang scam · 1'), findsOneWidget);
+      expect(find.text('Mag-ingat · 1'), findsOneWidget);
+      expect(find.textContaining('Sugal promo'), findsNothing);
       expect(find.text('Sender not given'), findsOneWidget);
       await tester.tap(find.text('GCASH'));
       await tester.pumpAndSettle();

@@ -318,6 +318,12 @@ CREATE TABLE first_aid_cards (
     'emergency',
     phones: [('911', '911')],
   );
+  record(
+    'hotline',
+    'Mental Health Crisis Line',
+    'social',
+    phones: [('0917-899-8727', '09178998727')],
+  );
 
   // Places.
   record(
@@ -495,6 +501,13 @@ CREATE TABLE first_aid_cards (
     ['Social Security System', 'SSS'],
     ['sss.gov.ph'],
     short: 'SSS',
+  );
+  sender(
+    'Philippine Amusement and Gaming Corporation',
+    'agency',
+    ['Philippine Amusement and Gaming Corporation', 'PAGCOR'],
+    ['pagcor.ph'],
+    short: 'PAGCOR',
   );
 
   void example(String text, String label) => db.execute(

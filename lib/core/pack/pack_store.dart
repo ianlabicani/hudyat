@@ -197,6 +197,27 @@ class PackStore {
     return null;
   }
 
+  /// A free national line to talk to someone, offered beside a gambling
+  /// promo. Null when the pack has none.
+  PackRecord? crisisLine() {
+    for (final row in hotlines(categories: const ['social'])) {
+      if (row.name == 'Mental Health Crisis Line' && row.canCall) return row;
+    }
+    return null;
+  }
+
+  /// The gambling regulator's website, from the official list. Null when
+  /// the pack does not list it.
+  String? gamblingRegulatorSite() {
+    for (final sender in officialSenders()) {
+      if (sender.name.toLowerCase().contains('amusement and gaming') &&
+          sender.domains.isNotEmpty) {
+        return sender.domains.first;
+      }
+    }
+    return null;
+  }
+
   /// Places whose category is in [kinds], optionally limited to one city.
   List<PackRecord> places({required List<String> kinds, String? city}) {
     if (kinds.isEmpty) return const [];

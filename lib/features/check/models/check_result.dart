@@ -93,4 +93,12 @@ class CheckResult {
 
   /// Only these are ever stored.
   bool get isFlagged => verdict != Verdict.clear;
+
+  /// Whether a gambling promo was found, whatever else was.
+  bool get hasGamblingPromo =>
+      reasons.any((reason) => reason.id == ReasonId.gamblingPromo);
+
+  /// A gambling promo and nothing else: it gets its own group in the
+  /// Flagged list, apart from other "Mag-ingat" texts.
+  bool get isGamblingPromo => reasons.length == 1 && hasGamblingPromo;
 }

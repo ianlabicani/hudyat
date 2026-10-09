@@ -62,8 +62,23 @@ class FlaggedScreen extends StatelessWidget {
                       ),
                     ],
                   ),
-                  for (final verdict in [Verdict.scam, Verdict.caution])
-                    ..._group(verdict, all, flagged.remove),
+                  ..._group(Verdict.scam.label, [
+                    for (final item in all)
+                      if (item.result.verdict == Verdict.scam) item,
+                  ], flagged.remove),
+                  ..._group(Verdict.caution.label, [
+                    for (final item in all)
+                      if (item.result.verdict == Verdict.caution &&
+                          !item.result.isGamblingPromo)
+                        item,
+                  ], flagged.remove),
+                  // Promos and nothing else, as on the widget's third count.
+                  ..._group('Sugal promo', [
+                    for (final item in all)
+                      if (item.result.verdict == Verdict.caution &&
+                          item.result.isGamblingPromo)
+                        item,
+                  ], flagged.remove),
                 ],
                 const SizedBox(height: 20),
                 const Text(
@@ -80,20 +95,16 @@ class FlaggedScreen extends StatelessWidget {
   }
 
   List<Widget> _group(
-    Verdict verdict,
-    List<FlaggedMessage> all,
+    String title,
+    List<FlaggedMessage> items,
     void Function(int id) onRemove,
   ) {
-    final items = [
-      for (final item in all)
-        if (item.result.verdict == verdict) item,
-    ];
     if (items.isEmpty) return const [];
     return [
       const SizedBox(height: 20),
       Semantics(
         header: true,
-        child: Text(verdict.label, style: HudyatText.section),
+        child: Text('$title · ${items.length}', style: HudyatText.section),
       ),
       for (final item in items)
         Padding(

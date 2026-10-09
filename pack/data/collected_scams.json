@@ -1,7 +1,7 @@
 {
   "about": "Scam SMS texts collected verbatim from published warnings and reports, for the suspicious-request classifier's calibration and final-test sets. Never use these for training. Keep texts from the same campaign_id in the same split. Collected 2026-10-09 from public sources; see source_url per message. Labels are suggestions under the suspicious-request definition and must be reviewed before use.",
-  "provenance_notes": "source_kind 'official' means a government agency or the named company published or quoted the text. 'news' means a news organization quoted it. 'blog' means a personal blog or comment thread reproduced a received text; weaker provenance, decide before using in the final test. completeness 'fragment' means the article quoted only part of the message.",
-  "known_gaps": "The set skews toward prize-bait campaigns. Campaigns described but not quoted in official advisories (PHLPost P17.05 address-fee, LBC redelivery fee, SSS benefit-claim links, PhilHealth info-update site, Smart fake SIM re-registration, MMDA NCAP violations, BDO account-on-hold) are listed in reconstruction_candidates and may only be paraphrased for training, never for calibration or final testing.",
+  "provenance_notes": "source_kind 'official' means a government agency or the named company published or quoted the text. 'news' means a news organization quoted it. 'blog' means a personal blog or comment thread reproduced a received text; weaker provenance, decide before using in the final test. completeness 'fragment' means the article quoted only part of the message. completeness 'pattern' means an author's rendition of a documented campaign, possibly paraphrased: usable for training or calibration, not the final test. completeness 'stitched' means assembled from quoted fragments in one article: same restriction as pattern.",
+  "known_gaps": "Verbatim official-provenance texts remain few; most full texts come from blogs or author patterns. Campaigns described but not quoted in official advisories (PHLPost P17.05 address-fee, LBC redelivery fee, SSS benefit-claim links, PhilHealth info-update site, Smart fake SIM re-registration, MMDA NCAP violations, BDO account-on-hold) are listed in reconstruction_candidates and may only be paraphrased for training, never for calibration or final testing.",
   "messages": [
     {
       "text": "The globe points service reminds you that your current points account (3,022 points) will expire today. Redeem your points as soon as possible: https://globeeph.top/i Please reply Y then exit SMS, open the SMS to activate the link again, or copy the link to the Safari browser and open it.",
@@ -201,7 +201,97 @@
       "source_name": "worldngayon.com smishing guide",
       "source_url": "https://worldngayon.com/smishing-text-scam-philippines/",
       "source_date": "2026",
-      "completeness": "full"
+      "completeness": "pattern"
+    },
+    {
+      "text": "LTO: You have an unsettled violation under Republic Act 10913, the Anti-Distracted Driving Act, for using your mobile phone while driving. A penalty fee of P1,000 is due within 24 hours. Failure to settle may result in additional penalties, license suspension, or alarm block. [link]",
+      "campaign_id": "lto-violation-2025",
+      "suggested_labels": ["money", "pressure", "action"],
+      "source_kind": "news",
+      "source_name": "Interaksyon/Philstar, text received by TV5 analyst Edson Guido; quoted phrases stitched",
+      "source_url": "https://interaksyon.philstar.com/rumor-cop/2025/11/13/304429/public-lto-text-scam-traffic-violation/",
+      "source_date": "2025-11",
+      "completeness": "stitched"
+    },
+    {
+      "text": "Your account has been locked due to suspicious activity. Verify now: [malicious link].",
+      "campaign_id": "bank-locked-pattern-2026",
+      "suggested_labels": ["pressure", "action"],
+      "source_kind": "blog",
+      "source_name": "worldngayon.com smishing guide, pattern attributed to NTC/PNP-ACG",
+      "source_url": "https://worldngayon.com/smishing-text-scam-philippines/",
+      "source_date": "2026-06",
+      "completeness": "pattern"
+    },
+    {
+      "text": "GCash: Your account has been accessed from a new device. If this was not you, tap [link] to secure your account.",
+      "campaign_id": "gcash-newdevice-pattern-2026",
+      "suggested_labels": ["action"],
+      "source_kind": "blog",
+      "source_name": "worldngayon.com smishing guide, pattern attributed to NTC/PNP-ACG",
+      "source_url": "https://worldngayon.com/smishing-text-scam-philippines/",
+      "source_date": "2026-06",
+      "completeness": "pattern"
+    },
+    {
+      "text": "Your package from Lazada/Shopee cannot be delivered due to incomplete address. Update here: [link].",
+      "campaign_id": "parcel-pattern-2026",
+      "suggested_labels": ["action", "money"],
+      "source_kind": "blog",
+      "source_name": "worldngayon.com smishing guide, pattern attributed to NTC/PNP-ACG",
+      "source_url": "https://worldngayon.com/smishing-text-scam-philippines/",
+      "source_date": "2026-06",
+      "completeness": "pattern"
+    },
+    {
+      "text": "Mom, I am in the hospital. Please send money urgently to this account.",
+      "campaign_id": "family-emergency-pattern-2026",
+      "suggested_labels": ["money", "pressure"],
+      "source_kind": "blog",
+      "source_name": "worldngayon.com smishing guide, pattern attributed to NTC/PNP-ACG",
+      "source_url": "https://worldngayon.com/smishing-text-scam-philippines/",
+      "source_date": "2026-06",
+      "completeness": "pattern"
+    },
+    {
+      "text": "DSWD: You are eligible for PHP5,000 aid under the 2026 SAP program. Register here: [link].",
+      "campaign_id": "dswd-aid-pattern-2026",
+      "suggested_labels": ["bait", "action"],
+      "source_kind": "blog",
+      "source_name": "worldngayon.com smishing guide, pattern attributed to NTC/PNP-ACG",
+      "source_url": "https://worldngayon.com/smishing-text-scam-philippines/",
+      "source_date": "2026-06",
+      "completeness": "pattern"
+    },
+    {
+      "text": "Your OTP for PHP25,000 transfer is 847291. Do not share this code. If you did not request this, visit: [phishing link].",
+      "campaign_id": "fake-otp-pattern-2026",
+      "suggested_labels": ["pressure", "action"],
+      "source_kind": "blog",
+      "source_name": "worldngayon.com smishing guide, pattern attributed to NTC/PNP-ACG",
+      "source_url": "https://worldngayon.com/smishing-text-scam-philippines/",
+      "source_date": "2026-06",
+      "completeness": "pattern"
+    },
+    {
+      "text": "PhilHealth: You have an unclaimed benefit of PHP8,500. Verify your membership: [link].",
+      "campaign_id": "philhealth-benefit-pattern-2026",
+      "suggested_labels": ["bait", "action"],
+      "source_kind": "blog",
+      "source_name": "worldngayon.com smishing guide, pattern attributed to NTC/PNP-ACG",
+      "source_url": "https://worldngayon.com/smishing-text-scam-philippines/",
+      "source_date": "2026-06",
+      "completeness": "pattern"
+    },
+    {
+      "text": "BI Alert: Your passport has been flagged for immigration violation. Resolve immediately: [link].",
+      "campaign_id": "bi-travel-pattern-2026",
+      "suggested_labels": ["pressure", "action"],
+      "source_kind": "blog",
+      "source_name": "worldngayon.com smishing guide, pattern attributed to NTC/PNP-ACG",
+      "source_url": "https://worldngayon.com/smishing-text-scam-philippines/",
+      "source_date": "2026-06",
+      "completeness": "pattern"
     }
   ],
   "reconstruction_candidates": [

@@ -8,7 +8,6 @@ import '../../../core/widgets/ai_note.dart';
 import '../../../core/widgets/buttons.dart';
 import '../../../core/widgets/panels.dart';
 import '../models/check_result.dart';
-import '../services/flagged_store.dart';
 import '../services/result_explainer.dart';
 import '../widgets/gambling_help.dart';
 import '../widgets/result_rows.dart';
@@ -79,18 +78,6 @@ class _ResultScreenState extends State<ResultScreen> {
       result.isFlagged && (result.app == null || result.app == 'Messages')
       ? result.sender
       : null;
-
-  /// Kept gambling promos from this result's sender, this one included.
-  int _promosFrom(List<FlaggedMessage> kept) {
-    final sender = result.sender;
-    if (sender == null) return 0;
-    return kept
-        .where(
-          (item) =>
-              item.result.sender == sender && item.result.hasGamblingPromo,
-        )
-        .length;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -167,7 +154,10 @@ class _ResultScreenState extends State<ResultScreen> {
             if (result.hasGamblingPromo) ...[
               const SizedBox(height: 22),
               GamblingHelp(
-                promosFromSender: _promosFrom(scope.flagged.all()),
+                promosFromSender: switch (result.sender) {
+                  final sender? => scope.flagged.promosFrom(sender),
+                  null => 0,
+                },
                 onBlock: _smsSender == null
                     ? null
                     : () => _openThread(context, _smsSender!),

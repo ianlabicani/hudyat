@@ -252,6 +252,28 @@ truncated INTEGER NOT NULL, checked_at INTEGER NOT NULL)''');
     });
   });
 
+  test('promosFrom counts only that sender\'s gambling promos', () {
+    final store = FlaggedStore(sqlite3.openInMemory());
+    addTearDown(store.close);
+    CheckResult kept(String text, String sender, String reason) => CheckResult(
+      text: text,
+      verdict: Verdict.caution,
+      reasons: [
+        CheckReason(reason, const {'source': 'BingoPlus'}),
+      ],
+      phrasing: PhrasingState.skipped,
+      sender: sender,
+    );
+    store
+      ..keep(kept('promo one', 'BingoPlus', ReasonId.gamblingPromo))
+      ..keep(kept('promo two', 'BingoPlus', ReasonId.gamblingPromo))
+      ..keep(kept('a short link', 'BingoPlus', ReasonId.linkShortener))
+      ..keep(kept('another promo', 'OKBet', ReasonId.gamblingPromo));
+    expect(store.promosFrom('BingoPlus'), 2);
+    expect(store.promosFrom('OKBet'), 1);
+    expect(store.promosFrom('GCash'), 0);
+  });
+
   group('openFlaggedDatabase', () {
     test('moves a damaged file aside and starts a new one', () {
       final dir = Directory.systemTemp.createTempSync('hudyat-flagged');

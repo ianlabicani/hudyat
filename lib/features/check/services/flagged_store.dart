@@ -22,6 +22,14 @@ Database openFlaggedDatabase(String path) {
   } on Object catch (error) {
     debugPrint('Flagged file unreadable, starting a new one: $error');
     db?.close();
+    // One set-aside copy is enough to look into; more would only fill the
+    // phone if the file kept failing.
+    final folder = File(path).parent;
+    if (folder.existsSync()) {
+      for (final old in folder.listSync().whereType<File>()) {
+        if (old.path.startsWith('$path.damaged-')) old.deleteSync();
+      }
+    }
     final stamp = DateTime.now().millisecondsSinceEpoch;
     for (final suffix in const ['', '-wal', '-shm']) {
       final file = File('$path$suffix');
@@ -147,6 +155,16 @@ CREATE TABLE IF NOT EXISTS native_findings (
 
   int get count =>
       _db.select('SELECT count(*) AS n FROM flagged').first['n'] as int;
+
+  /// How many kept messages from [sender] are gambling promos. Counted in
+  /// the database, so a result screen does not load every kept message.
+  int promosFrom(String sender) =>
+      _db.select(
+            'SELECT count(*) AS n FROM flagged WHERE sender = ? '
+            'AND reasons LIKE ?',
+            [sender, '%"id":"${ReasonId.gamblingPromo}"%'],
+          ).first['n']
+          as int;
 
   /// Whether this text from this sender is already kept.
   bool has(CheckResult result) => _db.select(

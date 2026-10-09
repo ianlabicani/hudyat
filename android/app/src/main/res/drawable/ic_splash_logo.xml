@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Generated logo C. Regenerate with swift tool/generate_brand_assets.swift. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="22dp" android:height="22dp"
-    android:viewportWidth="96" android:viewportHeight="96">
-    <group android:scaleX="1" android:scaleY="1"
-        android:translateX="0" android:translateY="0">
+    android:width="288dp" android:height="288dp"
+    android:viewportWidth="288" android:viewportHeight="288">
+    <group android:scaleX="1.66667" android:scaleY="1.66667"
+        android:translateX="64" android:translateY="64">
         <path android:fillColor="@android:color/transparent"
-            android:strokeColor="@color/widget_text" android:strokeWidth="8"
+            android:strokeColor="#F2F1EC" android:strokeWidth="8"
             android:strokeLineCap="round" android:pathData="M72,64L92,64M65,47L79,33M48,40L48,20M31,47L17,33M24,64L4,64M10,82L86,82"/>
-        <path android:fillColor="@color/widget_accent" android:pathData="M37,64a11,11 0 1,0 22,0a11,11 0 1,0 -22,0z"/>
+        <path android:fillColor="#F26A2E" android:pathData="M37,64a11,11 0 1,0 22,0a11,11 0 1,0 -22,0z"/>
     </group>
 </vector>

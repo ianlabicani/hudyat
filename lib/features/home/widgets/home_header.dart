@@ -33,23 +33,33 @@ class HomeBrand extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Wrap(
-      crossAxisAlignment: .end,
-      spacing: 8,
-      children: [
-        Text(
-          'Hudyat',
-          style: TextStyle(
-            fontSize: 28,
-            fontWeight: .w700,
-            letterSpacing: -0.3,
-          ),
+    return Semantics(
+      label: 'Hudyat',
+      header: true,
+      child: ExcludeSemantics(
+        child: Wrap(
+          crossAxisAlignment: .center,
+          spacing: 8,
+          runSpacing: 4,
+          children: [
+            Image.asset(
+              'assets/brand/hudyat_mark_c.png',
+              width: 32,
+              height: 32,
+              excludeFromSemantics: true,
+            ),
+            const Text(
+              'hudyat',
+              style: TextStyle(
+                fontFamily: HudyatText.family,
+                fontSize: 28,
+                fontWeight: .w700,
+                letterSpacing: -0.56,
+              ),
+            ),
+          ],
         ),
-        Padding(
-          padding: EdgeInsets.only(bottom: 5),
-          child: Text('signal', style: HudyatText.data),
-        ),
-      ],
+      ),
     );
   }
 }

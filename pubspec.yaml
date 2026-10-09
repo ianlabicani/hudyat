@@ -69,6 +69,7 @@ flutter:
   assets:
     # The whole folder, so the git-ignored map file is included when present.
     - assets/pack/
+    - assets/brand/hudyat_mark_c.png
   fonts:
     - family: AtkinsonHyperlegible
       fonts:

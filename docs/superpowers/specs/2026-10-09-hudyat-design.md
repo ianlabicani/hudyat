@@ -618,12 +618,13 @@ that is not here, add it to the canvas and this section first.
 | Ground / surface / ink | `#F2F1EC` / `#FFFFFF` / `#1B1B19` |
 | Muted text / rule | `#55534D` / `#CFCCC2` |
 | Disabled fill / disabled text | `#CFCCC2` / `#3F3D39` |
-| Call accent | `#B93A0B`, used only on Call buttons and the emergency link |
+| Call accent | `#B93A0B`, used on Call buttons, the emergency link and the logo's flare on light backgrounds |
 | Danger | `#A31621`, for "Mukhang scam" and the medical and injury icons |
 | Caution | `#8A5200`, for "Mag-ingat" |
 | No verdict colour | "Walang nakitang problema" stays muted. Green is not in the palette, since it would read as "safe" |
 | Help icons | Flood `#1F5FA8`, fire `#B85300`, police `#1E2F6B`, medicine and clinic `#0F6B63`, shelter `#5B3A8C`. Icons only; labels and borders stay ink |
 | Widget | A tile of its own, outside the app: ground `#1B1B19`, text `#F2F1EC`, muted `#B8B5AC`, accent `#F26A2E` in dark mode; white, ink, muted and the call accent `#B93A0B` in light mode. The one place the call accent marks a count |
+| Brand mark | Selected logo C, "Flare at the horizon": five round-ended rays and a horizon in ink with a rust flare on light backgrounds; pale `#F2F1EC` rays and orange `#F26A2E` flare on charcoal `#1B1B19`. The Android launcher and launch screen use the dark treatment. The home header uses the light mark; the widget follows its light/dark colors. Scam notifications retain the warning triangle |
 | Text face | Atkinson Hyperlegible, 400 and 700 |
 | Data face | IBM Plex Mono, 400 and 500, for numbers, addresses, badges and footers |
 | Text sizes | 28 screen title, 20 section heading, 16 body, 13 minimum |
@@ -640,6 +641,7 @@ submission disclosures.
 
 | Component | Contents |
 |---|---|
+| `HomeBrand` | 32px light logo C beside lowercase "hudyat", Atkinson Hyperlegible bold, 28px with -0.02em tracking. Wraps with large text; announced once as "Hudyat". The setup status pill wraps below when needed |
 | `TopBar` | Back button with a semantic label, screen title |
 | `HotlineRow` | Name, number, Call button |
 | `LeadCall` | The first hotline on a card as one full-width call-accent button: "Call", name, number |
@@ -703,7 +705,7 @@ submission disclosures.
 | Automatic checking | On | Badge reads ON; a panel with the three counts, texts checked and the time; "Turn off" | `WatcherSetup` |
 | Automatic checking | On, alerts not allowed | As On, with a Notice that alerts are off and texts are still counted | Rule only |
 | Automatic checking | On, SMS access taken away | As On, with a Notice to turn it off and on again | Rule only |
-| Widget | Counts | A rounded tile, dark in dark mode and white in light mode. Header: the signal mark, "Hudyat", and a "huling 7 araw" pill. The "Mukhang scam" count is the headline number in the widget accent; "Mag-ingat" and "Sugal promo" are smaller, stacked beside it. Each count has its own marker (filled circle, ring, square). Footer: "n texts checked · time" | `Widget` |
+| Widget | Counts | A rounded tile, dark in dark mode and white in light mode. Header: logo C's flare mark, "Hudyat", and a "huling 7 araw" pill. The "Mukhang scam" count is the headline number in the widget accent; "Mag-ingat" and "Sugal promo" are smaller, stacked beside it. Each count has its own marker (filled circle, ring, square). Footer: "n texts checked · time" | `Widget` |
 | Widget | All zero | A check-mark icon, "Walang nakitang scam" and "sa huling 7 araw", with the checked line | `Widget` |
 | Widget | SMS access not given | A lock icon and "Open Hudyat to check your texts" | `Widget` |
 | Widget | Not checked yet | A clock icon and "Not checked yet. Open Hudyat." | `Widget` |

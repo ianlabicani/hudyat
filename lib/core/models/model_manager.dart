@@ -66,7 +66,7 @@ class ModelManager extends ChangeNotifier {
   FirstAidMatcher? firstAid;
 
   /// The phrasing check, set once its examples are embedded. That happens
-  /// after everything else, so it never delays "Find help".
+  /// after the intent examples, so it never delays "Find help".
   ScamPhrases? scamPhrases;
 
   /// 0 to 100 while the scam examples are being embedded, else null.
@@ -101,10 +101,12 @@ class ModelManager extends ChangeNotifier {
       sideloadFolder = null;
     }
     await _embedding(_runtime.loadEmbedder);
-    await _chat(_runtime.loadGenerator);
-    await _firstAid();
+    // Before the chat model, which takes longest to load and which the
+    // message check does not need.
     await _scam();
     await _classifier();
+    await _chat(_runtime.loadGenerator);
+    await _firstAid();
   }
 
   Future<void> _classifier() async {

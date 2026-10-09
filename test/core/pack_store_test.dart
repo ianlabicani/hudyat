@@ -30,6 +30,23 @@ void main() {
     expect(older.gamblingRules().terms, isEmpty);
   });
 
+  test(
+    'reads each fixed table once, and hands out lists that cannot change',
+    () {
+      // Screens ask for these on every rebuild.
+      expect(identical(store.intents(), store.intents()), isTrue);
+      expect(
+        identical(store.officialSenders(), store.officialSenders()),
+        isTrue,
+      );
+      expect(identical(store.scamReasons(), store.scamReasons()), isTrue);
+      expect(store.intent('medical_emergency')?.id, 'medical_emergency');
+      expect(store.intent('no_such_intent'), isNull);
+      expect(() => store.cities().add('Elsewhere'), throwsUnsupportedError);
+      expect(() => store.scamReasons().clear(), throwsUnsupportedError);
+    },
+  );
+
   test('lists cities that have places, and their province', () {
     expect(store.cities(), ['Marikina', 'Pasig']);
     expect(store.provinceOf('Pasig'), 'Metro Manila');

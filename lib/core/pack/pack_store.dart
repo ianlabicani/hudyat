@@ -41,14 +41,14 @@ class PackStore {
     );
   }
 
-  List<IntentDef> intents() => [
+  List<IntentDef> _loadIntents() => [
     for (final row in _db.select('SELECT * FROM intents'))
       IntentDef.fromRow(row),
   ];
 
   /// The fixed first-aid cards, or nothing in a pack built before they
   /// were written.
-  List<FirstAidCard> firstAidCards() {
+  List<FirstAidCard> _loadFirstAidCards() {
     try {
       return [
         for (final row in _db.select('SELECT * FROM first_aid_cards'))
@@ -60,12 +60,12 @@ class PackStore {
   }
 
   /// Organisations the message check knows, companies first.
-  List<OfficialSender> officialSenders() => [
+  List<OfficialSender> _loadOfficialSenders() => [
     for (final row in _db.select('SELECT * FROM official_senders ORDER BY id'))
       OfficialSender.fromRow(row),
   ];
 
-  List<ScamExample> scamExamples() => [
+  List<ScamExample> _loadScamExamples() => [
     for (final row in _db.select('SELECT * FROM scam_examples ORDER BY id'))
       ScamExample.fromRow(row),
   ];
@@ -87,13 +87,13 @@ class PackStore {
   }
 
   /// Fixed reason wording by reason id.
-  Map<String, ScamReasonText> scamReasons() => {
+  Map<String, ScamReasonText> _loadScamReasons() => {
     for (final row in _db.select('SELECT * FROM scam_reasons'))
       row['id'] as String: ScamReasonText.fromRow(row),
   };
 
   /// Link-shortening services, whose links hide where they lead.
-  List<String> linkShorteners() {
+  List<String> _loadLinkShorteners() {
     final rows = _db.select(
       "SELECT value FROM meta WHERE key = 'link_shorteners'",
     );
@@ -103,15 +103,15 @@ class PackStore {
 
   /// Hosts anyone links to, such as facebook.com. A link there is never
   /// "not their website".
-  List<String> neutralHosts() => _metaList('neutral_hosts');
+  List<String> _loadNeutralHosts() => _metaList('neutral_hosts');
 
   /// Sender names real organisations text from. Shown on a result, never
   /// trusted, since a sender name can be faked.
-  List<String> knownSenderIds() => _metaList('sender_ids');
+  List<String> _loadKnownSenderIds() => _metaList('sender_ids');
 
   /// Identifies the message-check lists in this pack. Falls back to the
   /// build date for a pack made before it was recorded.
-  String rulesVersion() {
+  String _loadRulesVersion() {
     final rows = _db.select(
       "SELECT value FROM meta WHERE key = 'rules_version'",
     );
@@ -125,7 +125,7 @@ class PackStore {
   }
 
   /// Online gambling brands and wording, or nothing in an older pack.
-  GamblingRules gamblingRules() {
+  GamblingRules _loadGamblingRules() {
     final rows = _db.select("SELECT value FROM meta WHERE key = 'gambling'");
     if (rows.isEmpty) return GamblingRules.none;
     return GamblingRules.fromJson(
@@ -135,12 +135,14 @@ class PackStore {
   }
 
   IntentDef? intent(String id) {
-    final rows = _db.select('SELECT * FROM intents WHERE id = ?', [id]);
-    return rows.isEmpty ? null : IntentDef.fromRow(rows.first);
+    for (final intent in intents()) {
+      if (intent.id == id) return intent;
+    }
+    return null;
   }
 
   /// Cities the pack has places for, in alphabetical order.
-  List<String> cities() => [
+  List<String> _loadCities() => [
     for (final row in _db.select(
       "SELECT DISTINCT city FROM records WHERE kind = 'place' "
       'AND city IS NOT NULL ORDER BY city',
@@ -189,7 +191,7 @@ class PackStore {
   }
 
   /// The single national emergency number, for Home and the no-match screen.
-  PackRecord? nationalEmergency() {
+  PackRecord? _loadNationalEmergency() {
     final rows = hotlines(categories: const ['emergency']);
     for (final row in rows) {
       if (row.canCall) return row;
@@ -199,7 +201,7 @@ class PackStore {
 
   /// A free national line to talk to someone, offered beside a gambling
   /// promo. Null when the pack has none.
-  PackRecord? crisisLine() {
+  PackRecord? _loadCrisisLine() {
     for (final row in hotlines(categories: const ['social'])) {
       if (row.name == 'Mental Health Crisis Line' && row.canCall) return row;
     }
@@ -208,7 +210,7 @@ class PackStore {
 
   /// The gambling regulator's website, from the official list. Null when
   /// the pack does not list it.
-  String? gamblingRegulatorSite() {
+  String? _loadGamblingRegulatorSite() {
     for (final sender in officialSenders()) {
       if (sender.name.toLowerCase().contains('amusement and gaming') &&
           sender.domains.isNotEmpty) {
@@ -288,5 +290,65 @@ class PackStore {
     return distanceKm(from.lat, from.lon, lat, lon);
   }
 
+  // The pack never changes while the app runs, so each of its small fixed
+  // tables is read once, on first use, and kept. Screens ask for these on
+  // every rebuild. The lists cannot be modified, so the kept copy is safe
+  // to hand out.
+
+  late final List<IntentDef> _intents = List.unmodifiable(_loadIntents());
+  List<IntentDef> intents() => _intents;
+
+  late final List<FirstAidCard> _firstAidCards = List.unmodifiable(
+    _loadFirstAidCards(),
+  );
+  List<FirstAidCard> firstAidCards() => _firstAidCards;
+
+  late final List<OfficialSender> _officialSenders = List.unmodifiable(
+    _loadOfficialSenders(),
+  );
+  List<OfficialSender> officialSenders() => _officialSenders;
+
+  late final List<ScamExample> _scamExamples = List.unmodifiable(
+    _loadScamExamples(),
+  );
+  List<ScamExample> scamExamples() => _scamExamples;
+
+  late final Map<String, ScamReasonText> _scamReasons = Map.unmodifiable(
+    _loadScamReasons(),
+  );
+  Map<String, ScamReasonText> scamReasons() => _scamReasons;
+
+  late final List<String> _linkShorteners = List.unmodifiable(
+    _loadLinkShorteners(),
+  );
+  List<String> linkShorteners() => _linkShorteners;
+
+  late final List<String> _neutralHosts = List.unmodifiable(
+    _loadNeutralHosts(),
+  );
+  List<String> neutralHosts() => _neutralHosts;
+
+  late final List<String> _knownSenderIds = List.unmodifiable(
+    _loadKnownSenderIds(),
+  );
+  List<String> knownSenderIds() => _knownSenderIds;
+
+  late final String _rulesVersion = _loadRulesVersion();
+  String rulesVersion() => _rulesVersion;
+
+  late final GamblingRules _gamblingRules = _loadGamblingRules();
+  GamblingRules gamblingRules() => _gamblingRules;
+
+  late final List<String> _cities = List.unmodifiable(_loadCities());
+  List<String> cities() => _cities;
+
+  late final PackRecord? _nationalEmergency = _loadNationalEmergency();
+  PackRecord? nationalEmergency() => _nationalEmergency;
+
+  late final PackRecord? _crisisLine = _loadCrisisLine();
+  PackRecord? crisisLine() => _crisisLine;
+
+  late final String? _gamblingRegulatorSite = _loadGamblingRegulatorSite();
+  String? gamblingRegulatorSite() => _gamblingRegulatorSite;
   void close() => _db.close();
 }

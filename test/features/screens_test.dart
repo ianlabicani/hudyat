@@ -352,6 +352,151 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('Search results'), findsOneWidget);
     });
+
+    testWidgets('names what it understood once typing pauses', (tester) async {
+      gps.fix = pasigPosition;
+      await pump(tester, const HomeScreen());
+      await tester.enterText(
+        find.byType(TextField),
+        'hindi siya makahinga, dalhin sa ospital',
+      );
+      await tester.pump(const Duration(milliseconds: 300));
+      expect(rich('Naintindihan'), findsNothing);
+
+      await tester.pump(const Duration(milliseconds: 400));
+      await tester.pump();
+      expect(rich('Naintindihan: Medical emergency'), findsOneWidget);
+      expect(find.textContaining('AI on this phone'), findsOneWidget);
+
+      // "Find help" uses that answer instead of embedding the text again.
+      final embedder = runtime.embedder! as FakeEmbedder;
+      final calls = embedder.calls;
+      await tester.tap(find.text('Find help'));
+      await tester.pumpAndSettle();
+      expect(find.text('Help card'), findsOneWidget);
+      expect(embedder.calls, calls);
+    });
+
+    testWidgets('tapping what it understood opens the card', (tester) async {
+      gps.fix = pasigPosition;
+      await pump(tester, const HomeScreen());
+      await tester.enterText(
+        find.byType(TextField),
+        'hindi siya makahinga, dalhin sa ospital',
+      );
+      await tester.pump(const Duration(milliseconds: 700));
+      await tester.pump();
+      await tester.tap(rich('Naintindihan'));
+      await tester.pumpAndSettle();
+      expect(find.text('Help card'), findsOneWidget);
+    });
+
+    testWidgets('an answer for text since changed is dropped', (tester) async {
+      await pump(tester, const HomeScreen());
+      await tester.enterText(
+        find.byType(TextField),
+        'hindi siya makahinga, dalhin sa ospital',
+      );
+      await tester.pump(const Duration(milliseconds: 300));
+      await tester.enterText(find.byType(TextField), 'paano ang passport ko');
+      await tester.pump(const Duration(milliseconds: 700));
+      await tester.pump();
+      expect(rich('Naintindihan'), findsNothing);
+      expect(find.text('Hahanapin sa listahan'), findsOneWidget);
+    });
+
+    testWidgets('a word or two is not matched while typing', (tester) async {
+      await pump(tester, const HomeScreen());
+      await tester.enterText(find.byType(TextField), 'ospital dito');
+      await tester.pump(const Duration(milliseconds: 700));
+      await tester.pump();
+      expect(rich('Naintindihan'), findsNothing);
+      expect(find.text('Hahanapin sa listahan'), findsNothing);
+    });
+  });
+
+  group('Home message guard', () {
+    testWidgets('off: says what it does and opens Automatic checking', (
+      tester,
+    ) async {
+      await pump(tester, const HomeScreen());
+      expect(find.text('Bantay sa text'), findsOneWidget);
+      expect(find.text('OFF'), findsOneWidget);
+      expect(find.text('Mukhang scam'), findsNothing);
+      await tester.tap(find.text('Turn on'));
+      await tester.pumpAndSettle();
+      expect(find.text('Check my texts for scams'), findsOneWidget);
+    });
+
+    testWidgets('on: the three counts and when texts were checked', (
+      tester,
+    ) async {
+      phone
+        ..found = const TimedStatus(
+          hasAccess: true,
+          scam: 3,
+          caution: 1,
+          gambling: 2,
+          total: 124,
+        )
+        ..on = true
+        ..runs = 1;
+      await timed.refresh();
+      await pump(tester, const HomeScreen());
+      expect(find.text('ON'), findsOneWidget);
+      expect(find.text('3'), findsOneWidget);
+      expect(find.text('Mukhang scam'), findsOneWidget);
+      expect(find.text('Mag-ingat'), findsOneWidget);
+      expect(find.text('Sugal promo'), findsOneWidget);
+      expect(
+        find.text('Last 7 days · 124 texts checked · 20:40'),
+        findsOneWidget,
+      );
+      await tester.tap(find.text('See flagged messages'));
+      await tester.pumpAndSettle();
+      expect(find.text('No flagged messages'), findsOneWidget);
+    });
+
+    testWidgets('on without SMS access: points to Automatic checking', (
+      tester,
+    ) async {
+      phone
+        ..found = const TimedStatus()
+        ..on = true;
+      await timed.refresh();
+      await pump(tester, const HomeScreen());
+      expect(find.text('Open automatic checking'), findsOneWidget);
+      expect(find.text('Mukhang scam'), findsNothing);
+    });
+
+    testWidgets('holds up with large text on a narrow screen', (tester) async {
+      runtime.embedder = FakeEmbedder();
+      await models.load();
+      phone
+        ..found = const TimedStatus(hasAccess: true, scam: 12, total: 618)
+        ..on = true
+        ..runs = 1;
+      await timed.refresh();
+      gps.fix = pasigPosition;
+      await location.refresh();
+      tester.platformDispatcher.textScaleFactorTestValue = 2;
+      addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+      await pump(tester, const HomeScreen());
+      tester.view.physicalSize = const Size(320, 6000);
+      await tester.pump();
+      await tester.enterText(
+        find.byType(TextField),
+        'hindi siya makahinga, dalhin sa ospital',
+      );
+      await tester.pump(const Duration(milliseconds: 700));
+      await tester.pump();
+      expect(rich('Naintindihan'), findsOneWidget);
+
+      // The card, with its lead call, at the same size.
+      await tester.tap(find.text('Find help'));
+      await tester.pumpAndSettle();
+      expect(find.byType(LeadCall), findsOneWidget);
+    });
   });
 
   group('AI note', () {

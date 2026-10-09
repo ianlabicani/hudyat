@@ -13,14 +13,30 @@ import '../../../core/widgets/panels.dart';
 import '../../card/card_labels.dart';
 import '../../card/screens/card_screen.dart';
 import '../../check/screens/check_screen.dart';
+import '../../check/screens/flagged_screen.dart';
+import '../../check/screens/timed_check_screen.dart';
 import '../../location/screens/pick_city_screen.dart';
 import '../../location/state/location_controller.dart';
-import '../../intent/services/intent_matcher.dart';
 import '../../search/screens/search_screen.dart';
 import '../../setup/screens/setup_screen.dart';
+import '../widgets/guard_panel.dart';
+import '../widgets/home_header.dart';
 import '../widgets/quick_buttons.dart';
+import '../widgets/understood_strip.dart';
 
-/// Home: the emergency number, the message box and the quick buttons.
+/// What the language model made of one message: the intent to open a card
+/// for, or none when the message belongs in keyword search.
+class _Understood {
+  const _Understood(this.text, this.intent, this.firstAid, this.elapsed);
+
+  final String text;
+  final IntentDef? intent;
+  final FirstAidCard? firstAid;
+  final Duration elapsed;
+}
+
+/// Home: the emergency number, the message box, the quick buttons and what
+/// automatic checking has found.
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -29,16 +45,31 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  /// How long typing must pause before the message is matched.
+  static const _pause = Duration(milliseconds: 600);
+
+  /// Fewer words than this are not matched while typing.
+  static const _minWords = 3;
+
   final _message = TextEditingController();
 
   /// True while waiting for the first GPS fix before opening a card.
   bool _locating = false;
 
-  /// True while the message is being matched to an intent.
+  /// True while "Find help" waits for the message to be matched.
   bool _matching = false;
+
+  Timer? _typingPause;
+
+  /// Raised for every new match, so an answer for older text is dropped.
+  int _matchRound = 0;
+
+  /// The match for the text now in the box, once there is one.
+  _Understood? _understood;
 
   @override
   void dispose() {
+    _typingPause?.cancel();
     _message.dispose();
     super.dispose();
   }
@@ -82,38 +113,92 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  /// Message → intent → card. Anything that is not clearly an emergency, and
-  /// any failure of the model, goes to keyword search instead.
-  Future<void> _findHelp() async {
-    final text = _message.text.trim();
-    if (text.isEmpty || _matching) return;
-    final scope = AppScope.of(context);
-    final matcher = scope.models.matcher;
-    if (matcher == null) return _search(query: text);
+  void _push(Widget screen) {
+    Navigator.of(context).push<void>(MaterialPageRoute(builder: (_) => screen));
+  }
 
-    setState(() => _matching = true);
-    IntentMatch? match;
+  /// Message → intent and first-aid card, timed. Any failure of the model
+  /// counts as no match, which sends the message to keyword search.
+  Future<_Understood> _match(String text) async {
+    final scope = AppScope.of(context);
+    final watch = Stopwatch()..start();
+    IntentDef? intent;
     try {
-      match = await matcher.match(text);
+      final match = await scope.models.matcher?.match(text);
+      intent = match == null ? null : scope.store.intent(match.intentId);
     } on Object {
-      match = null;
+      intent = null;
     }
     // Only a message that opens a card can carry first aid. A failure here
     // means a card without it, never no card.
     FirstAidCard? firstAid;
-    if (match != null) {
+    if (intent != null) {
       try {
         firstAid = await scope.models.firstAid?.match(text);
       } on Object {
         firstAid = null;
       }
     }
-    if (!mounted) return;
-    setState(() => _matching = false);
+    watch.stop();
+    return _Understood(text, intent, firstAid, watch.elapsed);
+  }
 
-    final intent = match == null ? null : scope.store.intent(match.intentId);
-    if (intent == null) return _search(query: text, fromMessage: true);
-    await _openCard(intent, message: text, firstAid: firstAid);
+  /// Matches the message once typing pauses, so the answer is on screen
+  /// before "Find help" is pressed.
+  void _typed(String value) {
+    _typingPause?.cancel();
+    _matchRound++;
+    final text = value.trim();
+    if (_understood != null && _understood!.text != text) {
+      setState(() => _understood = null);
+    }
+    if (AppScope.of(context).models.matcher == null) return;
+    if (text.split(RegExp(r'\s+')).length < _minWords) return;
+    if (_understood?.text == text) return;
+    final round = _matchRound;
+    _typingPause = Timer(_pause, () async {
+      final understood = await _match(text);
+      if (!mounted || round != _matchRound || _matching) return;
+      setState(() => _understood = understood);
+    });
+  }
+
+  void _open(_Understood understood) {
+    final intent = understood.intent;
+    if (intent == null) {
+      return _search(query: understood.text, fromMessage: true);
+    }
+    unawaited(
+      _openCard(
+        intent,
+        message: understood.text,
+        firstAid: understood.firstAid,
+      ),
+    );
+  }
+
+  /// Message → intent → card. Anything that is not clearly an emergency, and
+  /// any failure of the model, goes to keyword search instead.
+  Future<void> _findHelp() async {
+    final text = _message.text.trim();
+    if (text.isEmpty || _matching) return;
+    _typingPause?.cancel();
+    _matchRound++;
+    if (AppScope.of(context).models.matcher == null) {
+      return _search(query: text);
+    }
+    // Already matched while typing: do not embed the message twice.
+    var understood = _understood;
+    if (understood == null || understood.text != text) {
+      setState(() => _matching = true);
+      understood = await _match(text);
+      if (!mounted) return;
+      setState(() {
+        _matching = false;
+        _understood = understood;
+      });
+    }
+    _open(understood);
   }
 
   // Back here would close the app and stop automatic checking, so it sends
@@ -139,10 +224,11 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       body: SafeArea(
         child: ListenableBuilder(
-          listenable: scope.models,
+          listenable: Listenable.merge([scope.models, scope.timed]),
           builder: (context, _) {
             final models = scope.models;
             final understands = models.matcher != null;
+            final understood = _understood;
             return ListView(
               padding: const EdgeInsets.all(HudyatShape.gutter),
               children: [
@@ -153,18 +239,16 @@ class _HomeScreenState extends State<HomeScreen> {
                   spacing: 12,
                   runSpacing: 8,
                   children: [
-                    const _Brand(),
-                    _StatusPill(
+                    const HomeBrand(),
+                    StatusPill(
                       ready: models.allReady,
-                      onPressed: () => Navigator.of(context).push<void>(
-                        MaterialPageRoute(builder: (_) => const SetupScreen()),
-                      ),
+                      onPressed: () => _push(const SetupScreen()),
                     ),
                   ],
                 ),
                 const SizedBox(height: 16),
                 if (emergency != null)
-                  _EmergencyButton(
+                  EmergencyButton(
                     number: emergency.dialable.first.display,
                     onPressed: () => callRecord(context, emergency),
                   ),
@@ -208,9 +292,22 @@ class _HomeScreenState extends State<HomeScreen> {
                               'may matanda na hindi makalabas'
                         : 'Type a few words. e.g. baha, ospital, sunog',
                   ),
+                  onChanged: _typed,
                   onSubmitted: (_) => _findHelp(),
                 ),
                 const SizedBox(height: 8),
+                if (understood != null && !_matching) ...[
+                  UnderstoodStrip(
+                    intentLabel: understood.intent?.label,
+                    icon: understood.intent == null
+                        ? null
+                        : CardLabels.icon(understood.intent!.id),
+                    firstAidTitle: understood.firstAid?.title,
+                    elapsed: understood.elapsed,
+                    onPressed: () => _open(understood),
+                  ),
+                  const SizedBox(height: 8),
+                ],
                 if (_matching)
                   const PrimaryButton(label: 'Finding help…', onPressed: null)
                 else if (understands)
@@ -242,30 +339,23 @@ class _HomeScreenState extends State<HomeScreen> {
                   enabled: !_locating,
                   onTap: _openCard,
                 ),
+                const SizedBox(height: 22),
+                GuardPanel(
+                  status: scope.timed.status,
+                  onOpenFlagged: () => _push(const FlaggedScreen()),
+                  onOpenSettings: () => _push(const TimedCheckScreen()),
+                ),
                 const SizedBox(height: 10),
-                Row(
-                  crossAxisAlignment: .start,
-                  spacing: 10,
-                  children: [
-                    Expanded(
-                      child: _TwoLineButton(
-                        label: 'Look up',
-                        gloss: 'Agencies, officials',
-                        onPressed: _search,
-                      ),
-                    ),
-                    Expanded(
-                      child: _TwoLineButton(
-                        label: 'Check a message',
-                        gloss: 'Suriin ang mensahe',
-                        onPressed: () => Navigator.of(context).push(
-                          MaterialPageRoute<void>(
-                            builder: (_) => const CheckScreen(),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
+                SecondaryButton(
+                  label: 'Check a message',
+                  gloss: 'Suriin ang mensahe',
+                  onPressed: () => _push(const CheckScreen()),
+                ),
+                const SizedBox(height: 10),
+                SecondaryButton(
+                  label: 'Look up',
+                  gloss: 'Agencies, officials',
+                  onPressed: _search,
                 ),
                 const SizedBox(height: 20),
                 DecoratedBox(
@@ -276,9 +366,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     padding: const EdgeInsets.only(top: 12),
                     child: Text(
                       'Pack: ${store.meta.name} · built '
-                      '${store.meta.buildDate}\n'
-                      'Models: embedding ${models.embeddingState.name} · '
-                      'chat ${models.chatState.name}',
+                      '${store.meta.buildDate}',
                       style: HudyatText.data,
                     ),
                   ),
@@ -287,148 +375,6 @@ class _HomeScreenState extends State<HomeScreen> {
             );
           },
         ),
-      ),
-    );
-  }
-}
-
-/// Opens Setup. Says whether both models are on the phone.
-class _StatusPill extends StatelessWidget {
-  const _StatusPill({required this.ready, required this.onPressed});
-
-  final bool ready;
-  final VoidCallback onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    return OutlinedButton.icon(
-      onPressed: onPressed,
-      icon: Icon(ready ? Icons.circle : Icons.circle_outlined, size: 12),
-      label: Text(ready ? 'Ready offline' : 'Finish setup'),
-      style: OutlinedButton.styleFrom(
-        backgroundColor: HudyatColors.surface,
-        foregroundColor: HudyatColors.ink,
-        side: HudyatShape.secondaryBorder,
-        minimumSize: const Size(48, 44),
-        padding: const EdgeInsets.symmetric(horizontal: 12),
-        shape: const StadiumBorder(),
-        textStyle: const TextStyle(fontFamily: HudyatText.family, fontSize: 13),
-      ),
-    );
-  }
-}
-
-class _Brand extends StatelessWidget {
-  const _Brand();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Wrap(
-      crossAxisAlignment: .end,
-      spacing: 8,
-      children: [
-        Text(
-          'Hudyat',
-          style: TextStyle(
-            fontSize: 28,
-            fontWeight: .w700,
-            letterSpacing: -0.3,
-          ),
-        ),
-        Padding(
-          padding: EdgeInsets.only(bottom: 5),
-          child: Text('signal', style: HudyatText.data),
-        ),
-      ],
-    );
-  }
-}
-
-/// The one-tap national emergency call, with the number from the pack.
-class _EmergencyButton extends StatelessWidget {
-  const _EmergencyButton({required this.number, required this.onPressed});
-
-  final String number;
-  final VoidCallback onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    return FilledButton(
-      onPressed: onPressed,
-      style: FilledButton.styleFrom(
-        backgroundColor: HudyatColors.call,
-        foregroundColor: HudyatColors.surface,
-        minimumSize: const Size.fromHeight(60),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-        shape: const RoundedRectangleBorder(borderRadius: HudyatShape.radius),
-      ),
-      child: Row(
-        children: [
-          const Expanded(
-            child: Column(
-              crossAxisAlignment: .start,
-              children: [
-                Text(
-                  'Call emergency hotline',
-                  style: TextStyle(fontSize: 18, fontWeight: .w700),
-                ),
-                Text('Tumawag ngayon', style: TextStyle(fontSize: 14)),
-              ],
-            ),
-          ),
-          const SizedBox(width: 12),
-          Text(
-            number,
-            style: HudyatText.data.copyWith(
-              fontSize: 18,
-              fontWeight: .w500,
-              color: HudyatColors.surface,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-/// One of the two outlined buttons under the quick buttons: a bold label
-/// with a smaller line beneath it.
-class _TwoLineButton extends StatelessWidget {
-  const _TwoLineButton({
-    required this.label,
-    required this.gloss,
-    required this.onPressed,
-  });
-
-  final String label;
-  final String gloss;
-  final VoidCallback onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    return OutlinedButton(
-      onPressed: onPressed,
-      style: OutlinedButton.styleFrom(
-        foregroundColor: HudyatColors.ink,
-        side: HudyatShape.secondaryBorder,
-        minimumSize: const Size.fromHeight(52),
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-        shape: const RoundedRectangleBorder(borderRadius: HudyatShape.radius),
-      ),
-      child: Column(
-        mainAxisSize: .min,
-        children: [
-          Text(
-            label,
-            textAlign: .center,
-            style: HudyatText.bodyBold.copyWith(fontSize: 15),
-          ),
-          Text(
-            gloss,
-            textAlign: .center,
-            style: HudyatText.gloss.copyWith(fontSize: 13),
-          ),
-        ],
       ),
     );
   }

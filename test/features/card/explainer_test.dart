@@ -45,6 +45,9 @@ void main() {
         expect(prompt, contains('MESSAGE: natumba si papa'));
         expect(prompt, contains(cardFacts(card)));
         expect(explainerPrompt(card: card), isNot(contains('MESSAGE:')));
+        // The chat model writes better English than Taglish.
+        expect(prompt, contains('plain English'));
+        expect(prompt, isNot(contains('Taglish')));
       },
     );
   });

@@ -140,7 +140,10 @@ void main() {
       expect(find.text('Pasig City DRRMO Emergency Hotline'), findsOneWidget);
       // The first number leads as one wide call button.
       expect(find.byType(LeadCall), findsOneWidget);
-      expect(find.text('Tawagan · Call'), findsOneWidget);
+      expect(
+        find.descendant(of: find.byType(LeadCall), matching: find.text('Call')),
+        findsOneWidget,
+      );
       expect(find.text('Nearest hospitals'), findsOneWidget);
       expect(find.text('Straight-line distance'), findsOneWidget);
       expect(find.text('Pasig Hospital West'), findsOneWidget);
@@ -384,11 +387,11 @@ void main() {
         'hindi siya makahinga, dalhin sa ospital',
       );
       await tester.pump(const Duration(milliseconds: 300));
-      expect(rich('Naintindihan'), findsNothing);
+      expect(rich('Understood'), findsNothing);
 
       await tester.pump(const Duration(milliseconds: 400));
       await tester.pump();
-      expect(rich('Naintindihan: Medical emergency'), findsOneWidget);
+      expect(rich('Understood: Medical emergency'), findsOneWidget);
       expect(find.textContaining('AI on this phone'), findsOneWidget);
 
       // "Find help" uses that answer instead of embedding the text again.
@@ -409,7 +412,7 @@ void main() {
       );
       await tester.pump(const Duration(milliseconds: 700));
       await tester.pump();
-      await tester.tap(rich('Naintindihan'));
+      await tester.tap(rich('Understood'));
       await tester.pumpAndSettle();
       expect(find.text('Help card'), findsOneWidget);
     });
@@ -424,8 +427,8 @@ void main() {
       await tester.enterText(find.byType(TextField), 'paano ang passport ko');
       await tester.pump(const Duration(milliseconds: 700));
       await tester.pump();
-      expect(rich('Naintindihan'), findsNothing);
-      expect(find.text('Hahanapin sa listahan'), findsOneWidget);
+      expect(rich('Understood'), findsNothing);
+      expect(find.text('Will search the directory'), findsOneWidget);
     });
 
     testWidgets('a word or two is not matched while typing', (tester) async {
@@ -433,8 +436,8 @@ void main() {
       await tester.enterText(find.byType(TextField), 'ospital dito');
       await tester.pump(const Duration(milliseconds: 700));
       await tester.pump();
-      expect(rich('Naintindihan'), findsNothing);
-      expect(find.text('Hahanapin sa listahan'), findsNothing);
+      expect(rich('Understood'), findsNothing);
+      expect(find.text('Will search the directory'), findsNothing);
     });
   });
 
@@ -443,7 +446,7 @@ void main() {
       tester,
     ) async {
       await pump(tester, const HomeScreen());
-      expect(find.text('Bantay sa text'), findsOneWidget);
+      expect(find.text('Message guard'), findsOneWidget);
       expect(find.text('OFF'), findsOneWidget);
       expect(find.text('Mukhang scam'), findsNothing);
       await tester.tap(find.text('Turn on'));
@@ -520,7 +523,7 @@ void main() {
       );
       await tester.pump(const Duration(milliseconds: 700));
       await tester.pump();
-      expect(rich('Naintindihan'), findsOneWidget);
+      expect(rich('Understood'), findsOneWidget);
       // A count of zero is muted, so nothing found does not look alarming.
       final zeros = tester.widgetList<Text>(find.text('0'));
       expect(zeros, hasLength(2));

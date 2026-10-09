@@ -101,7 +101,9 @@ void main() {
         sender: '+639171234567',
       );
       final facts = resultFacts(result, store.scamReasons());
-      expect(facts, contains('Mag-ingat'));
+      // The model is given the verdict's English line, not the Tagalog word.
+      expect(facts, contains('Be careful'));
+      expect(resultPrompt(facts), contains('plain English'));
       expect(facts, contains('GCash'));
       expect(facts, isNot(contains('639171234567')));
       expect(facts, isNot(contains(RegExp(r'\d{3}'))));
@@ -147,7 +149,7 @@ void main() {
       );
       expect(find.text(label), findsNothing);
       expect(generator.lastPrompt, isNull);
-      expect(find.text('Hindi ito garantiya'), findsOneWidget);
+      expect(find.text('This is not a guarantee'), findsOneWidget);
     });
 
     testWidgets('is dropped if the model writes a number of its own', (

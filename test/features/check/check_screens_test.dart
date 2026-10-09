@@ -178,9 +178,9 @@ void main() {
       await tester.tap(find.byType(PrimaryButton));
       await tester.pumpAndSettle();
       expect(find.text('Mukhang scam'), findsOneWidget);
-      expect(find.textContaining('Huwag pindutin ang link'), findsOneWidget);
+      expect(find.textContaining('Do not tap the link'), findsOneWidget);
       expect(
-        find.text('Ginagaya ng link na gcash-verify.com ang GCash.'),
+        find.text('The link gcash-verify.com imitates GCash.'),
         findsOneWidget,
       );
       expect(find.text('Opisyal: gcash.com'), findsOneWidget);
@@ -239,7 +239,7 @@ void main() {
       expect(find.textContaining('(02) 7213-9999'), findsOneWidget);
       expect(find.byType(CallButton), findsOneWidget);
       expect(find.textContaining('Details may be out of date'), findsOneWidget);
-      expect(find.text('Hindi ito garantiya'), findsNothing);
+      expect(find.text('This is not a guarantee'), findsNothing);
     });
 
     testWidgets('Mag-ingat from a notification may be cut short', (
@@ -276,7 +276,7 @@ void main() {
       );
       await pump(tester, ResultScreen(result: result));
       expect(find.text('Mag-ingat'), findsOneWidget);
-      expect(find.text('Promo ito ng online na sugal.'), findsOneWidget);
+      expect(find.text('This is an online gambling promo.'), findsOneWidget);
       expect(find.text('Mula sa: BingoPlus'), findsOneWidget);
       // The fake launcher refuses, as a phone with no SMS app would.
       final opened = <Object?>[];
@@ -322,7 +322,7 @@ void main() {
         ResultScreen(result: await checker.check('Ma, pauwi na ako.')),
       );
       expect(find.text('Walang nakitang problema'), findsOneWidget);
-      expect(find.text('Hindi ito garantiya'), findsOneWidget);
+      expect(find.text('This is not a guarantee'), findsOneWidget);
       expect(find.text('What was checked'), findsOneWidget);
       expect(find.text('None found'), findsOneWidget);
       expect(find.text('Not given / Hindi ibinigay'), findsOneWidget);

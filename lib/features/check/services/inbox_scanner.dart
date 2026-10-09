@@ -136,20 +136,36 @@ class InboxScanner extends ChangeNotifier {
     final days => _now().subtract(Duration(days: days)),
   };
 
-  /// How many texts in [range] have not been checked yet, or null without
-  /// SMS access. Does not ask for access.
+  /// The ids a scan can skip. With [recheckCleared], a text that was flagged
+  /// and is no longer in the Flagged list counts as unchecked: the user
+  /// cleared it there, and it is still in the SMS inbox.
+  Set<int> _alreadyChecked({required bool recheckCleared}) {
+    final checked = _index.checked(rules);
+    if (!recheckCleared) return checked;
+    final kept = _flagged.keptSmsIds;
+    return checked.difference(_index.flagged(rules).difference(kept));
+  }
+
+  /// How many texts in [range] a scan would check, or null without SMS
+  /// access. Does not ask for access.
   Future<int?> pending(ScanRange range) async {
     if (_disposed || !await _inbox.hasPermission() || _disposed) return null;
-    final checked = _index.checked(rules);
+    final checked = _alreadyChecked(recheckCleared: true);
     final messages = await _inbox.read(since: _since(range));
     return messages.where((m) => !checked.contains(m.id)).length;
   }
 
   /// Fast rules first, then a resumable AI pass over clear/caution texts.
+  /// A scan the user starts also finds flagged texts they had cleared.
   Future<ScanSummary?> scan(ScanRange range, {bool wording = false}) {
     _autoPaused = true;
     _continuation?.cancel();
-    return _scan(range, wording: wording, askPermission: true);
+    return _scan(
+      range,
+      wording: wording,
+      askPermission: true,
+      recheckCleared: true,
+    );
   }
 
   Future<ScanSummary?> _scan(
@@ -158,6 +174,7 @@ class InboxScanner extends ChangeNotifier {
     required bool askPermission,
     Duration? wordingBudget,
     bool quiet = false,
+    bool recheckCleared = false,
   }) async {
     if (_running || _disposed) return null;
     _running = true;
@@ -178,7 +195,7 @@ class InboxScanner extends ChangeNotifier {
       if (_disposed) return null;
       final messages = await _inbox.read(since: _since(range));
       if (_disposed) return null;
-      final checked = _index.checked(rules);
+      final checked = _alreadyChecked(recheckCleared: recheckCleared);
       final fresh = [
         for (final message in messages)
           if (!checked.contains(message.id)) message,

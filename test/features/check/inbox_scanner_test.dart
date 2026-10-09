@@ -165,6 +165,40 @@ void main() {
       expect(flagged.count, 2);
       expect(await s.pending(ScanRange.all), 4);
     });
+
+    test('a scan finds flagged texts again after they were cleared', () async {
+      final s = scanner();
+      await s.scan(ScanRange.all);
+      flagged.clear();
+
+      expect(await s.pending(ScanRange.all), 2);
+      final again = (await s.scan(ScanRange.all))!;
+      expect(again.checked, 2);
+      expect(again.skipped, 2);
+      expect(flagged.count, 2);
+    });
+
+    test('a scan finds one removed text again and leaves the rest', () async {
+      final s = scanner();
+      await s.scan(ScanRange.all);
+      flagged.remove(flagged.all().first.id);
+
+      expect(await s.pending(ScanRange.all), 1);
+      final again = (await s.scan(ScanRange.all))!;
+      expect(again.checked, 1);
+      expect(flagged.count, 2);
+    });
+
+    test('catch-up does not bring cleared texts back by itself', () async {
+      final s = scanner();
+      await s.catchUp();
+      expect(flagged.count, 1);
+      flagged.clear();
+
+      await s.catchUp();
+      expect(flagged.count, 0);
+    });
+
     test('catch-up flags recent texts quietly, and never asks', () async {
       final s = scanner();
       await s.catchUp();

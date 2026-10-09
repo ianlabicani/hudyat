@@ -42,6 +42,16 @@ CREATE TABLE IF NOT EXISTS scanned (
       row['sms_id'] as int,
   };
 
+  /// Ids these rules gave "Mukhang scam" or "Mag-ingat". Each should have a
+  /// kept message, unless the user cleared it.
+  Set<int> flagged(String rules) => {
+    for (final row in _db.select(
+      "SELECT sms_id FROM scanned WHERE rules = ? AND verdict != 'clear'",
+      [rules],
+    ))
+      row['sms_id'] as int,
+  };
+
   /// Ids that came out clear or caution from the rules and have not had the slower
   /// wording check yet.
   Set<int> awaitingWording(String rules, {String? aiVersion}) => {

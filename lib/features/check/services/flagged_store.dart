@@ -173,6 +173,14 @@ CREATE TABLE IF NOT EXISTS native_findings (
           ).first['n']
           as int;
 
+  /// Android's ids of the kept messages that came from the SMS inbox.
+  Set<int> get keptSmsIds => {
+    for (final row in _db.select(
+      "SELECT source_key FROM flagged WHERE source_key LIKE 'sms:%'",
+    ))
+      ?int.tryParse((row['source_key'] as String).substring(4)),
+  };
+
   /// Whether this text from this sender is already kept.
   bool has(CheckResult result) => _db.select(
     'SELECT 1 FROM flagged WHERE text = ? AND sender IS ? LIMIT 1',

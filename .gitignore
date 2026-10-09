@@ -46,3 +46,6 @@ app.*.map.json
 
 # Widget Preview related
 .widget_preview/
+
+# Map extract is 53 MB; rebuild with `bun run map` in pack/
+assets/pack/*.pmtiles

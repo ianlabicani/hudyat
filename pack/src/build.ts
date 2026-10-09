@@ -1,0 +1,65 @@
+// Builds assets/pack/metro-manila.sqlite from pack/raw/. Run `bun run fetch`
+// first, then `bun run build`.
+import { readFileSync, readdirSync } from "node:fs";
+import { join } from "node:path";
+import { convertAgencies, convertLgu } from "./sources/directory";
+import { convertCityHotlines, convertNationalHotlines } from "./sources/hotlines";
+import { convertOverpass } from "./sources/osm";
+import { convertServices } from "./sources/services";
+import type { Intent, PackRecord } from "./types";
+import { writePack } from "./write";
+
+const ROOT = join(import.meta.dir, "..");
+const RAW = join(ROOT, "raw");
+const OUT = join(ROOT, "..", "assets", "pack", "metro-manila.sqlite");
+
+const read = (path: string) => JSON.parse(readFileSync(join(RAW, path), "utf8"));
+const list = (dir: string) =>
+  readdirSync(join(RAW, dir))
+    .filter((file) => file.endsWith(".json"))
+    .sort();
+
+const AGENCY_CATEGORY: Record<string, string> = {
+  departments: "Department",
+  executive: "Executive office",
+  constitutional: "Constitutional office",
+  legislative: "Legislature",
+  judicial: "Judiciary",
+};
+
+const hotlines = [
+  ...convertNationalHotlines(read("philippines_hotlines.json")),
+  ...convertCityHotlines(read("hotlines.json")),
+];
+const agencies = list("directory").flatMap((file) =>
+  convertAgencies(read(`directory/${file}`), AGENCY_CATEGORY[file.replace(".json", "")] ?? "Agency"),
+);
+const officials = list("lgu").flatMap((file) => convertLgu(read(`lgu/${file}`)));
+const services = list("services").flatMap((file) => convertServices(read(`services/${file}`), agencies));
+const places = convertOverpass(read("overpass.json"));
+
+const records: PackRecord[] = [...hotlines, ...agencies, ...officials, ...services, ...places];
+const intents: Intent[] = JSON.parse(readFileSync(join(ROOT, "data", "intents.json"), "utf8"));
+
+writePack(OUT, {
+  meta: {
+    name: "Metro Manila",
+    area: "Metro Manila",
+    buildDate: new Date().toISOString().slice(0, 10),
+    sources: [
+      { name: "bettergovph/bettergov", used_for: "Agencies, officials, services, national hotlines", licence: "CC0-1.0" },
+      { name: "bettergovph/hotlines", used_for: "City hotlines", licence: "None listed" },
+      { name: "OpenStreetMap contributors", used_for: "Places and map", licence: "ODbL" },
+    ],
+  },
+  records,
+  intents,
+});
+
+const count = (kind: string) => records.filter((r) => r.kind === kind).length;
+console.log(`wrote ${OUT}`);
+for (const kind of ["hotline", "agency", "official", "service", "place"]) {
+  console.log(`  ${kind}: ${count(kind)}`);
+}
+const dialable = records.filter((r) => r.phones.some((p) => p.dial)).length;
+console.log(`  records with a dialable number: ${dialable} of ${records.length}`);

@@ -1,0 +1,81 @@
+import { Database } from "bun:sqlite";
+import { afterAll, describe, expect, test } from "bun:test";
+import { mkdtempSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import type { PackRecord } from "../src/types";
+import { validateRecords, writePack } from "../src/write";
+
+const dir = mkdtempSync(join(tmpdir(), "hudyat-pack-"));
+afterAll(() => rmSync(dir, { recursive: true, force: true }));
+
+const hotline: PackRecord = {
+  kind: "hotline",
+  name: "Parañaque Rescue",
+  category: "disaster",
+  city: "Parañaque",
+  province: "Metro Manila",
+  phones: [{ display: "911", dial: "911" }],
+  source: "test",
+};
+const place: PackRecord = {
+  kind: "place",
+  name: "Ospital ng Parañaque",
+  category: "hospital",
+  city: "Parañaque",
+  phones: [],
+  lat: 14.48,
+  lon: 121.0,
+  source: "test",
+};
+
+describe("validateRecords", () => {
+  test("rejects a record with no name", () => {
+    expect(() => validateRecords([{ ...hotline, name: " " }])).toThrow("without a kind or name");
+  });
+
+  test("rejects a place with no coordinates", () => {
+    expect(() => validateRecords([{ ...place, lat: null }])).toThrow("without coordinates");
+  });
+});
+
+describe("writePack", () => {
+  const path = join(dir, "pack.sqlite");
+  writePack(path, {
+    meta: { name: "Test", area: "Test", buildDate: "2026-10-09", sources: [] },
+    records: [hotline, place],
+    intents: [
+      { id: "fire", label: "Fire", hotline_categories: ["fire"], place_kinds: ["fire_station"], examples: ["may sunog"] },
+    ],
+  });
+  const db = new Database(path, { readonly: true });
+
+  test("stores meta, records and intents", () => {
+    expect(db.query("SELECT value FROM meta WHERE key = 'build_date'").get()).toEqual({ value: "2026-10-09" });
+    expect(db.query("SELECT count(*) AS n FROM records").get()).toEqual({ n: 2 });
+    const intent = db.query("SELECT examples FROM intents WHERE id = 'fire'").get() as { examples: string };
+    expect(JSON.parse(intent.examples)).toEqual(["may sunog"]);
+  });
+
+  test("keeps phones as JSON with both forms", () => {
+    const row = db.query("SELECT phones FROM records WHERE kind = 'hotline'").get() as { phones: string };
+    expect(JSON.parse(row.phones)).toEqual([{ display: "911", dial: "911" }]);
+  });
+
+  test("keyword search ignores accents and matches prefixes", () => {
+    const search = (q: string) =>
+      db
+        .query(
+          "SELECT r.name FROM records_fts f JOIN records r ON r.id = f.rowid WHERE records_fts MATCH ? ORDER BY r.name",
+        )
+        .all(q)
+        .map((row: any) => row.name);
+    expect(search("paranaque")).toEqual(["Ospital ng Parañaque", "Parañaque Rescue"]);
+    expect(search("ospit*")).toEqual(["Ospital ng Parañaque"]);
+    expect(search("bumbero")).toEqual([]);
+  });
+
+  test("has an empty first-aid table ready for the cards", () => {
+    expect(db.query("SELECT count(*) AS n FROM first_aid_cards").get()).toEqual({ n: 0 });
+  });
+});

@@ -112,16 +112,10 @@
                 android:layout_marginTop="2dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
-                <ImageView
-                    android:layout_width="10dp"
-                    android:layout_height="10dp"
-                    android:importantForAccessibility="no"
-                    android:src="@drawable/widget_mark_scam"/>
                 <TextView
                     android:id="@+id/widget_scam_label"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="6dp"
                     android:maxLines="1"
                     android:text="@string/widget_scam"
                     android:textColor="@color/widget_text"
@@ -159,17 +153,11 @@
                     android:textColor="@color/widget_text"
                     android:textSize="24dp"
                     android:textStyle="bold"/>
-                <ImageView
-                    android:layout_width="10dp"
-                    android:layout_height="10dp"
-                    android:layout_marginStart="10dp"
-                    android:importantForAccessibility="no"
-                    android:src="@drawable/widget_mark_caution"/>
                 <TextView
                     android:id="@+id/widget_caution_label"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="6dp"
+                    android:layout_marginStart="10dp"
                     android:maxLines="1"
                     android:text="@string/widget_caution"
                     android:textColor="@color/widget_text"
@@ -191,17 +179,11 @@
                     android:textColor="@color/widget_text"
                     android:textSize="24dp"
                     android:textStyle="bold"/>
-                <ImageView
-                    android:layout_width="10dp"
-                    android:layout_height="10dp"
-                    android:layout_marginStart="10dp"
-                    android:importantForAccessibility="no"
-                    android:src="@drawable/widget_mark_gambling"/>
                 <TextView
                     android:id="@+id/widget_gambling_label"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="6dp"
+                    android:layout_marginStart="10dp"
                     android:maxLines="1"
                     android:text="@string/widget_gambling"
                     android:textColor="@color/widget_text"

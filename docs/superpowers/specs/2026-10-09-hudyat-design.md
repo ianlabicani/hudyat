@@ -705,7 +705,7 @@ submission disclosures.
 | Automatic checking | On | Badge reads ON; a panel with the three counts, texts checked and the time; "Turn off" | `WatcherSetup` |
 | Automatic checking | On, alerts not allowed | As On, with a Notice that alerts are off and texts are still counted | Rule only |
 | Automatic checking | On, SMS access taken away | As On, with a Notice to turn it off and on again | Rule only |
-| Widget | Counts | A rounded tile, dark in dark mode and white in light mode. Header: logo C's flare mark, "Hudyat", and a "huling 7 araw" pill. The "Mukhang scam" count is the headline number in the widget accent; "Mag-ingat" and "Sugal promo" are smaller, stacked beside it. Each count has its own marker (filled circle, ring, square). Footer: "n texts checked · time" | `Widget` |
+| Widget | Counts | A rounded tile, dark in dark mode and white in light mode. Header: logo C's flare mark, "Hudyat", and a "huling 7 araw" pill. The "Mukhang scam" count is the headline number in the widget accent; "Mag-ingat" and "Sugal promo" are smaller, stacked beside it. The counts carry no marker: the label in words tells them apart. Footer: "n texts checked · time" | `Widget` |
 | Widget | All zero | A check-mark icon, "Walang nakitang scam" and "sa huling 7 araw", with the checked line | `Widget` |
 | Widget | SMS access not given | A lock icon and "Open Hudyat to check your texts" | `Widget` |
 | Widget | Not checked yet | A clock icon and "Not checked yet. Open Hudyat." | `Widget` |

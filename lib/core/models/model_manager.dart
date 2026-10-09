@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 
 import '../../features/check/services/scam_phrases.dart';
+import '../../features/check/services/suspicious_classifier.dart';
 import '../../features/intent/services/first_aid_matcher.dart';
 import '../../features/intent/services/intent_matcher.dart';
 import '../pack/first_aid_card.dart';
@@ -25,6 +26,8 @@ class ModelManager extends ChangeNotifier {
     this.scamCacheFile,
     this.firstAidCards = const [],
     this.firstAidCacheFile,
+    this.suspiciousArtifact,
+    this.phoneTest = false,
   });
 
   final ModelRuntime _runtime;
@@ -38,6 +41,12 @@ class ModelManager extends ChangeNotifier {
   /// Scam wording for the message check's phrasing step.
   final List<ScamExample> scamExamples;
   final File? scamCacheFile;
+  final SuspiciousArtifact? suspiciousArtifact;
+
+  /// An explicitly requested debug phone trial. Never active in release.
+  final bool phoneTest;
+  SuspiciousClassifier? suspiciousClassifier;
+  IdentifiedEmbedder? _identifiedEmbedder;
 
   ModelState embeddingState = ModelState.checking;
   ModelState chatState = ModelState.checking;
@@ -95,6 +104,28 @@ class ModelManager extends ChangeNotifier {
     await _chat(_runtime.loadGenerator);
     await _firstAid();
     await _scam();
+    await _classifier();
+  }
+
+  Future<void> _classifier() async {
+    suspiciousClassifier = null;
+    final artifact = suspiciousArtifact;
+    final embedder = _embedder;
+    if (artifact == null ||
+        !(artifact.approved || (kDebugMode && phoneTest)) ||
+        embedder == null) {
+      return;
+    }
+    try {
+      final fingerprint = await _identifiedEmbedder?.fingerprint();
+      if (fingerprint == artifact.fingerprint &&
+          await _identifiedEmbedder?.dimension() == artifact.dimension) {
+        suspiciousClassifier = LinearSuspiciousClassifier(artifact, embedder);
+      }
+    } on Object {
+      // Fingerprinting or compatibility failure retains the baseline.
+    }
+    notifyListeners();
   }
 
   /// Embeds the first-aid examples with whichever embedder is loaded. A
@@ -153,6 +184,7 @@ class ModelManager extends ChangeNotifier {
     );
     await _firstAid();
     await _scam();
+    await _classifier();
   }
 
   Future<void> downloadChat() => _chat(
@@ -172,6 +204,8 @@ class ModelManager extends ChangeNotifier {
     notifyListeners();
     try {
       final loaded = await obtain();
+      suspiciousClassifier = null;
+      _identifiedEmbedder = loaded is IdentifiedEmbedder ? loaded : null;
       // One message is matched against intents and first-aid cards; the
       // wrapper lets the second match reuse the first one's vector.
       final embedder = loaded == null ? null : LastQueryEmbedder(loaded);

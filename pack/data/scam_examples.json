@@ -2,211 +2,437 @@
   {
     "text": "Ang iyong GCash account ay na-lock. I-verify agad ang iyong account sa link na ito para hindi ma-suspend.",
     "type": "account_lock",
-    "type_label": "Na-lock o na-suspend na account"
+    "type_label": "Na-lock o na-suspend na account",
+    "ask_labels": [
+      "action",
+      "pressure"
+    ],
+    "source": "synthetic",
+    "review": "suspicious-request-v1: suspicious context"
   },
   {
     "text": "Your account has been temporarily restricted due to unusual activity. Verify now to avoid permanent suspension.",
     "type": "account_lock",
-    "type_label": "Na-lock o na-suspend na account"
+    "type_label": "Na-lock o na-suspend na account",
+    "ask_labels": [
+      "action",
+      "pressure"
+    ],
+    "source": "synthetic",
+    "review": "suspicious-request-v1: suspicious context"
   },
   {
     "text": "Dear customer, your BDO online banking will be deactivated today. Update your details here to continue using your account.",
     "type": "account_lock",
-    "type_label": "Na-lock o na-suspend na account"
+    "type_label": "Na-lock o na-suspend na account",
+    "ask_labels": [
+      "action",
+      "pressure"
+    ],
+    "source": "synthetic",
+    "review": "suspicious-request-v1: suspicious context"
   },
   {
     "text": "Na-detect namin ang kahina-hinalang login sa iyong account. I-click ang link para i-secure ito sa loob ng 24 oras.",
     "type": "account_lock",
-    "type_label": "Na-lock o na-suspend na account"
+    "type_label": "Na-lock o na-suspend na account",
+    "ask_labels": [
+      "action",
+      "pressure"
+    ],
+    "source": "synthetic",
+    "review": "suspicious-request-v1: suspicious context"
   },
   {
     "text": "Your Maya wallet needs to be re-verified. Failure to comply will result in account closure. Click here.",
     "type": "account_lock",
-    "type_label": "Na-lock o na-suspend na account"
+    "type_label": "Na-lock o na-suspend na account",
+    "ask_labels": [
+      "action",
+      "pressure"
+    ],
+    "source": "synthetic",
+    "review": "suspicious-request-v1: suspicious context"
   },
   {
     "text": "Mag-e-expire na ang iyong SIM registration. I-update ang iyong impormasyon sa link para hindi ma-deactivate ang SIM mo.",
     "type": "account_lock",
-    "type_label": "Na-lock o na-suspend na account"
+    "type_label": "Na-lock o na-suspend na account",
+    "ask_labels": [
+      "action",
+      "pressure"
+    ],
+    "source": "synthetic",
+    "review": "suspicious-request-v1: suspicious context"
   },
   {
     "text": "Your parcel could not be delivered due to incomplete address. Please update your address and pay the redelivery fee here.",
     "type": "parcel",
-    "type_label": "Bayad o problema sa parcel"
+    "type_label": "Bayad o problema sa parcel",
+    "ask_labels": [
+      "action",
+      "money"
+    ],
+    "source": "synthetic",
+    "review": "suspicious-request-v1: suspicious context"
   },
   {
     "text": "Hindi na-deliver ang iyong parcel. Magbayad ng P25 na redelivery fee sa link para maipadala ulit.",
     "type": "parcel",
-    "type_label": "Bayad o problema sa parcel"
+    "type_label": "Bayad o problema sa parcel",
+    "ask_labels": [
+      "action",
+      "money"
+    ],
+    "source": "synthetic",
+    "review": "suspicious-request-v1: suspicious context"
   },
   {
     "text": "Naka-hold ang package mo sa customs. Bayaran ang clearance fee para ma-release ngayong araw.",
     "type": "parcel",
-    "type_label": "Bayad o problema sa parcel"
+    "type_label": "Bayad o problema sa parcel",
+    "ask_labels": [],
+    "source": "synthetic",
+    "review": "suspicious-request-v1: ambiguous advisory; negative"
   },
   {
     "text": "LBC: Your package is pending. Confirm your delivery details within 12 hours or it will be returned to sender.",
     "type": "parcel",
-    "type_label": "Bayad o problema sa parcel"
+    "type_label": "Bayad o problema sa parcel",
+    "ask_labels": [],
+    "source": "synthetic",
+    "review": "suspicious-request-v1: ambiguous advisory; negative"
   },
   {
     "text": "May parcel ka na hindi ma-deliver, kulang ang address. I-click ang link at ilagay ang iyong detalye.",
     "type": "parcel",
-    "type_label": "Bayad o problema sa parcel"
+    "type_label": "Bayad o problema sa parcel",
+    "ask_labels": [],
+    "source": "synthetic",
+    "review": "suspicious-request-v1: ambiguous advisory; negative"
   },
   {
     "text": "Kwalipikado ka sa P10,000 ayuda mula sa DSWD. I-claim ngayon, ilagay lang ang iyong pangalan at GCash number sa link.",
     "type": "ayuda",
-    "type_label": "Pekeng ayuda o cash assistance"
+    "type_label": "Pekeng ayuda o cash assistance",
+    "ask_labels": [
+      "bait",
+      "action",
+      "credentials"
+    ],
+    "source": "synthetic",
+    "review": "suspicious-request-v1: suspicious context"
   },
   {
     "text": "DSWD cash assistance: You are a beneficiary of the typhoon relief fund. Register here to receive your payout.",
     "type": "ayuda",
-    "type_label": "Pekeng ayuda o cash assistance"
+    "type_label": "Pekeng ayuda o cash assistance",
+    "ask_labels": [
+      "bait",
+      "action"
+    ],
+    "source": "synthetic",
+    "review": "suspicious-request-v1: suspicious context"
   },
   {
     "text": "Mga nasalanta ng bagyo, makakatanggap ng P5,000 na tulong pinansyal. Mag-register sa link bago maubos ang slots.",
     "type": "ayuda",
-    "type_label": "Pekeng ayuda o cash assistance"
+    "type_label": "Pekeng ayuda o cash assistance",
+    "ask_labels": [
+      "bait",
+      "action",
+      "pressure"
+    ],
+    "source": "synthetic",
+    "review": "suspicious-request-v1: suspicious context"
   },
   {
     "text": "Congratulations! Napili ka para sa government financial assistance. Send your full name, address and GCash number to claim.",
     "type": "ayuda",
-    "type_label": "Pekeng ayuda o cash assistance"
+    "type_label": "Pekeng ayuda o cash assistance",
+    "ask_labels": [
+      "bait",
+      "credentials"
+    ],
+    "source": "synthetic",
+    "review": "suspicious-request-v1: suspicious context"
   },
   {
     "text": "Libreng ayuda para sa lahat ng apektado ng baha. I-claim ang iyong relief cash sa link na ito, hanggang ngayong araw lang.",
     "type": "ayuda",
-    "type_label": "Pekeng ayuda o cash assistance"
+    "type_label": "Pekeng ayuda o cash assistance",
+    "ask_labels": [
+      "bait",
+      "action",
+      "pressure"
+    ],
+    "source": "synthetic",
+    "review": "suspicious-request-v1: suspicious context"
   },
   {
     "text": "Your SSS calamity loan has been approved. Click the link to release your funds today.",
     "type": "ayuda",
-    "type_label": "Pekeng ayuda o cash assistance"
+    "type_label": "Pekeng ayuda o cash assistance",
+    "ask_labels": [],
+    "source": "synthetic",
+    "review": "suspicious-request-v1: ambiguous advisory; negative"
   },
   {
     "text": "Ako ang agent ng bangko ninyo. Pakibigay po ang OTP na natanggap ninyo para ma-cancel ang unauthorized transaction.",
     "type": "otp",
-    "type_label": "Paghingi ng OTP o PIN"
+    "type_label": "Paghingi ng OTP o PIN",
+    "ask_labels": [
+      "credentials"
+    ],
+    "source": "synthetic",
+    "review": "suspicious-request-v1: suspicious context"
   },
   {
     "text": "Nagkamali ako ng send ng code sa number mo, pwede pa-forward ng 6-digit code na natanggap mo? Salamat.",
     "type": "otp",
-    "type_label": "Paghingi ng OTP o PIN"
+    "type_label": "Paghingi ng OTP o PIN",
+    "ask_labels": [
+      "credentials"
+    ],
+    "source": "synthetic",
+    "review": "suspicious-request-v1: suspicious context"
   },
   {
     "text": "To reverse the transaction, please provide your MPIN and the one-time password sent to your phone.",
     "type": "otp",
-    "type_label": "Paghingi ng OTP o PIN"
+    "type_label": "Paghingi ng OTP o PIN",
+    "ask_labels": [
+      "credentials"
+    ],
+    "source": "synthetic",
+    "review": "suspicious-request-v1: suspicious context"
   },
   {
     "text": "Customer service po ito ng GCash. Para ma-refund ang pera ninyo, ibigay ang inyong MPIN at OTP.",
     "type": "otp",
-    "type_label": "Paghingi ng OTP o PIN"
+    "type_label": "Paghingi ng OTP o PIN",
+    "ask_labels": [
+      "credentials"
+    ],
+    "source": "synthetic",
+    "review": "suspicious-request-v1: suspicious context"
   },
   {
     "text": "May nag-attempt mag-withdraw sa account mo. Reply with your OTP to block the transaction immediately.",
     "type": "otp",
-    "type_label": "Paghingi ng OTP o PIN"
+    "type_label": "Paghingi ng OTP o PIN",
+    "ask_labels": [
+      "credentials",
+      "pressure"
+    ],
+    "source": "synthetic",
+    "review": "suspicious-request-v1: suspicious context"
   },
   {
     "text": "Hiring! Work from home, kumita ng P3,000 hanggang P8,000 kada araw. Walang experience na kailangan. Message sa Telegram.",
     "type": "job",
-    "type_label": "Alok na trabaho"
+    "type_label": "Alok na trabaho",
+    "ask_labels": [
+      "bait",
+      "action"
+    ],
+    "source": "synthetic",
+    "review": "suspicious-request-v1: suspicious context"
   },
   {
     "text": "We are hiring part-time staff. Earn 500 to 5000 pesos daily just by liking videos. Contact our HR on WhatsApp.",
     "type": "job",
-    "type_label": "Alok na trabaho"
+    "type_label": "Alok na trabaho",
+    "ask_labels": [
+      "bait",
+      "action"
+    ],
+    "source": "synthetic",
+    "review": "suspicious-request-v1: suspicious context"
   },
   {
     "text": "Hello, ako si Anna mula sa HR. Na-review namin ang resume mo, may online job kami, sweldo P1,500 kada oras. Interesado ka ba?",
     "type": "job",
-    "type_label": "Alok na trabaho"
+    "type_label": "Alok na trabaho",
+    "ask_labels": [
+      "bait"
+    ],
+    "source": "synthetic",
+    "review": "suspicious-request-v1: suspicious context"
   },
   {
     "text": "Part-time job offer: 30 minutes a day, salary paid daily through GCash. Add us on Telegram to start.",
     "type": "job",
-    "type_label": "Alok na trabaho"
+    "type_label": "Alok na trabaho",
+    "ask_labels": [],
+    "source": "synthetic",
+    "review": "suspicious-request-v1: ambiguous advisory; negative"
   },
   {
     "text": "Kailangan ng online assistant, bayad agad araw-araw. Mag-deposit lang ng maliit na halaga para ma-activate ang account mo.",
     "type": "job",
-    "type_label": "Alok na trabaho"
+    "type_label": "Alok na trabaho",
+    "ask_labels": [
+      "money"
+    ],
+    "source": "synthetic",
+    "review": "suspicious-request-v1: suspicious context"
   },
   {
     "text": "Congratulations! Your number won P50,000 in our anniversary raffle. Claim your prize by sending your details.",
     "type": "prize",
-    "type_label": "Premyo o raffle"
+    "type_label": "Premyo o raffle",
+    "ask_labels": [
+      "bait",
+      "credentials"
+    ],
+    "source": "synthetic",
+    "review": "suspicious-request-v1: suspicious context"
   },
   {
     "text": "Nanalo ka ng P100,000 sa raffle! Para ma-claim, magpadala muna ng P500 na processing fee.",
     "type": "prize",
-    "type_label": "Premyo o raffle"
+    "type_label": "Premyo o raffle",
+    "ask_labels": [
+      "bait",
+      "money"
+    ],
+    "source": "synthetic",
+    "review": "suspicious-request-v1: suspicious context"
   },
   {
     "text": "Ikaw ang napiling winner ng brand new iPhone. I-click ang link para i-claim ang iyong premyo ngayon.",
     "type": "prize",
-    "type_label": "Premyo o raffle"
+    "type_label": "Premyo o raffle",
+    "ask_labels": [
+      "bait",
+      "action"
+    ],
+    "source": "synthetic",
+    "review": "suspicious-request-v1: suspicious context"
   },
   {
     "text": "You have unclaimed rewards points expiring today. Redeem your free gift here before midnight.",
     "type": "prize",
-    "type_label": "Premyo o raffle"
+    "type_label": "Premyo o raffle",
+    "ask_labels": [],
+    "source": "synthetic",
+    "review": "suspicious-request-v1: ambiguous advisory; negative"
   },
   {
     "text": "Binabati ka namin! Napili ang iyong SIM sa promo. Tumawag sa number na ito para makuha ang cash prize.",
     "type": "prize",
-    "type_label": "Premyo o raffle"
+    "type_label": "Premyo o raffle",
+    "ask_labels": [
+      "bait",
+      "action"
+    ],
+    "source": "synthetic",
+    "review": "suspicious-request-v1: suspicious context"
   },
   {
     "text": "Hi ma, bagong number ko to. Nasira yung phone ko. Pwede pa-send muna ng pera sa GCash na ito, emergency lang.",
     "type": "relative",
-    "type_label": "Kunwaring kamag-anak na may bagong number"
+    "type_label": "Kunwaring kamag-anak na may bagong number",
+    "ask_labels": [
+      "money",
+      "pressure"
+    ],
+    "source": "synthetic",
+    "review": "suspicious-request-v1: suspicious context"
   },
   {
     "text": "Kuya, ako to, nagpalit ako ng number. Pautang muna ng 3k, ibabalik ko bukas, i-send mo sa number na to.",
     "type": "relative",
-    "type_label": "Kunwaring kamag-anak na may bagong number"
+    "type_label": "Kunwaring kamag-anak na may bagong number",
+    "ask_labels": [
+      "money"
+    ],
+    "source": "synthetic",
+    "review": "suspicious-request-v1: suspicious context"
   },
   {
     "text": "Tita si Jun to, bagong sim ko. Nasa ospital ako ngayon, kailangan ko ng pambayad, pwede pa-GCash agad?",
     "type": "relative",
-    "type_label": "Kunwaring kamag-anak na may bagong number"
+    "type_label": "Kunwaring kamag-anak na may bagong number",
+    "ask_labels": [
+      "money",
+      "pressure"
+    ],
+    "source": "synthetic",
+    "review": "suspicious-request-v1: suspicious context"
   },
   {
     "text": "Hello this is my new number, please save it. I need a favor, can you send load or GCash now? I will explain later.",
     "type": "relative",
-    "type_label": "Kunwaring kamag-anak na may bagong number"
+    "type_label": "Kunwaring kamag-anak na may bagong number",
+    "ask_labels": [
+      "money",
+      "pressure"
+    ],
+    "source": "synthetic",
+    "review": "suspicious-request-v1: suspicious context"
   },
   {
     "text": "Pre-approved ka na sa P50,000 loan, walang collateral at walang requirements. I-click ang link para makuha ngayon.",
     "type": "loan",
-    "type_label": "Alok na pautang"
+    "type_label": "Alok na pautang",
+    "ask_labels": [
+      "bait",
+      "action"
+    ],
+    "source": "synthetic",
+    "review": "suspicious-request-v1: suspicious context"
   },
   {
     "text": "Need cash? Get an instant loan up to 100,000 pesos, approved in 5 minutes, no documents needed. Apply here.",
     "type": "loan",
-    "type_label": "Alok na pautang"
+    "type_label": "Alok na pautang",
+    "ask_labels": [
+      "bait",
+      "action"
+    ],
+    "source": "synthetic",
+    "review": "suspicious-request-v1: suspicious context"
   },
   {
     "text": "Approved na ang loan mo. Magbayad lang ng P1,000 processing fee para ma-release ang pera sa GCash mo.",
     "type": "loan",
-    "type_label": "Alok na pautang"
+    "type_label": "Alok na pautang",
+    "ask_labels": [
+      "money"
+    ],
+    "source": "synthetic",
+    "review": "suspicious-request-v1: suspicious context"
   },
   {
     "text": "Your loan application is approved. Pay the insurance fee first to release your funds today.",
     "type": "loan",
-    "type_label": "Alok na pautang"
+    "type_label": "Alok na pautang",
+    "ask_labels": [
+      "money"
+    ],
+    "source": "synthetic",
+    "review": "suspicious-request-v1: suspicious context"
   },
   {
     "text": "Hello Ka-Fiber! Kung may concern kayo sa internet o billing, i-message kami sa aming website. Pakitanggal ang space bago ang com kapag ita-type.",
     "type": "fake_support",
-    "type_label": "Pekeng customer service"
+    "type_label": "Pekeng customer service",
+    "ask_labels": [
+      "action"
+    ],
+    "source": "synthetic",
+    "review": "suspicious-request-v1: suspicious context"
   },
   {
     "text": "Customer service po ito ng internet provider ninyo. Para sa internet concern, pumunta sa website namin, alisin lang ang space sa link.",
     "type": "fake_support",
-    "type_label": "Pekeng customer service"
+    "type_label": "Pekeng customer service",
+    "ask_labels": [
+      "action"
+    ],
+    "source": "synthetic",
+    "review": "suspicious-request-v1: suspicious context"
   }
 ]

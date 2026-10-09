@@ -9,9 +9,8 @@ import android.content.pm.ApplicationInfo
 import android.util.Log
 
 /**
- * The timed wake-up for [InboxCheck]. Android delivers an alarm even while
- * the phone has the app frozen, which a notification from another app is
- * not. Each alarm sets the next one.
+ * The timed wake-up for [InboxCheck]. Android may delay delivery, including
+ * while the phone holds the app frozen. Each alarm sets the next one.
  */
 object InboxAlarm {
     const val TAG = "HudyatAlarm"

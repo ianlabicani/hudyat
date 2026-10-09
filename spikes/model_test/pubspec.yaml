@@ -37,6 +37,7 @@ dependencies:
   flutter_edge_ai: ^2.1.1
   maplibre_gl: ^0.27.1
   path_provider: ^2.1.6
+  crypto: ^3.0.7
   flutter_edge_ai_litertlm: ^1.10.1
   flutter_edge_ai_embeddings: ^2.2.2
   notification_listener_service: ^1.0.0

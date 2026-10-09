@@ -1,92 +1,98 @@
-# Ask classifier: design note
+# Suspicious-request classifier: bounded experiment
 
-- **Date:** 2026-10-09, 9:45 PM
-- **Status:** agreed with the builder; not built
-- **Adds to:** section 3.4 of `2026-10-09-hudyat-design.md`. This note
-  does not change that file.
+Date: 2026-10-09. Status: implementation/tooling built; **disabled** pending real
+query exports, independent evaluation and user-initiated phone verification.
+The accepted [implementation plan](../plans/2026-10-09-stabilization-and-classifier.md)
+supersedes the earlier proposal and its weaker 20-example-only gate.
 
-## Why
+## Definition
 
-The message check decides mostly by rules. Its one AI signal, the
-phrasing match, catches 12 of 20 held-out scam messages. The classifier
-makes the AI's job explicit: say what a message asks the reader to do.
-The pack still answers who the message claims to be.
+Classify **suspicious requests**, using the message's context. Do not classify
+all literal requests. Genuine OTP notices, ordinary payment requests, routine
+advisories, appointments and legitimate forms are negatives. Unknown identity
+alone cannot make an ordinary request suspicious. An unfamiliar link alone
+is insufficient training evidence; rules check domains separately.
 
-## Decisions
-
-1. **Kept as built:** the rules, the emergency flow, the timed check.
-2. **What the AI classifies:** what the message asks for. Several labels
-   can apply to one message.
-3. **Identity stays with the rules and the pack.**
-4. **Verdict:** all AI labels on a message count together as one reason.
-   AI labels plus a data mismatch give "Mukhang scam". AI labels alone
-   give "Mag-ingat". Each label is still shown as its own line.
-5. **Where it runs:** wherever the app is awake: paste, share, text
-   selection, the scan, and the catch-up when Hudyat opens. The 12-hour
-   Kotlin check stays rules only.
-6. **Keep rule:** the classifier replaces the `phrasing` reason only if
-   it beats 12 of 20 on held-out messages with no false alarm on
-   ordinary ones. Otherwise the phrasing check stays as it is.
-7. **Pitch:** leads with the message guard and reports the rules and the
-   classifier as two separate measured numbers.
-
-## Labels and fixed reason text
-
-| Label | Means | Reason text (Tagalog, to be reviewed by the builder) |
-|---|---|---|
-| `credentials` | OTP, PIN, password or personal details | Humihingi ito ng OTP, PIN, password o personal na detalye. |
-| `money` | Send money or pay a fee | Humihingi ito ng pera o bayad. |
-| `action` | Click a link or install an app | Pinapapindot ka nito ng link o pinapa-install ng app. |
-| `pressure` | A deadline or a threat | Minamadali o tinatakot ka nito. |
-| `bait` | A prize, a job or easy money | Nag-aalok ito ng premyo, trabaho o madaling pera. |
-
-## How it is built
-
-1. **Vectors:** export EmbeddingGemma vectors on the Infinix for every
-   training and test text, using the existing export path.
-2. **Training:** a script on the laptop fits one small linear classifier
-   per label on those vectors (logistic regression).
-3. **Thresholds:** per label, the lowest score at which no held-out
-   ordinary message gets that label.
-4. **Shipping:** weights, bias and threshold per label go in the pack.
-5. **On the phone:** the message is already embedded for the phrasing
-   check, so scoring five labels is five dot products.
-
-## Data
-
-| Set | Source | Use |
-|---|---|---|
-| `pack/data/ask_examples.json` | 169 texts written for training: 137 with labels, 32 ordinary | Training only |
-| `pack/data/scam_examples.json` | 42 existing scam phrases, to be given ask labels | Training, except the 20 held out |
-| Builder's inbox, ordinary texts | 575 real texts, kept outside the repo | Part for training negatives, the rest for testing |
-| Held-out scam messages | The 20 used for the 12-of-20 figure | Testing only |
-
-Label counts in `ask_examples.json`: action 59, pressure 65, credentials
-44, money 59, bait 61.
-
-The examples in `ask_examples.json` were written by an AI assistant, not
-collected. They may not match real scams, so they are never used for
-testing, and they belong in the submission disclosures as synthetic
-training data. Only trained weights ship; no inbox text does.
-
-## Risks
-
-| Risk | Plan |
+| Label | Suspicious context |
 |---|---|
-| It does not beat 12 of 20 | Keep the current phrasing check (decision 6) |
-| Real OTP and bank texts get a label | Real ones are in the training negatives and the test set |
-| Ordinary requests for money between family | Hard negatives are in the examples; AI alone never gives "Mukhang scam" |
-| Written examples skew the model | Test on real and held-out messages only |
+| credentials | Requests to disclose secrets/codes, or sensitive details under a deceptive pretext |
+| money | Upfront release fees, implausible investment transfers, impersonated payment demands |
+| action | Deceptive verification links, disguised support downloads or related unsafe steps |
+| pressure | Threats or coercive deadlines tied to a suspicious demand |
+| bait | Implausible rewards, effortless earnings, unsolicited prize/benefit lures |
 
-## For the build session
+All labels form **one AI evidence group**, although each is rendered as a fixed
+reason row. AI alone means caution. AI plus another existing reason group uses
+the existing two-reason policy. Hard link findings remain scam. The pack supplies
+identity/contact facts; the classifier cannot authenticate a sender.
 
-- Give the 42 existing scam phrases ask labels.
-- Add the vector export for the new texts and the training script.
-- Add the weights table to the pack and the five reasons to
-  `scam_reasons.json`.
-- Score labels in the Dart checker; leave the Kotlin check untouched.
-- Fold this note into the main spec once it is built and measured.
+## Data and evaluation discipline
 
-## Stretch
+- All 169 `ask_examples.json` rows and 42 existing `scam_examples.json` phrases
+  have been reviewed against this definition. Ambiguous literal payments, routine
+  fees, forms and advisories were relabelled negative. New examples retain review
+  decisions; existing phrases now have `ask_labels`. Texts used by the baseline
+  matcher remain unchanged. All 211 are synthetic training data only.
+- The available ignored inbox file contains **217** ordinary texts. The earlier
+  575-text claim is unsupported by that file. Candidate template/campaign groups
+  were partitioned before fitting: 54 training, 55 calibration, 108 final rows.
+  Near-duplicates remain together; semantic campaign and ordinary-label review
+  must be completed before the training validator accepts the corpus.
+- The existing 20-scam benchmark remains regression only. It was already used
+  in development and cannot establish independent final performance. The
+  preparer excludes its synthetic ordinary examples from final testing.
+- `pack/classifier/official_samples.json` records official BSP, DSWD and DFPI
+  excerpts and further official screenshot leads, with reserved campaign splits.
+  Short excerpts and untranscribed images **do not count** toward final sample
+  requirements. Obtain complete usable samples, label them and group their
+  campaigns separately from training and calibration.
+- Final testing needs at least **20 scams and 100 ordinary texts**. Never pad it
+  with variants of a single campaign or synthetic examples. Never retune after
+  final testing. Existing ordinary data was available during baseline development;
+  disclose that history and collect fresh final ordinary campaigns if independence
+  cannot be substantiated.
 
-Recognise a genuine government advisory and mark it as important.
+## Reproducible implementation
+
+The explicitly invoked spike exporter uses `TaskType.retrievalQuery` for every
+classifier input, including training examples. It emits L2-normalized vectors,
+actual installed model/tokenizer SHA-256 fingerprints, dimension and corpus hash
+into ignored storage. Baseline comparison alone retains document embeddings for
+its existing examples and its 0.56 threshold.
+
+`pack/classifier/train.py fit` fits five separate L2 logistic regressions using
+C=1, balanced class weights, seed 42, liblinear and at most 2,000 iterations.
+Convergence warnings fail fitting. Each threshold is a 0.000001 numerical margin above that label's highest ordinary calibration score.
+Calibration requires distinct real scam campaigns too; final examples never
+select weights or thresholds. Frozen artifact output is not overwritten.
+
+A separate `evaluate` invocation checks the frozen corpus/model/vector hashes,
+reports per-label confusion counts and full-checker verdicts, and compares the
+baseline on exactly the same final inputs. A separate `release` invocation needs
+an artifact-bound user-initiated phone receipt. Only validated approved artifacts
+can be included by the pack builder. Runtime rejects malformed artifacts, missing
+approval, preprocessing/model/tokenizer/dimension mismatches and falls back to
+phrasing. A transient inference failure leaves AI completion pending.
+
+## Runtime and gate
+
+The classifier reuses one query embedding for all five heads. The optional pack
+entry contains versioned weights, biases, thresholds, dimension, preprocessing
+version, model fingerprint and release evidence. Artifact version is the SHA-256
+of its exact payload. No private messages or vectors ship.
+
+Foreground inbox checking finishes fast rules first, then checks pending clear
+and caution messages one at a time. Automatic passes stop at 30 seconds before
+starting another message, stop after the current message when backgrounded,
+and resume on foreground entry/model readiness. An explicit scan can be stopped
+and resumed. Rules completion and AI artifact version are tracked separately;
+updating weights does not repeat unchanged rules. Kotlin scheduled checks stay
+rules only.
+
+Enable only when all gates pass: at least **13/20 regression scams**, better AI
+detection than phrasing on final scams, no additional final ordinary warnings
+(at label-group and complete-checker levels), and verified offline scoring,
+foreground responsiveness, resumable catch-up and fallback on the phone.
+Otherwise the baseline ships. First-aid source review and release alarm behaviour
+are separate pending checks. Learned corrections, semantic service matching and
+new emergency chooser screens remain deferred.

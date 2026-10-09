@@ -201,6 +201,35 @@ void main() {
   });
 
   group('Result', () {
+    for (final state in [
+      PhrasingState.skipped,
+      PhrasingState.notReady,
+      PhrasingState.unknown,
+    ]) {
+      testWidgets('reopened result explains ${state.name} wording', (
+        tester,
+      ) async {
+        flagged.keep(
+          CheckResult(
+            text: 'bit.ly/example',
+            verdict: Verdict.caution,
+            reasons: const [
+              CheckReason(ReasonId.linkShortener, {'domain': 'bit.ly'}),
+            ],
+            phrasing: state,
+            linkCount: 1,
+          ),
+        );
+        await pump(tester, ResultScreen(result: flagged.all().single.result));
+        final expected = switch (state) {
+          PhrasingState.skipped =>
+            'The wording check was not run in this scan.',
+          PhrasingState.notReady => 'The wording check is not ready yet',
+          _ => 'Whether the wording was checked was not recorded.',
+        };
+        expect(find.textContaining(expected), findsOneWidget);
+      });
+    }
     testWidgets('Mukhang scam shows the real contact with Call', (
       tester,
     ) async {
@@ -385,6 +414,8 @@ void main() {
       await tester.tap(find.byType(PrimaryButton));
       await tester.pumpAndSettle();
       expect(find.text('ON'), findsOneWidget);
+      expect(find.textContaining('Android may delay them.'), findsOneWidget);
+      expect(find.textContaining('up to 12 hours'), findsNothing);
       expect(
         find.text('3 Mukhang scam · 1 Mag-ingat · 2 sugal promo'),
         findsOneWidget,

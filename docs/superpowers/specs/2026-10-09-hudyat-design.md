@@ -4,7 +4,8 @@
 - **Event:** AppBuildersPH Hackathon 2026, theme "Local AI"
 - **Builder:** solo
 - **Submission deadline:** 2026-10-10, 10:00 AM, no extensions
-- **Status:** awaiting review
+- **Status:** stabilization and foreground checks built; optional classifier disabled pending release evidence
+- **Current plan:** [Stabilization and classifier](../plans/2026-10-09-stabilization-and-classifier.md)
 
 ## 1. Purpose
 
@@ -284,6 +285,17 @@ phrasing check is not ready.
 path uses the link and sender checks only, and the phrasing check runs
 when the user opens the message.
 
+**Suspicious-request experiment.** The current accepted plan adds five fixed
+AI reason types. They describe suspicious requests, not all literal requests,
+and count together as one AI evidence group. Unverified artifacts remain
+disabled and the measured phrasing matcher stays active. See the
+[suspicious-request design](2026-10-09-ask-classifier-design.md) for the
+artifact, evaluation and phone gates. No new screen or component is added;
+existing Result reason rows and Scan progress/stopped states are reused.
+Saved results preserve AI status; legacy unknown status says "Whether the
+wording was checked was not recorded." Skipped checks remain explicitly
+labelled, including on flagged results. These are rules on existing boards.
+
 **Stage 2: explanation.** Runs only when the user opens a result.
 
 - **Model:** Gemma 3 1B.
@@ -341,8 +353,8 @@ widget. It does not read notifications.
   the title names the sender, the body is the first reason, and
   "Tingnan" opens the Flagged list. Texts already in the inbox when the
   check is turned on are counted but not alerted. An alert comes at
-  the next check, so up to 12 hours after the text, or at once when
-  Hudyat is opened.
+  the next check. Checks are scheduled about every 12 hours. Android may
+  delay them. Opening Hudyat also checks recent texts.
 - **Widget:** three counts for the last 7 days (Mukhang scam, Mag-ingat,
   sugal promo), how many texts were checked and when. Counts only, never
   a message or a sender, since a home screen is visible to anyone holding
@@ -370,16 +382,18 @@ inbox.
   The screen shows how many texts in the range are not yet checked.
 - **Index:** a table next to the flagged messages records, for each text
   a scan has checked, Android's id for it, when it arrived, the verdict
-  and which version of the rules judged it. It never records the text or
-  the sender. A later scan skips every text in the index, so only new
-  texts, or texts outside earlier ranges, are checked.
+  and separate rules and AI completion versions. It never records the text or
+  the sender. Later scans reuse unchanged rules and resume pending AI checks;
+  an AI-version change invalidates AI completion independently.
 - **Rules version:** a fingerprint of the pack's lists plus a version
   number in the checker. When either changes, earlier entries no longer
   match and those texts are checked again.
 - **Two passes:** the rules (links, hidden links, sender, gambling) run
   on every unchecked text, about a second for 600. The wording check is
-  an optional second pass over texts the rules left clear, newest first,
-  at about a second each; it can be stopped and continued later.
+  an optional second pass over clear and caution texts, newest first. Foreground
+  catch-up uses passes capped at 30 seconds, processing one message at a time.
+  Backgrounding or Stop finishes the current message and leaves the rest pending.
+  Model readiness and the next foreground entry resume pending work.
 - **Storage:** as everywhere else, only "Mukhang scam" and "Mag-ingat"
   texts are kept, under the time they arrived. "Forget what was checked"
   empties the index and leaves the flagged list alone.
@@ -788,7 +802,7 @@ checkpoint.
 | Hotline numbers may be outdated | Show the pack build date on every card |
 | First-aid text accuracy | Builder reviews each card against its cited source |
 | GPS indoors at the venue | Manual city choice |
-| The alarm is held while the app is frozen in recent apps | Measured on the Infinix: it fires once the app has been closed. The screen says an alert can come up to 12 hours after the text, or at once on opening Hudyat |
+| The alarm is held while the app is frozen in recent apps | Measured on the Infinix: it fires once the app has been closed. The screen describes an approximate 12-hour schedule, possible Android delays, and checking on open |
 | Embedding model killed in the background | Link and sender checks need no model |
 | A real message flagged as a scam | Tests include real agency messages; verdict wording stays cautious |
 | A scam not flagged | The app never says "safe"; say so in the pitch |

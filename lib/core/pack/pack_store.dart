@@ -6,6 +6,7 @@ import '../geo.dart';
 import 'first_aid_card.dart';
 import 'pack_record.dart';
 import 'scam_records.dart';
+import '../models/suspicious_artifact.dart';
 
 /// Which level a set of hotlines belongs to. Cards always label it.
 enum HotlineLevel { city, province, national }
@@ -68,6 +69,22 @@ class PackStore {
     for (final row in _db.select('SELECT * FROM scam_examples ORDER BY id'))
       ScamExample.fromRow(row),
   ];
+
+  /// Optional, measured classifier; older packs and malformed artifacts
+  /// leave the current phrasing matcher active.
+  SuspiciousArtifact? suspiciousArtifact() {
+    final rows = _db.select(
+      "SELECT value FROM meta WHERE key = 'suspicious_classifier'",
+    );
+    if (rows.isEmpty) return null;
+    try {
+      return SuspiciousArtifact.fromJson(
+        jsonDecode(rows.first['value'] as String) as Map<String, dynamic>,
+      );
+    } on Object {
+      return null;
+    }
+  }
 
   /// Fixed reason wording by reason id.
   Map<String, ScamReasonText> scamReasons() => {

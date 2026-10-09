@@ -1,0 +1,73 @@
+{
+  "retrieved": "2026-10-09",
+  "status": "Short verified excerpts and collection leads only. Incomplete excerpts must not count toward the 20-message final gate.",
+  "samples": [
+    {
+      "id": "bsp-charity-raffle-2020",
+      "group": "bsp-phil-charity-foundation-raffle",
+      "reserved_split": "calibration",
+      "source": "official",
+      "source_url": "https://www.bsp.gov.ph/Inclusive%20Finance/Tools/Protect_yourself_from_Fraud_and_Scam.pdf",
+      "location": "PDF page 10 (printed page 8), SMS screenshot",
+      "text": "Your Sim# Had won (Php780,000) Pls send Your Name/Age/Address/Work:",
+      "labels": [
+        "bait",
+        "credentials"
+      ],
+      "complete": false,
+      "reviewed": true
+    },
+    {
+      "id": "dswd-charity-raffle-2012",
+      "group": "bsp-phil-charity-foundation-raffle",
+      "reserved_split": "calibration",
+      "source": "official",
+      "source_url": "https://old.dswd.gov.ph/report-text-scams-using-pantawid-pamilya/",
+      "location": "Official indexed article quoting the SMS; full page currently unavailable",
+      "text": "your sim # won P950,000 as second prize winner in the Handog Pangkabuhayan raffle promo",
+      "labels": [
+        "bait"
+      ],
+      "complete": false,
+      "reviewed": true,
+      "note": "Keep with the BSP charity-foundation raffle variants; not an independent final campaign."
+    },
+    {
+      "id": "dfpi-bank-login-example",
+      "group": "dfpi-unusual-bank-activity-bitdo",
+      "reserved_split": "final",
+      "source": "official",
+      "source_url": "https://papan.asmdc.org/sites/a21.asmdc.org/files/2025-07/dfpi_pyff-updated-6-2025v3.pdf",
+      "location": "Official indexed PDF screenshot excerpt; full PDF currently returned 502",
+      "text": "We have identified some unusual activity on your online banking.Please log in via http://bit.do/dq3WJ to secure your account.",
+      "labels": [
+        "action"
+      ],
+      "complete": false,
+      "reviewed": true,
+      "note": "US warning; full screenshot/context verification pending. Not eligible for final testing yet."
+    }
+  ],
+  "leads": [
+    {
+      "group": "bdo-blocked-account",
+      "reserved_split": "final",
+      "source_url": "https://www.bdo.com.ph/about-bdo/learn/stop-scam/other-advisories",
+      "sample_url": "https://www.bdo.com.ph/content/dam/bdounibank/en-ph/cbg-digital-marketing/digital/bdo-antiscam/advisories/text-message-scam/Slide18.JPG",
+      "status": "Official screenshot identified; transcription pending"
+    },
+    {
+      "group": "ftc-fedex-survey-2020",
+      "reserved_split": "final",
+      "source_url": "https://consumer.ftc.gov/consumer-alerts/2020/02/text-message-about-your-fedex-package-really-scam",
+      "sample_url": "https://consumer.ftc.gov/sites/www.consumer.ftc.gov/files/fedex_phishing_text_social_media_graphic_01142021.png",
+      "status": "Official screenshot identified; transcription pending"
+    },
+    {
+      "group": "pdic-raffle-2020",
+      "reserved_split": "calibration",
+      "source_url": "https://www.pdic.gov.ph/files/ccd/Raffle_Scam_10212020.pdf",
+      "status": "Official indexed warning; server returned 403, unverified transcription excluded"
+    }
+  ]
+}

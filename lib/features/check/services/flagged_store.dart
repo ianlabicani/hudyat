@@ -12,11 +12,23 @@ class FlaggedMessage {
     required this.id,
     required this.result,
     required this.checkedAt,
+    this.sourceKey,
+    this.sourceType,
+    this.sourcePackage,
+    this.arrivedAt,
+    this.rulesVersion,
+    this.aiVersion,
   });
 
   final int id;
   final CheckResult result;
   final DateTime checkedAt;
+  final String? sourceKey;
+  final String? sourceType;
+  final String? sourcePackage;
+  final DateTime? arrivedAt;
+  final String? rulesVersion;
+  final String? aiVersion;
 }
 
 /// The only place message text is stored: "Mukhang scam" and "Mag-ingat"
@@ -35,8 +47,57 @@ CREATE TABLE IF NOT EXISTS flagged (
   reasons TEXT NOT NULL,
   claimed TEXT,
   truncated INTEGER NOT NULL,
-  checked_at INTEGER NOT NULL
+  checked_at INTEGER NOT NULL,
+  phrasing TEXT NOT NULL DEFAULT 'unknown',
+  link_count INTEGER NOT NULL DEFAULT 0,
+  source_key TEXT,
+  source_type TEXT,
+  source_package TEXT,
+  arrived_at INTEGER,
+  rules_version TEXT,
+  ai_version TEXT
 )''');
+    final columns = {
+      for (final row in _db.select('PRAGMA table_info(flagged)')) row['name'],
+    };
+    _db.execute('BEGIN');
+    try {
+      if (!columns.contains('phrasing')) {
+        _db.execute(
+          "ALTER TABLE flagged ADD COLUMN phrasing TEXT NOT NULL DEFAULT 'unknown'",
+        );
+      }
+      if (!columns.contains('link_count')) {
+        _db.execute(
+          'ALTER TABLE flagged ADD COLUMN link_count INTEGER NOT NULL DEFAULT 0',
+        );
+      }
+      for (final name in [
+        'source_key',
+        'source_type',
+        'source_package',
+        'arrived_at',
+        'rules_version',
+        'ai_version',
+      ]) {
+        if (!columns.contains(name)) {
+          _db.execute(
+            'ALTER TABLE flagged ADD COLUMN $name '
+            '${name == 'arrived_at' ? 'INTEGER' : 'TEXT'}',
+          );
+        }
+      }
+      _db.execute(
+        'CREATE UNIQUE INDEX IF NOT EXISTS flagged_source_key '
+        'ON flagged(source_key) WHERE source_key IS NOT NULL',
+      );
+      _db.execute('COMMIT');
+    } on Object {
+      _db.execute('ROLLBACK');
+      rethrow;
+    }
+    _db.execute('PRAGMA busy_timeout = 3000');
+    _db.execute('PRAGMA journal_mode = WAL');
   }
 
   factory FlaggedStore.open(
@@ -59,44 +120,113 @@ CREATE TABLE IF NOT EXISTS flagged (
     [result.text, result.sender],
   ).isNotEmpty;
 
-  /// Keeps [result] if it is flagged and returns its id; anything else is
-  /// ignored and gives null. The same text from the same sender is kept
-  /// once, with the latest time.
-  int? keep(CheckResult result, {DateTime? at}) {
-    if (!result.isFlagged) return null;
-    _db
-      ..execute('DELETE FROM flagged WHERE text = ? AND sender IS ?', [
-        result.text,
-        result.sender,
-      ])
-      ..execute(
-        'INSERT INTO flagged (text, sender, app, verdict, reasons, claimed, '
-        'truncated, checked_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-        [
-          result.text,
-          result.sender,
-          result.app,
-          result.verdict.name,
-          jsonEncode([
+  /// Saves a flagged result atomically. A source identity keeps the same row
+  /// when an alert, inbox scan, and foreground AI pass see the same message.
+  int? keep(
+    CheckResult result, {
+    DateTime? at,
+    String? sourceKey,
+    String? sourceType,
+    String? sourcePackage,
+    DateTime? arrivedAt,
+    String? rulesVersion,
+    String? aiVersion,
+  }) {
+    _db.execute('BEGIN IMMEDIATE');
+    try {
+      final id = _keepInTransaction(
+        result,
+        at: at,
+        sourceKey: sourceKey,
+        sourceType: sourceType,
+        sourcePackage: sourcePackage,
+        arrivedAt: arrivedAt,
+        rulesVersion: rulesVersion,
+        aiVersion: aiVersion,
+      );
+      _db.execute('COMMIT');
+      notifyListeners();
+      return id;
+    } on Object {
+      _db.execute('ROLLBACK');
+      rethrow;
+    }
+  }
+
+  int? _keepInTransaction(
+    CheckResult result, {
+    DateTime? at,
+    String? sourceKey,
+    String? sourceType,
+    String? sourcePackage,
+    DateTime? arrivedAt,
+    String? rulesVersion,
+    String? aiVersion,
+  }) {
+    final bySource = sourceKey == null
+        ? const <Row>[]
+        : _db.select('SELECT id FROM flagged WHERE source_key = ?', [sourceKey]);
+    final legacy = bySource.isNotEmpty
+        ? const <Row>[]
+        : _db.select(
+            'SELECT id FROM flagged WHERE source_key IS NULL '
+            'AND text = ? AND sender IS ? ORDER BY id DESC LIMIT 1',
+            [result.text, result.sender],
+          );
+    final id = (bySource.isNotEmpty ? bySource.first['id'] :
+        legacy.isNotEmpty ? legacy.first['id'] : null) as int?;
+    if (!result.isFlagged) {
+      if (id != null) _db.execute('DELETE FROM flagged WHERE id = ?', [id]);
+      return null;
+    }
+    final values = [
+      result.text,
+      result.sender,
+      result.app,
+      result.verdict.name,
+      jsonEncode([
             for (final reason in result.reasons)
               {'id': reason.id, 'facts': reason.facts},
-          ]),
-          result.claimed?.name,
-          result.truncated ? 1 : 0,
-          (at ?? DateTime.now()).millisecondsSinceEpoch,
-        ],
+      ]),
+      result.claimed?.name,
+      result.truncated ? 1 : 0,
+      (at ?? DateTime.now()).millisecondsSinceEpoch,
+      result.phrasing.name,
+      result.linkCount,
+      sourceKey,
+      sourceType,
+      sourcePackage,
+      arrivedAt?.millisecondsSinceEpoch,
+      rulesVersion,
+      aiVersion,
+    ];
+    if (id == null) {
+      _db.execute(
+        'INSERT INTO flagged (text, sender, app, verdict, reasons, claimed, '
+        'truncated, checked_at, phrasing, link_count, source_key, '
+        'source_type, source_package, arrived_at, rules_version, ai_version) '
+        'VALUES (${List.filled(16, '?').join(', ')})',
+        values,
       );
-    final id = _db.lastInsertRowId;
-    notifyListeners();
+      return _db.lastInsertRowId;
+    }
+    _db.execute(
+      'UPDATE flagged SET text=?, sender=?, app=?, verdict=?, reasons=?, '
+      'claimed=?, truncated=?, checked_at=?, phrasing=?, link_count=?, '
+      'source_key=COALESCE(?, source_key), source_type=COALESCE(?, source_type), '
+      'source_package=COALESCE(?, source_package), '
+      'arrived_at=COALESCE(?, arrived_at), '
+      'rules_version=COALESCE(?, rules_version), '
+      'ai_version=COALESCE(?, ai_version) WHERE id=?',
+      [...values, id],
+    );
     return id;
   }
 
   /// The kept message with [id], if it has not been cleared.
   FlaggedMessage? byId(int id) {
-    for (final message in all()) {
-      if (message.id == id) return message;
-    }
-    return null;
+    final rows = _db.select('SELECT * FROM flagged WHERE id = ?', [id]);
+    return rows.isEmpty ? null : _message(rows.single);
   }
 
   /// Newest first.
@@ -104,11 +234,22 @@ CREATE TABLE IF NOT EXISTS flagged (
     for (final row in _db.select(
       'SELECT * FROM flagged ORDER BY checked_at DESC, id DESC',
     ))
-      FlaggedMessage(
+      _message(row),
+  ];
+
+  FlaggedMessage _message(Row row) => FlaggedMessage(
         id: row['id'] as int,
         checkedAt: DateTime.fromMillisecondsSinceEpoch(
           row['checked_at'] as int,
         ),
+        sourceKey: row['source_key'] as String?,
+        sourceType: row['source_type'] as String?,
+        sourcePackage: row['source_package'] as String?,
+        arrivedAt: row['arrived_at'] == null
+            ? null
+            : DateTime.fromMillisecondsSinceEpoch(row['arrived_at'] as int),
+        rulesVersion: row['rules_version'] as String?,
+        aiVersion: row['ai_version'] as String?,
         result: CheckResult(
           text: row['text'] as String,
           verdict: Verdict.values.byName(row['verdict'] as String),
@@ -119,14 +260,31 @@ CREATE TABLE IF NOT EXISTS flagged (
                 (item['facts'] as Map).cast<String, String>(),
               ),
           ],
-          phrasing: PhrasingState.checked,
+          phrasing: PhrasingState.values.firstWhere(
+            (state) => state.name == row['phrasing'],
+            orElse: () => PhrasingState.unknown,
+          ),
+          linkCount: row['link_count'] as int,
           sender: row['sender'] as String?,
           app: row['app'] as String?,
           claimed: _senders[row['claimed']],
           truncated: row['truncated'] == 1,
         ),
-      ),
+      );
+
+  List<FlaggedMessage> notificationFindingsAwaitingAI(String aiVersion) => [
+    for (final row in _db.select(
+      "SELECT * FROM flagged WHERE source_type = 'notification' "
+      'AND (ai_version IS NULL OR ai_version != ?) '
+      'ORDER BY arrived_at DESC LIMIT 100',
+      [aiVersion],
+    ))
+      _message(row),
   ];
+
+  /// Native writes use another SQLite connection; refresh the visible list
+  /// when the platform reports a completed transaction.
+  void nativeResultsChanged() => notifyListeners();
 
   /// Drops one kept message. The text in the SMS app is untouched.
   void remove(int id) {

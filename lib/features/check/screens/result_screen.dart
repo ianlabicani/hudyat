@@ -76,7 +76,14 @@ class _ResultScreenState extends State<ResultScreen> {
     final scope = AppScope.of(context);
     final wording = scope.store.scamReasons();
     final claimed = result.claimed;
-    final notReady = result.phrasing == PhrasingState.notReady;
+    final wordingNotice = switch (result.phrasing) {
+      PhrasingState.notReady =>
+        'The wording check is not ready yet, so only the rules were checked.',
+      PhrasingState.skipped => 'The wording check was not run in this scan. Only the rules were checked.',
+      PhrasingState.unknown =>
+        'Whether the wording was checked was not recorded.',
+      PhrasingState.checked => null,
+    };
     return Scaffold(
       appBar: const TopBar(title: 'Message check'),
       body: SafeArea(
@@ -105,14 +112,10 @@ class _ResultScreenState extends State<ResultScreen> {
                     padding: const EdgeInsets.only(top: 10),
                     child: ReasonRow(reason: reason, wording: text),
                   ),
-              if (notReady)
-                const Padding(
-                  padding: EdgeInsets.only(top: 8),
-                  child: Text(
-                    'The wording check is not ready yet, so only links and '
-                    'the sender were checked.',
-                    style: HudyatText.gloss,
-                  ),
+              if (wordingNotice != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: Text(wordingNotice, style: HudyatText.gloss),
                 ),
             ],
             if (result.verdict == Verdict.clear) ...[
@@ -132,6 +135,8 @@ class _ResultScreenState extends State<ResultScreen> {
               CheckedRow(
                 name: 'Phrasing',
                 outcome: switch (result.phrasing) {
+                  PhrasingState.unknown =>
+                    'Whether the wording was checked was not recorded.',
                   PhrasingState.notReady => 'Not ready yet',
                   PhrasingState.skipped => 'Not run in this scan',
                   PhrasingState.checked => 'No scam match',

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 
 import '../models/check_result.dart';
@@ -99,7 +101,35 @@ class InboxScanner extends ChangeNotifier {
   bool refused = false;
 
   int get remembered => _index.count;
-  bool get canCheckWording => phrases?.call()?.isReady ?? false;
+  bool get canCheckWording => _checker.canCheckWording;
+  bool _foreground = true;
+  bool _autoPaused = false;
+  bool _disposed = false;
+  Timer? _continuation;
+  bool _resumeRequested = false;
+
+  void setForeground(bool value) {
+    _foreground = value;
+    if (!value) {
+      _continuation?.cancel();
+      _stop = true;
+    } else {
+      _autoPaused = false;
+      if (_running) _resumeRequested = true;
+    }
+  }
+
+  @override
+  void dispose() {
+    _disposed = true;
+    _stop = true;
+    _continuation?.cancel();
+    super.dispose();
+  }
+
+  void _notify() {
+    if (!_disposed) notifyListeners();
+  }
 
   DateTime? _since(ScanRange range) => switch (range.days) {
     null => null,
@@ -109,45 +139,60 @@ class InboxScanner extends ChangeNotifier {
   /// How many texts in [range] have not been checked yet, or null without
   /// SMS access. Does not ask for access.
   Future<int?> pending(ScanRange range) async {
-    if (!await _inbox.hasPermission()) return null;
+    if (_disposed || !await _inbox.hasPermission() || _disposed) return null;
     final checked = _index.checked(rules);
     final messages = await _inbox.read(since: _since(range));
     return messages.where((m) => !checked.contains(m.id)).length;
   }
 
-  /// Checks every text in [range] that is not in the index yet. With
-  /// [wording], texts the rules left clear also get the wording check,
-  /// newest first; that takes about a second each. Returns null when SMS
-  /// access is refused.
-  Future<ScanSummary?> scan(ScanRange range, {bool wording = false}) async {
-    if (_running) return null;
+  /// Fast rules first, then a resumable AI pass over clear/caution texts.
+  Future<ScanSummary?> scan(ScanRange range, {bool wording = false}) {
+    _autoPaused = true;
+    _continuation?.cancel();
+    return _scan(range, wording: wording, askPermission: true);
+  }
+
+  Future<ScanSummary?> _scan(
+    ScanRange range, {
+    required bool wording,
+    required bool askPermission,
+    Duration? wordingBudget,
+    bool quiet = false,
+  }) async {
+    if (_running || _disposed) return null;
     _running = true;
-    _stop = false;
+    _stop = !_foreground;
     refused = false;
-    last = null;
+    if (!quiet) last = null;
     done = 0;
     total = 0;
     wordingPass = false;
-    notifyListeners();
+    _notify();
     try {
-      if (!await _inbox.hasPermission() && !await _inbox.requestPermission()) {
-        refused = true;
-        return null;
+      if (!await _inbox.hasPermission()) {
+        if (!askPermission || !await _inbox.requestPermission()) {
+          refused = askPermission;
+          return null;
+        }
       }
+      if (_disposed) return null;
       final messages = await _inbox.read(since: _since(range));
+      if (_disposed) return null;
       final checked = _index.checked(rules);
       final fresh = [
         for (final message in messages)
           if (!checked.contains(message.id)) message,
       ];
       total = fresh.length;
-      notifyListeners();
+      _notify();
 
-      final counts = {for (final verdict in Verdict.values) verdict: 0};
+      // One entry per SMS, so a rules check followed by AI is counted once.
+      final touched = <int, Verdict>{};
       for (final message in fresh) {
         if (_stop) break;
         final result = await _check(message, phrasing: false);
-        counts[result.verdict] = counts[result.verdict]! + 1;
+        if (_disposed) return null;
+        touched[message.id] = result.verdict;
         _index.record(
           smsId: message.id,
           sentAt: message.sentAt,
@@ -156,16 +201,16 @@ class InboxScanner extends ChangeNotifier {
           worded: false,
         );
         done++;
-        // Often enough to show progress, rarely enough not to slow it.
         if (done % 25 == 0) {
-          notifyListeners();
+          _notify();
           await Future<void>.delayed(Duration.zero);
         }
       }
 
       var worded = 0;
-      if (wording && !_stop && canCheckWording) {
-        final waiting = _index.awaitingWording(rules);
+      final aiVersion = _checker.aiVersion;
+      if (wording && !_stop && aiVersion != null) {
+        final waiting = _index.awaitingWording(rules, aiVersion: aiVersion);
         final queue = [
           for (final message in messages.reversed)
             if (waiting.contains(message.id)) message,
@@ -173,44 +218,54 @@ class InboxScanner extends ChangeNotifier {
         wordingPass = true;
         done = 0;
         total = queue.length;
-        notifyListeners();
+        final watch = Stopwatch()..start();
+        _notify();
         for (final message in queue) {
-          if (_stop) break;
-          final result = await _check(message, phrasing: true);
-          if (result.verdict != Verdict.clear) {
-            counts[Verdict.clear] = (counts[Verdict.clear]! - 1).clamp(
-              0,
-              1 << 31,
-            );
-            counts[result.verdict] = counts[result.verdict]! + 1;
+          if (_stop ||
+              !_foreground ||
+              _checker.aiVersion != aiVersion ||
+              (wordingBudget != null && watch.elapsed >= wordingBudget)) {
+            break;
           }
-          _index.record(
+          final result = await _check(message, phrasing: true);
+          if (_disposed) return null;
+          // A failed model must not mark a message as AI-complete.
+          if (result.phrasing != PhrasingState.checked) break;
+          touched[message.id] = result.verdict;
+          _index.recordAI(
             smsId: message.id,
-            sentAt: message.sentAt,
-            verdict: result.verdict,
             rules: rules,
-            worded: true,
+            verdict: result.verdict,
+            aiVersion: aiVersion,
           );
           worded++;
           done++;
-          notifyListeners();
+          _notify();
+          // Let interactive requests enqueue before the next inbox inference.
+          await Future<void>.delayed(Duration.zero);
         }
       }
-
-      return last = ScanSummary(
+      final summary = ScanSummary(
         range: range,
         read: messages.length,
-        skipped: messages.length - fresh.length,
-        scam: counts[Verdict.scam]!,
-        caution: counts[Verdict.caution]!,
-        clear: counts[Verdict.clear]!,
+        skipped: messages.length - touched.length,
+        scam: touched.values.where((v) => v == Verdict.scam).length,
+        caution: touched.values.where((v) => v == Verdict.caution).length,
+        clear: touched.values.where((v) => v == Verdict.clear).length,
         worded: worded,
         stopped: _stop,
       );
+      if (!quiet) last = summary;
+      return summary;
     } finally {
       _running = false;
       wordingPass = false;
-      notifyListeners();
+      _notify();
+      if (_resumeRequested && !_disposed && _foreground && !_autoPaused) {
+        _resumeRequested = false;
+        _continuation?.cancel();
+        _continuation = Timer(Duration.zero, () => unawaited(catchUp()));
+      }
     }
   }
 
@@ -225,30 +280,75 @@ class InboxScanner extends ChangeNotifier {
       phrasing: phrasing,
     );
     // Kept under the time the text arrived, not the time of the scan.
-    _flagged.keep(result, at: message.sentAt);
+    if (!_disposed) _flagged.keep(result, at: message.sentAt);
     return result;
   }
 
-  /// Quietly checks recent texts the app has not seen, when SMS access is
-  /// already given. Run when the app opens or returns to the screen, so a
-  /// message that arrived while the phone had the app frozen is still
-  /// flagged. Never asks for access.
+  /// Quiet rules pass on open, without a permission prompt or AI delay.
   Future<void> catchUp() async {
-    if (_running || !await _inbox.hasPermission()) return;
-    final before = last;
-    await scan(ScanRange.week);
-    // Not a scan the user asked for, so it leaves no summary behind.
-    last = before;
-    notifyListeners();
+    if (!_foreground || _disposed) return;
+    if (_running) {
+      _resumeRequested = true;
+      return;
+    }
+    try {
+      await _scan(
+        ScanRange.week,
+        wording: false,
+        askPermission: false,
+        quiet: true,
+      );
+      unawaited(resumeWording());
+    } on Object {
+      // A failed inbox read must not break startup or navigation.
+    }
   }
 
-  /// Ends the running scan after the text it is on.
-  void stop() => _stop = true;
+  /// Called on model readiness/foreground entry. Each pass has a 30-second
+  /// budget; completion is stored after each message and errors stay pending.
+  Future<void> resumeWording({
+    Duration budget = const Duration(seconds: 30),
+  }) async {
+    if (!_foreground || _autoPaused || _disposed || !canCheckWording) return;
+    if (_running) {
+      _resumeRequested = true;
+      return;
+    }
+    try {
+      final result = await _scan(
+        ScanRange.week,
+        wording: true,
+        askPermission: false,
+        quiet: true,
+        wordingBudget: budget,
+      );
+      if (result != null &&
+          result.worded > 0 &&
+          !_stop &&
+          _foreground &&
+          !_autoPaused &&
+          !_disposed) {
+        _continuation?.cancel();
+        _continuation = Timer(const Duration(milliseconds: 100), () {
+          unawaited(resumeWording(budget: budget));
+        });
+      }
+    } on Object {
+      // Retried on the next foreground/model-ready event, not a tight loop.
+    }
+  }
+
+  /// Stop after the current text, including automatic foreground checks.
+  void stop() {
+    _stop = true;
+    _autoPaused = true;
+    _continuation?.cancel();
+  }
 
   /// Forgets which texts were checked. Flagged messages stay.
   void forget() {
     _index.clear();
     last = null;
-    notifyListeners();
+    _notify();
   }
 }

@@ -6,6 +6,7 @@ import 'package:flutter_edge_ai_litertlm/flutter_edge_ai_litertlm.dart';
 import 'package:path_provider/path_provider.dart';
 
 import 'model_runtime.dart';
+import 'embedding_identity.dart';
 
 /// [ModelRuntime] on `flutter_edge_ai`: EmbeddingGemma for vectors and
 /// Gemma 3 1B for wording. Only this file knows the plugin.
@@ -101,10 +102,29 @@ class EdgeAiRuntime implements ModelRuntime {
   }
 }
 
-class _EdgeEmbedder implements TextEmbedder {
+class _EdgeEmbedder implements IdentifiedEmbedder {
   _EdgeEmbedder(this._model);
 
   final EmbeddingModel _model;
+
+  @override
+  Future<int> dimension() => _model.getDimension();
+
+  @override
+  Future<String?> fingerprint() async {
+    final spec = FlutterEdgeAi.activeEmbedderSpec;
+    if (spec == null) return null;
+    // The facade exposes the active spec, but only the file manager exposes
+    // its installed paths. Do not hash sideload files which may differ.
+    final paths = await FlutterEdgeAiPlugin.instance.modelManager
+        .getModelFilePaths(spec);
+    if (paths == null || paths.length != 2) return null;
+    final model = paths.values.where((path) => path.endsWith('.tflite')).single;
+    final tokenizer = paths.values
+        .where((path) => path.endsWith('.model'))
+        .single;
+    return embeddingFingerprint(File(model), File(tokenizer));
+  }
 
   /// One call at a time: a typed message can arrive while the scam phrases
   /// are still being embedded in the background.

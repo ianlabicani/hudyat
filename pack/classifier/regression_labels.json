@@ -1,0 +1,73 @@
+{
+  "definition": "suspicious-request-v1",
+  "purpose": "existing synthetic development benchmark; regression only, not final testing",
+  "labels": {
+    "regression:0": [
+      "action",
+      "pressure"
+    ],
+    "regression:1": [
+      "action"
+    ],
+    "regression:2": [
+      "action",
+      "money"
+    ],
+    "regression:3": [],
+    "regression:4": [
+      "bait",
+      "action"
+    ],
+    "regression:5": [
+      "bait",
+      "action"
+    ],
+    "regression:6": [
+      "credentials"
+    ],
+    "regression:7": [
+      "credentials"
+    ],
+    "regression:8": [
+      "bait",
+      "action"
+    ],
+    "regression:9": [
+      "bait"
+    ],
+    "regression:10": [
+      "bait",
+      "credentials"
+    ],
+    "regression:11": [
+      "bait",
+      "money"
+    ],
+    "regression:12": [
+      "money",
+      "pressure"
+    ],
+    "regression:13": [
+      "money",
+      "pressure"
+    ],
+    "regression:14": [
+      "bait",
+      "action"
+    ],
+    "regression:15": [
+      "money"
+    ],
+    "regression:16": [
+      "action",
+      "pressure"
+    ],
+    "regression:17": [],
+    "regression:18": [
+      "bait",
+      "action",
+      "pressure"
+    ],
+    "regression:19": []
+  }
+}

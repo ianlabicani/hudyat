@@ -1,5 +1,8 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:convert';
+
+import 'package:flutter/foundation.dart';
 
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as p;
@@ -9,6 +12,7 @@ import 'package:sqlite3/sqlite3.dart' show sqlite3;
 import 'core/app_scope.dart';
 import 'core/models/edge_ai_runtime.dart';
 import 'core/models/model_manager.dart';
+import 'core/models/suspicious_artifact.dart';
 import 'core/pack/pack_installer.dart';
 import 'core/pack/pack_store.dart';
 import 'core/theme/tokens.dart';
@@ -48,6 +52,7 @@ class _HudyatAppState extends State<HudyatApp> with WidgetsBindingObserver {
   TimedCheck? _timed;
   InboxScanner? _scanner;
   Object? _error;
+  String? _lastAiVersion;
 
   final _navigator = GlobalKey<NavigatorState>();
   final _share = ShareEntry();
@@ -62,7 +67,19 @@ class _HudyatAppState extends State<HudyatApp> with WidgetsBindingObserver {
   /// Back on screen: pick up texts that arrived while the app was away.
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
+    _scanner?.setForeground(state == AppLifecycleState.resumed);
     if (state == AppLifecycleState.resumed) unawaited(_catchUp());
+  }
+
+  void _modelReady() {
+    final version = _checker?.aiVersion;
+    if (version == null) {
+      _lastAiVersion = null;
+      return;
+    }
+    if (version == _lastAiVersion && _models?.loading == true) return;
+    _lastAiVersion = version;
+    unawaited(_scanner?.resumeWording());
   }
 
   /// Flags new texts, then has the widget recount.
@@ -77,6 +94,24 @@ class _HudyatAppState extends State<HudyatApp> with WidgetsBindingObserver {
       final store = PackStore.open(await installBundledPack());
       store.meta; // Fails here, not on first use, if the pack is unreadable.
       final support = await getApplicationSupportDirectory();
+      const phoneTest =
+          kDebugMode && bool.fromEnvironment('HUDYAT_CLASSIFIER_PHONE_TEST');
+      SuspiciousArtifact? candidate;
+      if (phoneTest) {
+        final external = await getExternalStorageDirectory();
+        if (external != null) {
+          final file = File(p.join(external.path, 'classifier-candidate.json'));
+          if (await file.exists()) {
+            try {
+              candidate = SuspiciousArtifact.fromJson(
+                jsonDecode(await file.readAsString()) as Map<String, dynamic>,
+              );
+            } on Object {
+              /* Invalid trial input keeps the baseline. */
+            }
+          }
+        }
+      }
       final models = ModelManager(
         runtime: EdgeAiRuntime(),
         intents: store.intents(),
@@ -85,6 +120,8 @@ class _HudyatAppState extends State<HudyatApp> with WidgetsBindingObserver {
         scamCacheFile: File(p.join(support.path, 'scam-vectors.json')),
         firstAidCards: store.firstAidCards(),
         firstAidCacheFile: File(p.join(support.path, 'first-aid-vectors.json')),
+        suspiciousArtifact: candidate ?? store.suspiciousArtifact(),
+        phoneTest: phoneTest,
       );
       final senders = store.officialSenders();
       final checker = MessageChecker(
@@ -93,6 +130,7 @@ class _HudyatAppState extends State<HudyatApp> with WidgetsBindingObserver {
         neutralHosts: store.neutralHosts(),
         gambling: store.gamblingRules(),
         phrases: () => models.scamPhrases,
+        classifier: () => models.suspiciousClassifier,
       );
       // Flagged messages live in their own file, apart from the pack.
       final kept = sqlite3.open(p.join(support.path, 'flagged.sqlite'));
@@ -111,7 +149,12 @@ class _HudyatAppState extends State<HudyatApp> with WidgetsBindingObserver {
         inbox: const AndroidSmsInbox(),
       );
       _scanner = scanner;
+      scanner.setForeground(
+        WidgetsBinding.instance.lifecycleState == null ||
+            WidgetsBinding.instance.lifecycleState == AppLifecycleState.resumed,
+      );
       _timed = timed;
+      models.addListener(_modelReady);
       unawaited(_catchUp());
       // Models load in the background; the app is usable before they do.
       unawaited(models.load());

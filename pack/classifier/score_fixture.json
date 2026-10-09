@@ -1,0 +1,17 @@
+{
+  "artifact": {
+    "payload": "{\"schema\":1,\"preprocessing\":\"query-l2-v1\",\"dimension\":2,\"fingerprint\":\"sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\",\"heads\":{\"credentials\":{\"weights\":[-0.5,-0.25],\"bias\":0.0,\"threshold\":0.6},\"money\":{\"weights\":[0.5,-1.25],\"bias\":0.1,\"threshold\":0.6},\"action\":{\"weights\":[1.5,-2.25],\"bias\":0.2,\"threshold\":0.6},\"pressure\":{\"weights\":[2.5,-3.25],\"bias\":0.30000000000000004,\"threshold\":0.6},\"bait\":{\"weights\":[3.5,-4.25],\"bias\":0.4,\"threshold\":0.6}}}",
+    "version": "376f776ae2e92d41e4dd1f77dad25695f5e6474ebba00fc68a259c40f9d89f19"
+  },
+  "vector": [
+    3.0,
+    4.0
+  ],
+  "scores": {
+    "credentials": 0.3775406687981454,
+    "money": 0.35434369377420455,
+    "action": 0.33181222783183384,
+    "pressure": 0.31002551887238755,
+    "bait": 0.289050497374996
+  }
+}

@@ -1,4 +1,7 @@
 import 'dart:io';
+import 'dart:convert';
+
+import 'package:crypto/crypto.dart';
 
 import '../../../core/models/example_vectors.dart';
 import '../../../core/models/model_runtime.dart';
@@ -28,6 +31,14 @@ class ScamPhrases {
   final double threshold;
 
   bool get isReady => _vectors.isReady;
+  late final String version =
+      'phrasing:${sha256.convert(utf8.encode(jsonEncode({
+        'algorithm': 'nearest-example-v1',
+        'threshold': threshold,
+        'examples': [
+          for (final example in _examples) [example.text, example.typeLabel],
+        ],
+      })))}';
 
   Future<void> prepare({void Function(int done, int total)? onProgress}) =>
       _vectors.prepare(onProgress: onProgress);

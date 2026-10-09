@@ -1,5 +1,6 @@
 import { Database } from "bun:sqlite";
 import { existsSync, mkdirSync, rmSync } from "node:fs";
+import { validateClassifier, type ClassifierEnvelope } from "./classifier";
 import { dirname } from "node:path";
 import type { FirstAidCard, Intent, PackRecord, ScamData } from "./types";
 
@@ -21,6 +22,7 @@ export interface PackContents {
   scam?: ScamData;
   /** First-aid cards. The table is created empty without them. */
   firstAid?: FirstAidCard[];
+  classifier?: ClassifierEnvelope;
 }
 
 const SCHEMA = `
@@ -158,6 +160,12 @@ export function validateRecords(records: PackRecord[]): void {
 
 export function writePack(path: string, contents: PackContents): void {
   validateRecords(contents.records);
+  if (contents.classifier) {
+    validateClassifier(contents.classifier);
+    for (const label of ["credentials", "money", "action", "pressure", "bait"]) {
+      if (!contents.scam?.reasons.some(r=>r.id === `ask_${label}`)) throw new Error("Missing classifier reason text");
+    }
+  }
   if (contents.scam) validateScamData(contents.scam);
   if (contents.firstAid) validateFirstAid(contents.firstAid);
   if (path !== ":memory:") {
@@ -184,6 +192,7 @@ export function writePack(path: string, contents: PackContents): void {
     insertMeta.run("build_date", contents.meta.buildDate);
     insertMeta.run("bbox", contents.meta.bbox.join(","));
     insertMeta.run("sources", JSON.stringify(contents.meta.sources));
+    if (contents.classifier) insertMeta.run("suspicious_classifier", JSON.stringify(contents.classifier));
 
     for (const r of contents.records) {
       insertRecord.run(
@@ -206,7 +215,7 @@ export function writePack(path: string, contents: PackContents): void {
     if (scam) {
       // Changes whenever the lists do, so the app rechecks texts it scanned
       // with older ones.
-      insertMeta.run("rules_version", Bun.hash(JSON.stringify(scam)).toString(16));
+      insertMeta.run("rules_version", Bun.hash(JSON.stringify({ senders: scam.senders, shorteners: scam.shorteners, neutralHosts: scam.neutralHosts, senderIds: scam.senderIds, gambling: scam.gambling })).toString(16));
       insertMeta.run("link_shorteners", JSON.stringify(scam.shorteners));
       insertMeta.run("neutral_hosts", JSON.stringify(scam.neutralHosts));
       insertMeta.run("sender_ids", JSON.stringify(scam.senderIds));

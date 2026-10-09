@@ -145,6 +145,8 @@ void main() {
         'verdict',
         'rules',
         'worded',
+        'rule_verdict',
+        'ai_version',
       ]);
       expect(
         [for (final row in rows) row['verdict']],
@@ -228,11 +230,11 @@ void main() {
       expect(fast.clear, 2);
       expect(fast.worded, 0);
 
-      // The wording pass covers only texts the rules left clear, once.
+      // The wording pass covers rules-clear and rules-caution texts, once.
       final slow = (await s.scan(ScanRange.week, wording: true))!;
-      expect(slow.checked, 1);
-      expect(slow.worded, 2);
-      expect(slow.caution, 1);
+      expect(slow.checked, 3);
+      expect(slow.worded, 3);
+      expect(slow.caution, 2);
       expect(flagged.count, 2);
       final again = (await s.scan(ScanRange.week, wording: true))!;
       expect(again.worded, 0);

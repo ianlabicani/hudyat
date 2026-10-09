@@ -13,8 +13,22 @@ CREATE TABLE IF NOT EXISTS scanned (
   sent_at INTEGER NOT NULL,
   verdict TEXT NOT NULL,
   rules TEXT NOT NULL,
-  worded INTEGER NOT NULL
+  worded INTEGER NOT NULL,
+  rule_verdict TEXT,
+  ai_version TEXT
 )''');
+    final columns = {
+      for (final row in _db.select('PRAGMA table_info(scanned)')) row['name'],
+    };
+    if (!columns.contains('rule_verdict')) {
+      _db.execute('ALTER TABLE scanned ADD COLUMN rule_verdict TEXT');
+    }
+    if (!columns.contains('ai_version')) {
+      _db.execute('ALTER TABLE scanned ADD COLUMN ai_version TEXT');
+    }
+    _db.execute(
+      'UPDATE scanned SET rule_verdict = verdict WHERE rule_verdict IS NULL',
+    );
   }
 
   final Database _db;
@@ -28,13 +42,14 @@ CREATE TABLE IF NOT EXISTS scanned (
       row['sms_id'] as int,
   };
 
-  /// Ids that came out clear from the rules and have not had the slower
+  /// Ids that came out clear or caution from the rules and have not had the slower
   /// wording check yet.
-  Set<int> awaitingWording(String rules) => {
+  Set<int> awaitingWording(String rules, {String? aiVersion}) => {
     for (final row in _db.select(
-      'SELECT sms_id FROM scanned WHERE rules = ? AND worded = 0 '
-      "AND verdict = 'clear'",
-      [rules],
+      'SELECT sms_id FROM scanned WHERE rules = ? '
+      "AND rule_verdict != 'scam' AND "
+      '${aiVersion == null ? 'worded = 0' : '(ai_version IS NULL OR ai_version != ?)'}',
+      [rules, ?aiVersion],
     ))
       row['sms_id'] as int,
   };
@@ -46,9 +61,26 @@ CREATE TABLE IF NOT EXISTS scanned (
     required String rules,
     required bool worded,
   }) => _db.execute(
-    'INSERT OR REPLACE INTO scanned (sms_id, sent_at, verdict, rules, worded) '
-    'VALUES (?, ?, ?, ?, ?)',
-    [smsId, sentAt.millisecondsSinceEpoch, verdict.name, rules, worded ? 1 : 0],
+    'INSERT OR REPLACE INTO scanned (sms_id, sent_at, verdict, rules, worded, rule_verdict) '
+    'VALUES (?, ?, ?, ?, ?, ?)',
+    [
+      smsId,
+      sentAt.millisecondsSinceEpoch,
+      verdict.name,
+      rules,
+      worded ? 1 : 0,
+      verdict.name,
+    ],
+  );
+
+  void recordAI({
+    required int smsId,
+    required String rules,
+    required Verdict verdict,
+    required String aiVersion,
+  }) => _db.execute(
+    'UPDATE scanned SET verdict = ?, worded = 1, ai_version = ? WHERE sms_id = ? AND rules = ?',
+    [verdict.name, aiVersion, smsId, rules],
   );
 
   /// How many texts are remembered, whatever rules checked them.

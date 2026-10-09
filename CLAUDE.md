@@ -8,6 +8,8 @@ Hudyat ("signal") is a Flutter app, Android first, for the AppBuildersPH Hackath
 
 The design spec is `docs/superpowers/specs/2026-10-09-hudyat-design.md`. Read it before any product work: it holds the scope, the cut order and the submission deadline (2026-10-10, 10:00 AM).
 
+The current accepted implementation plan and release checklist is `docs/superpowers/plans/2026-10-09-stabilization-and-classifier.md`. Session plans outside the repository are historical; follow this plan's measured release gate and explicit deferred scope.
+
 The practical user stories are in `docs/superpowers/stories/2026-10-09-user-stories.md`. They are the reference for who the app serves: the README, the demo script and the pitch must not claim more than a story shows, and a story changes in the same commit as the behaviour it describes.
 
 ## Current state
@@ -117,3 +119,20 @@ Data lives in a pack: one SQLite file per area (tables `meta`, `records`, `recor
 - No server of our own, no accounts, no sync. The only network use is the first-run download of models and packs.
 - OpenStreetMap data is ODbL and needs attribution; first-aid cards cite their source per card.
 - The hour-one model test app stays outside the product code.
+
+## Suspicious-request experiment and release status
+
+The accepted stabilization plan is the execution checklist. Saved-result
+metadata and resumable foreground wording checks are implemented. The optional
+five-head classifier is disabled in the bundled pack until independent
+calibration/final results and a user-initiated phone receipt satisfy all gates.
+Synthetic labels mean suspicious requests; ordinary payments/OTP notices are
+negatives. Follow `pack/classifier/README.md`; private data/vectors belong under
+ignored `pack/raw/classifier/`. Do not reuse the 20-scam regression set as a final
+test or claim toy-vector tests as classifier accuracy. Optional artifact changes
+invalidate AI completion only; `rules_version` excludes AI examples/reason copy.
+The explicit `HUDYAT_CLASSIFIER_PHONE_TEST` flag reads a local candidate only in
+debug builds and is never a release bypass. No phone installation, data clearing
+or model replacement without the user's initiation. First-aid source/threshold
+review and release alarm behaviour remain pending. Preserve October 10 feature
+stop at 07:00 and submission target at 09:30 Asia/Manila; no push/publication here.

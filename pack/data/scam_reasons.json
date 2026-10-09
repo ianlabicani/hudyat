@@ -40,5 +40,35 @@
     "tl": "Sinadyang putulin ang link para hindi mahuli ng filter ng network.",
     "en": "The link is deliberately broken up to get past the network's filters.",
     "fact": "Link: {domain}"
+  },
+  {
+    "id": "ask_credentials",
+    "tl": "Kahina-hinala ang paghingi nito ng sensitibong detalye o code.",
+    "en": "Its request for sensitive details or a code looks suspicious.",
+    "fact": ""
+  },
+  {
+    "id": "ask_money",
+    "tl": "Kahina-hinala ang paghingi nito ng pera o bayad.",
+    "en": "Its request for money or a fee looks suspicious.",
+    "fact": ""
+  },
+  {
+    "id": "ask_action",
+    "tl": "Kahina-hinala ang pagpapapindot nito ng link o pagpapagawa ng hakbang.",
+    "en": "Its request to follow a link or take an action looks suspicious.",
+    "fact": ""
+  },
+  {
+    "id": "ask_pressure",
+    "tl": "Minamadali o tinatakot ka nito sa kahina-hinalang paraan.",
+    "en": "It uses suspicious urgency or threats.",
+    "fact": ""
+  },
+  {
+    "id": "ask_bait",
+    "tl": "Kahina-hinala ang alok nitong premyo, trabaho o madaling pera.",
+    "en": "Its offer of a prize, job or easy money looks suspicious.",
+    "fact": ""
   }
 ]

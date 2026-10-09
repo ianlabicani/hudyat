@@ -3,10 +3,11 @@ import '../models/check_result.dart';
 import 'gambling.dart';
 import 'links.dart';
 import 'scam_phrases.dart';
+import 'suspicious_classifier.dart';
 
 /// Raise this when the rules in [MessageChecker] change, so texts an inbox
 /// scan checked with the old rules are checked again.
-const checkerVersion = 2;
+const checkerVersion = 3;
 
 /// Stage 1 of the message check (spec 3.4): links, claimed sender,
 /// gambling promos and phrasing, giving a verdict and reason ids. One checker serves paste,
@@ -18,6 +19,7 @@ class MessageChecker {
     List<String> neutralHosts = const [],
     GamblingRules gambling = GamblingRules.none,
     this.phrases,
+    this.classifier,
   }) : _shorteners = shorteners.toSet(),
        _neutral = neutralHosts.toSet(),
        _gambling = GamblingMatcher(gambling);
@@ -31,6 +33,12 @@ class MessageChecker {
 
   /// Returns the phrasing check once its examples are embedded, else null.
   final ScamPhrases? Function()? phrases;
+  final SuspiciousClassifier? Function()? classifier;
+
+  String? get aiVersion =>
+      classifier?.call()?.version ??
+      (phrases?.call()?.isReady == true ? phrases!.call()!.version : null);
+  bool get canCheckWording => aiVersion != null;
 
   /// Words that turn "Smart" or "Maya" from an ordinary word into a company.
   static final _telltale = RegExp(
@@ -116,21 +124,33 @@ class MessageChecker {
 
     // The wording check costs about a second on a phone, so an inbox scan
     // can leave it out.
-    final wording = phrasing ? phrases?.call() : null;
-    if (wording != null && wording.isReady) {
-      final type = await wording.match(text);
-      if (type != null) add(CheckReason(ReasonId.phrasing, {'type': type}));
+    var wordingState = phrasing
+        ? PhrasingState.notReady
+        : PhrasingState.skipped;
+    if (phrasing) {
+      try {
+        final detector = classifier?.call();
+        final wording = phrases?.call();
+        if (detector != null) {
+          for (final label in await detector.classify(text)) {
+            add(CheckReason('ask_${label.name}'));
+          }
+          wordingState = PhrasingState.checked;
+        } else if (wording != null && wording.isReady) {
+          final type = await wording.match(text);
+          if (type != null) add(CheckReason(ReasonId.phrasing, {'type': type}));
+          wordingState = PhrasingState.checked;
+        }
+      } on Object {
+        // Keep the rules result. A failed AI pass remains pending in the index.
+      }
     }
 
     return CheckResult(
       text: text,
       verdict: verdictFor(reasons),
       reasons: reasons,
-      phrasing: !phrasing
-          ? PhrasingState.skipped
-          : wording != null && wording.isReady
-          ? PhrasingState.checked
-          : PhrasingState.notReady,
+      phrasing: wordingState,
       sender: from == null || from.isEmpty ? null : from,
       app: app,
       claimed: claimed.isNotEmpty
@@ -145,11 +165,18 @@ class MessageChecker {
   /// finding is "Mag-ingat". Phrasing alone is never more than that.
   static Verdict verdictFor(List<CheckReason> reasons) {
     final ids = {for (final reason in reasons) reason.id};
+    final groups = {
+      for (final id in ids)
+        if (ReasonId.suspicious.contains(id) || id == ReasonId.phrasing)
+          'ai'
+        else
+          id,
+    };
     if (ids.isEmpty) return Verdict.clear;
     if (ids.contains(ReasonId.linkLookalike) ||
         ids.contains(ReasonId.linkHidden) ||
         ids.contains(ReasonId.linkNotOfficial) ||
-        ids.length >= 2) {
+        groups.length >= 2) {
       return Verdict.scam;
     }
     return Verdict.caution;

@@ -143,9 +143,9 @@ class _TimedCheckScreenState extends State<TimedCheckScreen> {
                     const SizedBox(height: 14),
                   ],
                   Text(
-                    'Hudyat alerts you only for "Mukhang scam", at the next '
-                    'check: up to ${status.intervalLabel} after the text '
-                    'arrives, or at once when you open Hudyat. Add the '
+                    'Checks are scheduled about every ${status.intervalLabel}. '
+                    'Android may delay them. Opening Hudyat also checks recent texts. '
+                    'Hudyat alerts you only for "Mukhang scam". Add the '
                     'Hudyat widget to your home screen to see the counts.',
                     style: HudyatText.secondary,
                   ),

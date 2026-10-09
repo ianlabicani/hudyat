@@ -7,6 +7,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_edge_ai/flutter_edge_ai.dart';
 import 'package:path_provider/path_provider.dart';
 
+import 'classifier_export.dart';
+
 const chatFile = 'Gemma3-1B-IT_multi-prefill-seq_q4_ekv4096.litertlm';
 const embedFile = 'embeddinggemma-300M_seq256_mixed-precision.tflite';
 const tokenizerFile = 'sentencepiece.model';
@@ -392,6 +394,21 @@ class _ModelTestPageState extends State<ModelTestPage>
     );
   });
 
+  Future<void> _exportClassifier() => _guard(() async {
+    final dir = _modelsDir!;
+    await FlutterEdgeAi.installEmbedder()
+        .modelFromFile('$dir/$embedFile')
+        .tokenizerFromFile('$dir/$tokenizerFile')
+        .install();
+    final count = await exportClassifierInputs(
+      dir,
+      await _json('assets/scam_examples.json'),
+    );
+    _say(
+      'RESULT classifier export: $count query vectors; classifier-vectors.json in files folder',
+    );
+  });
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -426,6 +443,10 @@ class _ModelTestPageState extends State<ModelTestPage>
               FilledButton(
                 onPressed: _running ? null : _exportInboxVectors,
                 child: const Text('5. Export inbox vectors'),
+              ),
+              FilledButton(
+                onPressed: _running ? null : _exportClassifier,
+                child: const Text('6. Export classifier inputs'),
               ),
               OutlinedButton(
                 onPressed: () =>

@@ -21,6 +21,13 @@ abstract final class ReasonId {
   static const phrasing = 'phrasing';
   static const linkHidden = 'link_hidden';
   static const gamblingPromo = 'gambling_promo';
+  static const suspicious = {
+    'ask_credentials',
+    'ask_money',
+    'ask_action',
+    'ask_pressure',
+    'ask_bait',
+  };
 }
 
 /// One finding: a reason id plus the facts that fill its fixed wording.
@@ -42,6 +49,8 @@ class CheckReason {
 
 /// Where the phrasing check stood when the message was checked.
 enum PhrasingState {
+  /// A legacy saved result did not record whether AI ran.
+  unknown,
   checked,
   notReady,
 

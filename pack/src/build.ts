@@ -1,6 +1,6 @@
 // Builds assets/pack/metro-manila.sqlite from pack/raw/. Run `bun run fetch`
 // first, then `bun run build`.
-import { readFileSync, readdirSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { convertAgencies, convertLgu } from "./sources/directory";
 import { convertCityHotlines, convertNationalHotlines } from "./sources/hotlines";
@@ -73,6 +73,7 @@ writePack(OUT, {
   records,
   intents,
   firstAid,
+  classifier: existsSync(join(ROOT, "data", "suspicious-classifier.json")) ? data("suspicious-classifier.json") : undefined,
   scam: {
     senders,
     examples: data("scam_examples.json"),

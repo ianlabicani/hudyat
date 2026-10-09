@@ -5,6 +5,12 @@ abstract class TextEmbedder {
   Future<List<List<double>>> embed(List<String> texts, {required bool asQuery});
 }
 
+/// Optional identity of the exact installed embedding model and tokenizer.
+abstract interface class IdentifiedEmbedder implements TextEmbedder {
+  Future<String?> fingerprint();
+  Future<int> dimension();
+}
+
 /// Streams generated text. Used only for the optional wording step.
 abstract class TextGenerator {
   Stream<String> generate(String prompt, {int maxOutputTokens = 80});

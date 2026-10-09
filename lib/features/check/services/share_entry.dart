@@ -3,13 +3,14 @@ import 'package:flutter/services.dart';
 /// Something another app handed to Hudyat. [text] is null when it had no
 /// text in it.
 class SharedText {
-  const SharedText(this.text, {this.openFlagged = false});
+  const SharedText(this.text, {this.openFlagged = false, this.resultId});
 
   final String? text;
 
   /// True for a tap on a scam alert or on the home screen widget, which
   /// carries no text and asks for the Flagged list.
   final bool openFlagged;
+  final int? resultId;
 }
 
 /// The two ways in from other apps: the share sheet and "Check with Hudyat"
@@ -34,6 +35,12 @@ class ShareEntry {
       if (payload == null) return null;
       if (payload['open'] == 'flagged') {
         return const SharedText(null, openFlagged: true);
+      }
+      if (payload['open'] == 'result') {
+        return SharedText(
+          null,
+          resultId: int.tryParse(payload['resultId'] ?? ''),
+        );
       }
       final text = payload['text']?.trim() ?? '';
       return SharedText(text.isEmpty ? null : text);

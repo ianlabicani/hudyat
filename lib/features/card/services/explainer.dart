@@ -22,15 +22,15 @@ String cardFacts(HelpCard card) {
 }
 
 String explainerPrompt({required HelpCard card, String? message}) =>
-    'Ikaw ay tumutulong sa taong nangangailangan ng tulong. Sumulat ng isa o '
-    'dalawang maikli at mahinahong pangungusap sa Taglish na nagsasabi kung '
-    'sino ang unang tatawagan at saan ang pinakamalapit na mapupuntahan.\n'
+    'You are helping someone who needs help. Write one or two short, calm '
+    'sentences in plain English saying who to call first and where the '
+    'nearest place to go is.\n'
     'Rules: Use only the FACTS. Do not add phone numbers, names, places or '
     'steps that are not in the FACTS. Do not give medical advice.\n'
     '${message == null ? '' : 'MESSAGE: $message\n'}'
     'FACTS:\n${cardFacts(card)}';
 
-/// Streams the optional Taglish note for a card (spec 3.2). The stream ends
+/// Streams the optional note for a card, in English (spec 3.2). The stream ends
 /// quietly on any error or when the model is too slow; the card is never
 /// affected.
 class Explainer {

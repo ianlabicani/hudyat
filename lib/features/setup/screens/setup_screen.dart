@@ -67,7 +67,7 @@ class SetupScreen extends StatelessWidget {
               _ModelCard(
                 title: 'Chat model: Gemma 3 1B',
                 body:
-                    'Writes a short Taglish note under each card. Optional. '
+                    'Writes a short note under each card. Optional. '
                     'Cards work without it.',
                 state: models.chatState,
                 progress: models.chatProgress,

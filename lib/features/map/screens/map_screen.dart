@@ -235,7 +235,6 @@ class _PlaceSheet extends StatelessWidget {
                 if (place.canCall)
                   Expanded(
                     child: CallButton(
-                      gloss: 'Tawagan',
                       onPressed: () => callRecord(context, place),
                     ),
                   ),

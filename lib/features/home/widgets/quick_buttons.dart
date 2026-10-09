@@ -41,20 +41,7 @@ class QuickButtons extends StatelessWidget {
                     // Null when disabled, so it greys with the label.
                     color: enabled ? CardLabels.iconColor(intent.id) : null,
                   ),
-                  label: Column(
-                    crossAxisAlignment: .start,
-                    mainAxisSize: .min,
-                    children: [
-                      Text(CardLabels.quickLabel(intent.id, intent.label)),
-                      if (CardLabels.quickGloss(intent.id) case final gloss?)
-                        Text(
-                          gloss,
-                          style: HudyatText.gloss.copyWith(
-                            color: enabled ? null : HudyatColors.disabledText,
-                          ),
-                        ),
-                    ],
-                  ),
+                  label: Text(CardLabels.quickLabel(intent.id, intent.label)),
                   style: OutlinedButton.styleFrom(
                     backgroundColor: HudyatColors.surface,
                     foregroundColor: HudyatColors.ink,

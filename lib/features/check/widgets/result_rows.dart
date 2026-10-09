@@ -80,8 +80,7 @@ class ReasonRow extends StatelessWidget {
               crossAxisAlignment: .start,
               spacing: 4,
               children: [
-                Text(reason.fill(wording.tl), style: HudyatText.bodyBold),
-                Text(reason.fill(wording.en), style: HudyatText.gloss),
+                Text(reason.fill(wording.en), style: HudyatText.bodyBold),
                 Text(reason.fill(wording.fact), style: HudyatText.data),
               ],
             ),

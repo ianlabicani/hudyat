@@ -7,16 +7,16 @@ import '../models/check_result.dart';
 /// fixed reasons already on screen. The sender's number and the real
 /// contact's details are left out, so the model cannot repeat them.
 String resultFacts(CheckResult result, Map<String, ScamReasonText> wording) => [
-  'verdict: ${result.verdict.label}',
+  'verdict: ${result.verdict.gloss}',
   for (final reason in result.reasons)
     if (wording[reason.id] case final text?)
       'reason: '
-          '${CheckReason(reason.id, {...reason.facts}..remove('sender')).fill(text.tl)}',
+          '${CheckReason(reason.id, {...reason.facts}..remove('sender')).fill(text.en)}',
 ].join('\n');
 
 String resultPrompt(String facts) =>
-    'Ipaliwanag sa isa o dalawang maikli at mahinahong pangungusap sa '
-    'Tagalog kung bakit ganito ang resulta ng pagsusuri sa isang mensahe.\n'
+    'Explain in one or two short, calm sentences in plain English why a '
+    'check of a message gave this result.\n'
     'Rules: Use only the FACTS. Do not add numbers, links, names or advice '
     'that are not in the FACTS. Never say the message is safe.\n'
     'FACTS:\n$facts';
@@ -37,7 +37,7 @@ bool rejectsResultNote(String text, String facts) {
       .any((match) => !known.contains(match.group(0)!));
 }
 
-/// Streams the optional Tagalog explanation under a flagged result (spec
+/// Streams the optional English explanation under a flagged result (spec
 /// 3.4, stage 2). The verdict and reasons never depend on it.
 class ResultExplainer {
   ResultExplainer(
@@ -45,7 +45,7 @@ class ResultExplainer {
     this.timeout = const Duration(seconds: 12),
   });
 
-  /// The spec's cut rule: set to false if the Tagalog is still poor on the
+  /// The spec's cut rule: set to false if the wording is still poor on the
   /// phone, and results show no note. The fixed reasons already explain the
   /// verdict.
   static const enabled = true;

@@ -167,7 +167,6 @@ class _CardScreenState extends State<CardScreen> {
       ],
       SectionHeading(
         title: 'Call now',
-        gloss: 'Tumawag ngayon',
         trailing: LevelBadge(
           level: card.hotlineLevel,
           name: card.hotlineLevelName,
@@ -219,11 +218,8 @@ class _CardScreenState extends State<CardScreen> {
     return [
       SectionHeading(
         title: byDistance
-            ? 'Nearest ${labels.plural}'
-            : '${_capitalise(labels.plural)} in ${card.city}',
-        gloss: byDistance
-            ? 'Pinakamalapit na ${labels.gloss}'
-            : 'Mga ${labels.gloss} sa ${card.city}',
+            ? 'Nearest $labels'
+            : '${_capitalise(labels)} in ${card.city}',
         trailing: Text(
           byDistance ? 'Straight-line distance' : 'Distances hidden',
           style: HudyatText.gloss.copyWith(fontSize: 13),
@@ -246,7 +242,7 @@ class _CardScreenState extends State<CardScreen> {
       if (card.places.isEmpty) ...[
         const SizedBox(height: 10),
         Text(
-          'No ${labels.plural} listed in ${card.city} in this pack.',
+          'No $labels listed in ${card.city} in this pack.',
           style: HudyatText.secondary,
         ),
       ],

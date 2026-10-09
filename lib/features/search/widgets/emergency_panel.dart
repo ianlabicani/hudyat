@@ -50,7 +50,6 @@ class EmergencyPanel extends StatelessWidget {
           CallButton(
             large: true,
             label: 'Call this number',
-            gloss: 'Tawagan ang numerong ito',
             onPressed: () => callRecord(context, hotline),
           ),
         ],

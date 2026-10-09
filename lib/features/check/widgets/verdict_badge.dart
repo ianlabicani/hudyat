@@ -4,12 +4,11 @@ import '../../../core/theme/tokens.dart';
 import '../../../core/widgets/dashed_panel.dart';
 import '../models/check_result.dart';
 
-/// What to do next, in fixed Tagalog. The clear verdict gets a Notice
+/// What to do next, in fixed wording. The clear verdict gets a Notice
 /// instead, since it must never read as "safe".
 String? adviceFor(Verdict verdict) => switch (verdict) {
-  Verdict.scam =>
-    'Huwag pindutin ang link. Huwag magbigay ng OTP, password o pera.',
-  Verdict.caution => 'I-verify muna gamit ang opisyal na contact bago kumilos.',
+  Verdict.scam => 'Do not tap the link. Do not give an OTP, password or money.',
+  Verdict.caution => 'Verify with the official contact before you act.',
   Verdict.clear => null,
 };
 

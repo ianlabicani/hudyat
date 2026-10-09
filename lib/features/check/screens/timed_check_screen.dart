@@ -5,6 +5,7 @@ import '../../../core/theme/tokens.dart';
 import '../../../core/widgets/buttons.dart';
 import '../../../core/widgets/panels.dart';
 import '../services/timed_check.dart';
+import '../services/protection_platform.dart';
 
 /// Explains automatic checking and turns it on or off. It is off until the
 /// user turns it on here, and it needs access to the SMS inbox.
@@ -23,15 +24,22 @@ class _TimedCheckScreenState extends State<TimedCheckScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     AppScope.of(context).timed.refresh();
+    AppScope.of(context).protection?.refresh();
   }
 
   Future<void> _turnOn() async {
-    final timed = AppScope.of(context).timed;
+    final scope = AppScope.of(context);
+    final timed = scope.timed;
+    final protection = scope.protection;
     setState(() {
       _asking = true;
       _refused = false;
     });
     final on = await timed.turnOn();
+    if (on) {
+      await protection?.requestSmsCapture();
+      await protection?.refresh();
+    }
     if (!mounted) return;
     setState(() {
       _asking = false;
@@ -41,7 +49,11 @@ class _TimedCheckScreenState extends State<TimedCheckScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final timed = AppScope.of(context).timed;
+    final scope = AppScope.of(context);
+    final timed = scope.timed;
+    if (scope.protection case final protection?) {
+      return _liveScreen(timed, protection);
+    }
     return Scaffold(
       appBar: const TopBar(title: 'Automatic checking'),
       body: SafeArea(
@@ -67,11 +79,6 @@ class _TimedCheckScreenState extends State<TimedCheckScreen> {
                     const SizedBox(width: 8),
                     Tag(status.on ? 'ON' : 'OFF'),
                   ],
-                ),
-                const SizedBox(height: 6),
-                const Text(
-                  'Awtomatikong suriin ang mga text ko',
-                  style: HudyatText.gloss,
                 ),
                 const SizedBox(height: 18),
                 _Fact(
@@ -150,10 +157,215 @@ class _TimedCheckScreenState extends State<TimedCheckScreen> {
                     style: HudyatText.secondary,
                   ),
                   const SizedBox(height: 18),
+                  SecondaryButton(label: 'Turn off', onPressed: timed.turnOff),
+                ],
+              ],
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _liveScreen(TimedCheck timed, ProtectionController protection) {
+    return Scaffold(
+      appBar: const TopBar(title: 'Automatic checking'),
+      body: SafeArea(
+        child: ListenableBuilder(
+          listenable: Listenable.merge([timed, protection]),
+          builder: (context, _) {
+            final status = timed.status;
+            final live = protection.status;
+            final active = status.on || live.appsOn;
+            return ListView(
+              padding: const EdgeInsets.all(HudyatShape.gutter),
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'Live scam protection',
+                        style: HudyatText.title.copyWith(fontSize: 24),
+                      ),
+                    ),
+                    Tag(active ? 'ON' : 'OFF'),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                const Text(
+                  'Hudyat checks incoming SMS and selected messaging app '
+                  'previews on this phone. It alerts only for "Mukhang scam".',
+                  style: HudyatText.secondary,
+                ),
+                const SizedBox(height: 16),
+                _Fact(
+                  title: 'SMS',
+                  body: status.on
+                      ? live.smsCapture
+                            ? 'Live SMS checking is ready. The 12-hour inbox '
+                                  'check also recovers missed messages.'
+                            : 'The inbox recovery is on, but live SMS access '
+                                  'is not allowed yet.'
+                      : 'Turn on SMS checking to allow live capture and '
+                            'the 12-hour recovery check.',
+                ),
+                const SizedBox(height: 10),
+                if (!status.on) ...[
+                  if (_refused)
+                    const Notice(
+                      title: 'SMS access was not given',
+                      body:
+                          'SMS checking stays off. Messaging app coverage '
+                          'can still be enabled separately.',
+                    ),
+                  const SizedBox(height: 10),
+                  PrimaryButton(
+                    label: _asking ? 'Waiting for access…' : 'Turn on SMS',
+                    onPressed: _asking ? null : _turnOn,
+                  ),
+                ] else ...[
+                  _Counts(status: status),
+                  if (!status.hasAccess || !live.smsCapture) ...[
+                    const SizedBox(height: 10),
+                    Notice(
+                      title: !status.hasAccess
+                          ? 'SMS inbox access was taken away'
+                          : 'Live SMS access is off',
+                      body: !status.hasAccess
+                          ? 'Live SMS can still work if its separate access '
+                                'is allowed, but the 12-hour recovery cannot run.'
+                          : 'Allow incoming SMS access for immediate checks. '
+                                'Inbox recovery continues with its own access.',
+                    ),
+                    const SizedBox(height: 10),
+                    SecondaryButton(
+                      label: 'Allow live SMS access',
+                      onPressed: protection.requestSmsCapture,
+                    ),
+                  ],
+                  const SizedBox(height: 10),
                   SecondaryButton(
-                    label: 'Turn off',
-                    gloss: 'I-off',
-                    onPressed: timed.turnOff,
+                    label: 'Turn off SMS',
+                    onPressed: () async {
+                      await timed.turnOff();
+                      await protection.refresh();
+                    },
+                  ),
+                ],
+                const SizedBox(height: 20),
+                _Fact(
+                  title: 'Messaging apps',
+                  body: live.appsOn
+                      ? live.appsReady
+                            ? 'Notification access is connected. Selected '
+                                  'app previews are checked as they arrive.'
+                            : 'Allow Hudyat notification access in Android '
+                                  'settings. This is separate from scam alerts.'
+                      : 'Enable this to check visible previews from selected '
+                            'messaging apps. Android asks for notification access.',
+                ),
+                const SizedBox(height: 10),
+                SecondaryButton(
+                  label: live.appsOn
+                      ? 'Turn off app checking'
+                      : 'Turn on app checking',
+                  onPressed: () async {
+                    await protection.setAppsOn(!live.appsOn);
+                    if (!live.appsOn && !protection.status.notificationAccess) {
+                      await protection.openNotificationAccess();
+                    }
+                  },
+                ),
+                if (live.appsOn) ...[
+                  if (!live.notificationAccess) ...[
+                    const SizedBox(height: 10),
+                    SecondaryButton(
+                      label: 'Open notification access settings',
+                      onPressed: protection.openNotificationAccess,
+                    ),
+                  ],
+                  const SizedBox(height: 12),
+                  const Text('Apps to check', style: HudyatText.bodyBold),
+                  for (final source in live.sources.where((s) => s.installed))
+                    SwitchListTile(
+                      contentPadding: EdgeInsets.zero,
+                      title: Text(source.name, style: HudyatText.body),
+                      subtitle: Text(source.package, style: HudyatText.data),
+                      value: source.enabled,
+                      onChanged: (enabled) =>
+                          protection.setSourceEnabled(source.package, enabled),
+                    ),
+                ],
+                const SizedBox(height: 20),
+                _Fact(
+                  title: 'Scam alerts',
+                  body: live.canAlert
+                      ? 'Ready. Only strong "Mukhang scam" findings notify you.'
+                      : 'Alerts are turned off for Hudyat. Findings are still '
+                            'saved; allow Hudyat notifications and its Scam '
+                            'alerts channel to see warnings.',
+                ),
+                if (!live.canAlert) ...[
+                  const SizedBox(height: 10),
+                  SecondaryButton(
+                    label: 'Allow scam alerts',
+                    onPressed: () async {
+                      if (!await timed.requestAlerts()) {
+                        await protection.openAlertSettings();
+                      }
+                      await protection.refresh();
+                    },
+                  ),
+                ],
+                const SizedBox(height: 16),
+                Text(
+                  live.lastProcessed == null
+                      ? 'No live message processed yet.'
+                      : 'Last processed: ${live.lastProcessed}',
+                  style: HudyatText.data,
+                ),
+                if (live.failure case final failure?) ...[
+                  const SizedBox(height: 8),
+                  Notice(
+                    title: 'A recent check failed',
+                    body: failure == 'pack_unavailable'
+                        ? 'Open Hudyat to prepare its local data pack, then '
+                              'try again.'
+                        : 'Open Hudyat again. If checks still fail, review '
+                              'SMS and notification access in Android settings.',
+                  ),
+                ],
+                const SizedBox(height: 16),
+                const _Fact(
+                  title: 'What Hudyat keeps',
+                  body:
+                      'Only flagged message text stays in the Flagged list '
+                      'on this phone. Other message text is discarded.',
+                ),
+                const SizedBox(height: 10),
+                const _Fact(
+                  title: 'Coverage limits',
+                  body:
+                      'Hidden previews, muted apps, and Android-redacted '
+                      'content may not be available. Android 15 can hide some '
+                      'OTP text from notification access. Missing text is '
+                      'never treated as a clear message.',
+                ),
+                const SizedBox(height: 10),
+                const _Fact(
+                  title: 'What leaves the phone',
+                  body:
+                      'Nothing from these checks. Fast rules run offline '
+                      'without loading an AI model in the background.',
+                ),
+                if (active) ...[
+                  const SizedBox(height: 18),
+                  SecondaryButton(
+                    label: 'Turn off all protection',
+                    onPressed: () async {
+                      await protection.stopAll();
+                      await timed.refresh();
+                    },
                   ),
                 ],
               ],

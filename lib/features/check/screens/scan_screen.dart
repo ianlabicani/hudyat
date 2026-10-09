@@ -73,11 +73,6 @@ class _ScanScreenState extends State<ScanScreen> {
                     style: HudyatText.title.copyWith(fontSize: 24),
                   ),
                 ),
-                const SizedBox(height: 6),
-                const Text(
-                  'Suriin ang mga text na nasa phone na',
-                  style: HudyatText.gloss,
-                ),
                 const SizedBox(height: 18),
                 const Panel(
                   primary: false,
@@ -92,7 +87,7 @@ class _ScanScreenState extends State<ScanScreen> {
                   ),
                 ),
                 const SizedBox(height: 18),
-                const SectionHeading(title: 'How far back', gloss: 'Saklaw'),
+                const SectionHeading(title: 'How far back'),
                 const SizedBox(height: 10),
                 Wrap(
                   spacing: 8,
@@ -185,11 +180,7 @@ class _ScanScreenState extends State<ScanScreen> {
                   const SizedBox(height: 10),
                   SecondaryButton(label: 'Stop', onPressed: scanner.stop),
                 ] else
-                  PrimaryButton(
-                    label: 'Scan',
-                    gloss: 'I-scan',
-                    onPressed: _scan,
-                  ),
+                  PrimaryButton(label: 'Scan', onPressed: _scan),
                 if (summary != null) ...[
                   const SizedBox(height: 22),
                   _Summary(summary: summary),

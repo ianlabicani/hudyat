@@ -79,15 +79,9 @@ class EmergencyButton extends StatelessWidget {
       child: Row(
         children: [
           const Expanded(
-            child: Column(
-              crossAxisAlignment: .start,
-              children: [
-                Text(
-                  'Call emergency hotline',
-                  style: TextStyle(fontSize: 18, fontWeight: .w700),
-                ),
-                Text('Tumawag ngayon', style: TextStyle(fontSize: 14)),
-              ],
+            child: Text(
+              'Call emergency hotline',
+              style: TextStyle(fontSize: 18, fontWeight: .w700),
             ),
           ),
           const SizedBox(width: 12),

@@ -84,8 +84,6 @@ class _CheckScreenState extends State<CheckScreen> {
                 style: HudyatText.title,
               ),
             ),
-            const SizedBox(height: 6),
-            const Text('Totoo ba ang mensaheng ito?', style: HudyatText.gloss),
             const SizedBox(height: 18),
             if (widget.sharedWithoutText) ...[
               const Notice(
@@ -100,9 +98,6 @@ class _CheckScreenState extends State<CheckScreen> {
               TextSpan(
                 text: 'Message',
                 style: TextStyle(fontSize: 18, fontWeight: .w700),
-                children: [
-                  TextSpan(text: '  Mensahe', style: HudyatText.gloss),
-                ],
               ),
             ),
             const SizedBox(height: 8),
@@ -113,7 +108,7 @@ class _CheckScreenState extends State<CheckScreen> {
               textCapitalization: .sentences,
               style: HudyatText.body,
               decoration: const InputDecoration(
-                hintText: 'Paste the message here. I-paste dito ang mensahe.',
+                hintText: 'Paste the message here.',
               ),
               onChanged: (_) => setState(() {}),
             ),
@@ -122,9 +117,6 @@ class _CheckScreenState extends State<CheckScreen> {
               TextSpan(
                 text: 'Sender, if you know it',
                 style: HudyatText.bodyBold,
-                children: [
-                  TextSpan(text: '  Nagpadala', style: HudyatText.gloss),
-                ],
               ),
             ),
             const SizedBox(height: 8),
@@ -207,7 +199,6 @@ class _CheckScreenState extends State<CheckScreen> {
             const SizedBox(height: 10),
             SecondaryButton(
               label: 'Scan my messages',
-              gloss: 'I-scan ang mga mensahe',
               onPressed: () => Navigator.of(context).push(
                 MaterialPageRoute<void>(builder: (_) => const ScanScreen()),
               ),
@@ -217,7 +208,11 @@ class _CheckScreenState extends State<CheckScreen> {
               listenable: scope.timed,
               builder: (context, _) => SecondaryButton(
                 label: 'Automatic checking',
-                gloss: scope.timed.status.on ? 'ON' : 'OFF',
+                gloss:
+                    scope.timed.status.on ||
+                        (scope.protection?.status.appsOn ?? false)
+                    ? 'ON'
+                    : 'OFF',
                 onPressed: () => Navigator.of(context).push(
                   MaterialPageRoute<void>(
                     builder: (_) => const TimedCheckScreen(),

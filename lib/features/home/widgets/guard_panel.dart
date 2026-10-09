@@ -37,8 +37,7 @@ class GuardPanel extends StatelessWidget {
         spacing: 12,
         children: [
           SectionHeading(
-            title: 'Bantay sa text',
-            gloss: 'Message guard',
+            title: 'Message guard',
             trailing: Tag(status.on || appsOn ? 'On' : 'Off'),
           ),
           if (!status.on && !appsOn) ...[
@@ -47,11 +46,7 @@ class GuardPanel extends StatelessWidget {
               'Nothing leaves it.',
               style: HudyatText.secondary,
             ),
-            SecondaryButton(
-              label: 'Turn on',
-              gloss: 'I-on',
-              onPressed: onOpenSettings,
-            ),
+            SecondaryButton(label: 'Turn on', onPressed: onOpenSettings),
           ] else if (status.on && !status.hasAccess) ...[
             const Text(
               'Hudyat cannot read your texts. Open automatic checking to '
@@ -75,7 +70,6 @@ class GuardPanel extends StatelessWidget {
             Text(_checkedLine(status), style: HudyatText.data),
             SecondaryButton(
               label: 'See flagged messages',
-              gloss: 'Tingnan',
               onPressed: onOpenFlagged,
             ),
           ] else ...[
@@ -89,11 +83,7 @@ class GuardPanel extends StatelessWidget {
               onPressed: onOpenFlagged,
             ),
           ],
-          SecondaryButton(
-            label: 'Check a message',
-            gloss: 'Suriin ang mensahe',
-            onPressed: onCheckMessage,
-          ),
+          SecondaryButton(label: 'Check a message', onPressed: onCheckMessage),
         ],
       ),
     );

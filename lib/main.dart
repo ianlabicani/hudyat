@@ -17,13 +17,17 @@ import 'core/pack/pack_installer.dart';
 import 'core/pack/pack_store.dart';
 import 'core/theme/tokens.dart';
 import 'core/widgets/buttons.dart';
+import 'core/widgets/panels.dart';
 import 'features/card/services/resolver.dart';
 import 'features/check/services/flagged_store.dart';
+import 'features/check/models/check_result.dart';
 import 'features/check/services/inbox_scanner.dart';
 import 'features/check/services/scan_index.dart';
+import 'features/check/services/protection_platform.dart';
 import 'features/check/services/sms_inbox.dart';
 import 'features/check/screens/check_screen.dart';
 import 'features/check/screens/flagged_screen.dart';
+import 'features/check/screens/result_screen.dart';
 import 'features/check/services/timed_check.dart';
 import 'features/check/services/message_checker.dart';
 import 'features/check/services/share_entry.dart';
@@ -51,6 +55,8 @@ class _HudyatAppState extends State<HudyatApp> with WidgetsBindingObserver {
   FlaggedStore? _flagged;
   TimedCheck? _timed;
   InboxScanner? _scanner;
+  ProtectionController? _protection;
+  bool _foreground = true;
   Object? _error;
   String? _lastAiVersion;
 
@@ -67,8 +73,13 @@ class _HudyatAppState extends State<HudyatApp> with WidgetsBindingObserver {
   /// Back on screen: pick up texts that arrived while the app was away.
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    _scanner?.setForeground(state == AppLifecycleState.resumed);
-    if (state == AppLifecycleState.resumed) unawaited(_catchUp());
+    _foreground = state == AppLifecycleState.resumed;
+    _scanner?.setForeground(_foreground);
+    if (_foreground) {
+      unawaited(_catchUp());
+      unawaited(_protection?.refresh());
+      unawaited(_resumeNotificationAI());
+    }
   }
 
   void _modelReady() {
@@ -80,12 +91,52 @@ class _HudyatAppState extends State<HudyatApp> with WidgetsBindingObserver {
     if (version == _lastAiVersion && _models?.loading == true) return;
     _lastAiVersion = version;
     unawaited(_scanner?.resumeWording());
+    unawaited(_resumeNotificationAI());
   }
 
   /// Flags new texts, then has the widget recount.
   Future<void> _catchUp() async {
-    await _scanner?.catchUp();
-    await _timed?.checkNow();
+    await _timed?.refresh();
+    if (_timed?.status.on == true) {
+      await _timed?.checkNow();
+      await _scanner?.catchUp();
+    }
+  }
+
+  Future<void> _resumeNotificationAI() async {
+    final checker = _checker;
+    final flagged = _flagged;
+    final version = checker?.aiVersion;
+    if (!_foreground || checker == null || flagged == null || version == null) {
+      return;
+    }
+    final watch = Stopwatch()..start();
+    for (final item in flagged.notificationFindingsAwaitingAI(version)) {
+      if (!_foreground ||
+          watch.elapsed >= const Duration(seconds: 30) ||
+          checker.aiVersion != version) {
+        break;
+      }
+      final old = item.result;
+      final updated = await checker.check(
+        old.text,
+        sender: old.sender,
+        app: old.app,
+        truncated: old.truncated,
+      );
+      if (updated.phrasing != PhrasingState.checked) break;
+      flagged.keep(
+        updated,
+        at: item.checkedAt,
+        sourceKey: item.sourceKey,
+        sourceType: item.sourceType,
+        sourcePackage: item.sourcePackage,
+        arrivedAt: item.arrivedAt,
+        rulesVersion: item.rulesVersion,
+        aiVersion: version,
+      );
+      await Future<void>.delayed(Duration.zero);
+    }
   }
 
   Future<void> _start() async {
@@ -148,12 +199,21 @@ class _HudyatAppState extends State<HudyatApp> with WidgetsBindingObserver {
         platform: const AndroidTimedCheck(),
         inbox: const AndroidSmsInbox(),
       );
+      final protection = ProtectionController(
+        const AndroidProtectionPlatform(),
+        onResultsChanged: () {
+          flagged.nativeResultsChanged();
+          unawaited(_resumeNotificationAI());
+        },
+      );
       _scanner = scanner;
       scanner.setForeground(
         WidgetsBinding.instance.lifecycleState == null ||
             WidgetsBinding.instance.lifecycleState == AppLifecycleState.resumed,
       );
       _timed = timed;
+      _protection = protection;
+      unawaited(protection.refresh());
       models.addListener(_modelReady);
       unawaited(_catchUp());
       // Models load in the background; the app is usable before they do.
@@ -181,15 +241,17 @@ class _HudyatAppState extends State<HudyatApp> with WidgetsBindingObserver {
   Future<void> _openShared() async {
     final shared = await _share.take();
     if (shared == null || !mounted) return;
-    if (shared.openFlagged) {
-      // The alert came from the timed check; this puts its text in the list.
-      await _scanner?.catchUp();
-      if (!mounted) return;
-    }
+    final saved = shared.resultId == null
+        ? null
+        : _flagged?.byId(shared.resultId!);
     unawaited(
       _navigator.currentState?.push(
         MaterialPageRoute<void>(
-          builder: (_) => shared.openFlagged
+          builder: (_) => shared.resultId != null
+              ? saved == null
+                    ? const _UnavailableResultScreen()
+                    : ResultScreen(result: saved.result)
+              : shared.openFlagged
               ? const FlaggedScreen()
               : CheckScreen(
                   initialText: shared.text,
@@ -204,6 +266,7 @@ class _HudyatAppState extends State<HudyatApp> with WidgetsBindingObserver {
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     _timed?.dispose();
+    _protection?.dispose();
     _scanner?.dispose();
     _share.dispose();
     _location?.dispose();
@@ -244,6 +307,7 @@ class _HudyatAppState extends State<HudyatApp> with WidgetsBindingObserver {
       flagged: flagged,
       timed: timed,
       scanner: scanner,
+      protection: _protection,
       child: MaterialApp(
         title: 'Hudyat',
         navigatorKey: _navigator,
@@ -252,6 +316,27 @@ class _HudyatAppState extends State<HudyatApp> with WidgetsBindingObserver {
       ),
     );
   }
+}
+
+class _UnavailableResultScreen extends StatelessWidget {
+  const _UnavailableResultScreen();
+
+  @override
+  Widget build(BuildContext context) => const Scaffold(
+    appBar: TopBar(title: 'Message check'),
+    body: SafeArea(
+      child: Center(
+        child: Padding(
+          padding: EdgeInsets.all(24),
+          child: Text(
+            'This saved result is no longer available. It may have been cleared.',
+            style: HudyatText.body,
+            textAlign: .center,
+          ),
+        ),
+      ),
+    ),
+  );
 }
 
 /// Shown for the moment it takes to unpack the data, or if that fails.

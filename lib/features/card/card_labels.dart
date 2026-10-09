@@ -53,27 +53,14 @@ abstract final class CardLabels {
         _ => fallback,
       };
 
-  /// The Filipino word under a quick button's label.
-  static String? quickGloss(String intentId) => switch (intentId) {
-    'flood_rescue' => 'Baha',
-    'medical_emergency' => 'Medikal',
-    'fire' => 'Sunog',
-    'crime_police' => 'Pulis',
-    'injury' => 'Sugat',
-    'need_medicine' => 'Gamot',
-    'need_clinic' => 'Klinika',
-    'shelter' => 'Evacuation',
-    _ => null,
-  };
-
-  /// Section title and Filipino gloss for a list of places of one kind.
-  static ({String plural, String gloss}) places(String kind) => switch (kind) {
-    'hospital' => (plural: 'hospitals', gloss: 'ospital'),
-    'clinic' => (plural: 'clinics', gloss: 'klinika'),
-    'pharmacy' => (plural: 'pharmacies', gloss: 'botika'),
-    'police' => (plural: 'police stations', gloss: 'istasyon ng pulis'),
-    'fire_station' => (plural: 'fire stations', gloss: 'istasyon ng bumbero'),
-    'shelter' => (plural: 'shelters', gloss: 'evacuation center'),
-    _ => (plural: 'places', gloss: 'lugar'),
+  /// The plural used in the heading over a list of places of one kind.
+  static String places(String kind) => switch (kind) {
+    'hospital' => 'hospitals',
+    'clinic' => 'clinics',
+    'pharmacy' => 'pharmacies',
+    'police' => 'police stations',
+    'fire_station' => 'fire stations',
+    'shelter' => 'shelters',
+    _ => 'places',
   };
 }

@@ -64,7 +64,7 @@ class UnderstoodStrip extends StatelessWidget {
                       if (intentLabel != null)
                         Text.rich(
                           TextSpan(
-                            text: 'Naintindihan: ',
+                            text: 'Understood: ',
                             style: HudyatText.body,
                             children: [
                               TextSpan(
@@ -76,7 +76,7 @@ class UnderstoodStrip extends StatelessWidget {
                         )
                       else
                         const Text(
-                          'Hahanapin sa listahan',
+                          'Will search the directory',
                           style: HudyatText.bodyBold,
                         ),
                       if (firstAidTitle != null)
@@ -87,8 +87,7 @@ class UnderstoodStrip extends StatelessWidget {
                       Text(
                         intentLabel != null
                             ? 'AI on this phone · ${_seconds(elapsed)}'
-                            : 'Not an emergency card · will search the '
-                                  'directory',
+                            : 'Not an emergency card',
                         style: HudyatText.data,
                       ),
                     ],

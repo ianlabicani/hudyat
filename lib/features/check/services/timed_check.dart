@@ -146,4 +146,16 @@ class TimedCheck extends ChangeNotifier {
   }
 
   Future<void> turnOff() => _apply(_platform.turnOff);
+
+  Future<bool> requestAlerts() async {
+    try {
+      final allowed = await _platform.requestNotifications();
+      await refresh();
+      return allowed;
+    } on PlatformException {
+      return false;
+    } on MissingPluginException {
+      return false;
+    }
+  }
 }

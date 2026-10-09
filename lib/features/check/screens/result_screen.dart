@@ -94,7 +94,7 @@ class _ResultScreenState extends State<ResultScreen> {
             if (result.verdict == Verdict.clear) ...[
               const SizedBox(height: 22),
               const Notice(
-                title: 'Hindi ito garantiya',
+                title: 'This is not a guarantee',
                 body:
                     'Hudyat can miss scams. If the message asks for money, '
                     'an OTP or a password, check with the sender another '
@@ -105,7 +105,7 @@ class _ResultScreenState extends State<ResultScreen> {
             MessageQuote(result: result),
             if (result.reasons.isNotEmpty) ...[
               const SizedBox(height: 22),
-              const SectionHeading(title: 'Why', gloss: 'Bakit'),
+              const SectionHeading(title: 'Why'),
               for (final reason in result.reasons)
                 if (wording[reason.id] case final text?)
                   Padding(
@@ -120,10 +120,7 @@ class _ResultScreenState extends State<ResultScreen> {
             ],
             if (result.verdict == Verdict.clear) ...[
               const SizedBox(height: 22),
-              const SectionHeading(
-                title: 'What was checked',
-                gloss: 'Ano ang sinuri',
-              ),
+              const SectionHeading(title: 'What was checked'),
               const SizedBox(height: 10),
               CheckedRow(name: 'Links', outcome: _links),
               const SizedBox(height: 10),
@@ -145,10 +142,7 @@ class _ResultScreenState extends State<ResultScreen> {
             ],
             if (claimed != null) ...[
               const SizedBox(height: 22),
-              const SectionHeading(
-                title: 'The real contact',
-                gloss: 'Ang tunay na contact',
-              ),
+              const SectionHeading(title: 'The real contact'),
               const SizedBox(height: 10),
               ContactRow(
                 sender: claimed,
@@ -165,11 +159,12 @@ class _ResultScreenState extends State<ResultScreen> {
                 style: HudyatText.gloss,
               ),
             ],
-            if (result.sender case final from? when result.isFlagged) ...[
+            if (result.sender case final from?
+                when result.isFlagged &&
+                    (result.app == null || result.app == 'Messages')) ...[
               const SizedBox(height: 22),
               SecondaryButton(
                 label: 'Open in Messages',
-                gloss: 'Buksan sa Messages',
                 onPressed: () => _openThread(context, from),
               ),
               const SizedBox(height: 8),

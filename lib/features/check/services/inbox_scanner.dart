@@ -280,7 +280,19 @@ class InboxScanner extends ChangeNotifier {
       phrasing: phrasing,
     );
     // Kept under the time the text arrived, not the time of the scan.
-    if (!_disposed) _flagged.keep(result, at: message.sentAt);
+    if (!_disposed) {
+      _flagged.keep(
+        result,
+        at: message.sentAt,
+        sourceKey: 'sms:${message.id}',
+        sourceType: 'sms',
+        arrivedAt: message.sentAt,
+        rulesVersion: rules,
+        aiVersion: result.phrasing == PhrasingState.checked
+            ? _checker.aiVersion
+            : null,
+      );
+    }
     return result;
   }
 

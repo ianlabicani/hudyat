@@ -34,7 +34,7 @@ class LeadCall extends StatelessWidget {
               spacing: 2,
               children: [
                 const Text(
-                  'Tawagan · Call',
+                  'Call',
                   style: TextStyle(fontSize: 14, color: onAccent),
                 ),
                 Text(

@@ -165,7 +165,9 @@ CREATE TABLE IF NOT EXISTS flagged (
   }) {
     final bySource = sourceKey == null
         ? const <Row>[]
-        : _db.select('SELECT id FROM flagged WHERE source_key = ?', [sourceKey]);
+        : _db.select('SELECT id FROM flagged WHERE source_key = ?', [
+            sourceKey,
+          ]);
     final legacy = bySource.isNotEmpty
         ? const <Row>[]
         : _db.select(
@@ -173,8 +175,13 @@ CREATE TABLE IF NOT EXISTS flagged (
             'AND text = ? AND sender IS ? ORDER BY id DESC LIMIT 1',
             [result.text, result.sender],
           );
-    final id = (bySource.isNotEmpty ? bySource.first['id'] :
-        legacy.isNotEmpty ? legacy.first['id'] : null) as int?;
+    final id =
+        (bySource.isNotEmpty
+                ? bySource.first['id']
+                : legacy.isNotEmpty
+                ? legacy.first['id']
+                : null)
+            as int?;
     if (!result.isFlagged) {
       if (id != null) _db.execute('DELETE FROM flagged WHERE id = ?', [id]);
       return null;
@@ -185,8 +192,8 @@ CREATE TABLE IF NOT EXISTS flagged (
       result.app,
       result.verdict.name,
       jsonEncode([
-            for (final reason in result.reasons)
-              {'id': reason.id, 'facts': reason.facts},
+        for (final reason in result.reasons)
+          {'id': reason.id, 'facts': reason.facts},
       ]),
       result.claimed?.name,
       result.truncated ? 1 : 0,
@@ -238,39 +245,37 @@ CREATE TABLE IF NOT EXISTS flagged (
   ];
 
   FlaggedMessage _message(Row row) => FlaggedMessage(
-        id: row['id'] as int,
-        checkedAt: DateTime.fromMillisecondsSinceEpoch(
-          row['checked_at'] as int,
-        ),
-        sourceKey: row['source_key'] as String?,
-        sourceType: row['source_type'] as String?,
-        sourcePackage: row['source_package'] as String?,
-        arrivedAt: row['arrived_at'] == null
-            ? null
-            : DateTime.fromMillisecondsSinceEpoch(row['arrived_at'] as int),
-        rulesVersion: row['rules_version'] as String?,
-        aiVersion: row['ai_version'] as String?,
-        result: CheckResult(
-          text: row['text'] as String,
-          verdict: Verdict.values.byName(row['verdict'] as String),
-          reasons: [
-            for (final item in jsonDecode(row['reasons'] as String) as List)
-              CheckReason(
-                (item as Map)['id'] as String,
-                (item['facts'] as Map).cast<String, String>(),
-              ),
-          ],
-          phrasing: PhrasingState.values.firstWhere(
-            (state) => state.name == row['phrasing'],
-            orElse: () => PhrasingState.unknown,
+    id: row['id'] as int,
+    checkedAt: DateTime.fromMillisecondsSinceEpoch(row['checked_at'] as int),
+    sourceKey: row['source_key'] as String?,
+    sourceType: row['source_type'] as String?,
+    sourcePackage: row['source_package'] as String?,
+    arrivedAt: row['arrived_at'] == null
+        ? null
+        : DateTime.fromMillisecondsSinceEpoch(row['arrived_at'] as int),
+    rulesVersion: row['rules_version'] as String?,
+    aiVersion: row['ai_version'] as String?,
+    result: CheckResult(
+      text: row['text'] as String,
+      verdict: Verdict.values.byName(row['verdict'] as String),
+      reasons: [
+        for (final item in jsonDecode(row['reasons'] as String) as List)
+          CheckReason(
+            (item as Map)['id'] as String,
+            (item['facts'] as Map).cast<String, String>(),
           ),
-          linkCount: row['link_count'] as int,
-          sender: row['sender'] as String?,
-          app: row['app'] as String?,
-          claimed: _senders[row['claimed']],
-          truncated: row['truncated'] == 1,
-        ),
-      );
+      ],
+      phrasing: PhrasingState.values.firstWhere(
+        (state) => state.name == row['phrasing'],
+        orElse: () => PhrasingState.unknown,
+      ),
+      linkCount: row['link_count'] as int,
+      sender: row['sender'] as String?,
+      app: row['app'] as String?,
+      claimed: _senders[row['claimed']],
+      truncated: row['truncated'] == 1,
+    ),
+  );
 
   List<FlaggedMessage> notificationFindingsAwaitingAI(String aiVersion) => [
     for (final row in _db.select(

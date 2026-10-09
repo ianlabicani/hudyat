@@ -276,17 +276,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   const SizedBox(height: 16),
                 ],
-                const Text.rich(
-                  TextSpan(
-                    text: 'What happened? ',
-                    style: TextStyle(fontSize: 18, fontWeight: .w700),
-                    children: [
-                      TextSpan(
-                        text: "Ano'ng nangyari?",
-                        style: HudyatText.gloss,
-                      ),
-                    ],
-                  ),
+                const Text(
+                  'What happened?',
+                  style: TextStyle(fontSize: 18, fontWeight: .w700),
                 ),
                 const SizedBox(height: 8),
                 TextField(
@@ -322,17 +314,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 if (_matching)
                   const PrimaryButton(label: 'Finding help…', onPressed: null)
                 else if (understands)
-                  PrimaryButton(
-                    label: 'Find help',
-                    gloss: 'Humanap ng tulong',
-                    onPressed: _findHelp,
-                  )
+                  PrimaryButton(label: 'Find help', onPressed: _findHelp)
                 else
-                  PrimaryButton(
-                    label: 'Search',
-                    gloss: 'Maghanap',
-                    onPressed: _findHelp,
-                  ),
+                  PrimaryButton(label: 'Search', onPressed: _findHelp),
                 const SizedBox(height: 16),
                 const Text('Or tap what you need', style: HudyatText.gloss),
                 const SizedBox(height: 8),

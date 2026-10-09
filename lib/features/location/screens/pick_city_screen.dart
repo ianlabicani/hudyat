@@ -42,7 +42,7 @@ class _PickCityScreenState extends State<PickCityScreen> {
         if (city.toLowerCase().contains(needle)) city,
     ];
     return Scaffold(
-      appBar: const TopBar(title: 'Where are you?', gloss: 'Nasaan ka?'),
+      appBar: const TopBar(title: 'Where are you?'),
       body: SafeArea(
         child: Column(
           children: [

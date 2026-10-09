@@ -94,6 +94,10 @@ abstract final class HudyatShape {
   );
   static const ruleBorder = BorderSide(color: HudyatColors.rule, width: 1.5);
 
+  /// Around information that cannot be tapped. An ink border means "tap
+  /// me": buttons, text boxes and rows that open something.
+  static const panelBorder = BorderSide(color: HudyatColors.rule, width: 2);
+
   /// Page gutter.
   static const gutter = 20.0;
 }

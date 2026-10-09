@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import '../pack/pack_store.dart';
 import '../theme/tokens.dart';
 
-/// A white box with the primary or secondary border. Most rows sit in one.
+/// A white box around information: a note, a fact, a row that is only read.
+/// Its border is the pale rule colour, never ink, so it does not look like a
+/// button. Anything tappable draws its own ink border instead.
 class Panel extends StatelessWidget {
   const Panel({
     required this.child,
@@ -23,7 +25,7 @@ class Panel extends StatelessWidget {
         color: HudyatColors.surface,
         borderRadius: HudyatShape.radius,
         border: Border.fromBorderSide(
-          primary ? HudyatShape.primaryBorder : HudyatShape.secondaryBorder,
+          primary ? HudyatShape.panelBorder : HudyatShape.ruleBorder,
         ),
       ),
       child: Padding(padding: padding, child: child),

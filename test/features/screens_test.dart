@@ -5,6 +5,7 @@ import 'package:hudyat/core/geo.dart';
 import 'package:hudyat/core/models/model_manager.dart';
 import 'package:hudyat/core/pack/pack_store.dart';
 import 'package:hudyat/core/theme/tokens.dart';
+import 'package:hudyat/core/widgets/panels.dart';
 import 'package:hudyat/core/widgets/rows.dart';
 import 'package:hudyat/features/card/screens/card_screen.dart';
 import 'package:hudyat/features/card/services/resolver.dart';
@@ -120,6 +121,53 @@ void main() {
       await pump(tester, Scaffold(body: HotlineRow(record: lab, onCall: null)));
       expect(find.text('6431234'), findsOneWidget);
       expect(find.text('Call'), findsNothing);
+    });
+  });
+
+  group('Borders', () {
+    Color sideOf(WidgetTester tester, Finder row) =>
+        (tester
+                    .widget<Material>(
+                      find.descendant(of: row, matching: find.byType(Material)),
+                    )
+                    .shape!
+                as RoundedRectangleBorder)
+            .side
+            .color;
+
+    testWidgets('ink means tappable; information is boxed in the rule colour', (
+      tester,
+    ) async {
+      final place = store
+          .hotlines(categories: ['medical'], city: 'Pasig')
+          .first;
+      await pump(
+        tester,
+        Scaffold(
+          body: Column(
+            children: [
+              const Notice(title: 'A note'),
+              PlaceRow(key: const Key('opens'), place: place, onTap: () {}),
+              PlaceRow(key: const Key('plain'), place: place),
+            ],
+          ),
+        ),
+      );
+      final note =
+          tester
+                  .widget<DecoratedBox>(
+                    find
+                        .descendant(
+                          of: find.byType(Notice),
+                          matching: find.byType(DecoratedBox),
+                        )
+                        .first,
+                  )
+                  .decoration
+              as BoxDecoration;
+      expect((note.border! as Border).top.color, HudyatColors.rule);
+      expect(sideOf(tester, find.byKey(const Key('opens'))), HudyatColors.ink);
+      expect(sideOf(tester, find.byKey(const Key('plain'))), HudyatColors.rule);
     });
   });
 

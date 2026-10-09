@@ -108,9 +108,12 @@ class PlaceRow extends StatelessWidget {
     );
     return Material(
       color: HudyatColors.surface,
-      shape: const RoundedRectangleBorder(
+      shape: RoundedRectangleBorder(
         borderRadius: HudyatShape.radius,
-        side: HudyatShape.secondaryBorder,
+        // Ink only when the row opens the map.
+        side: onTap == null
+            ? HudyatShape.ruleBorder
+            : HudyatShape.secondaryBorder,
       ),
       clipBehavior: .antiAlias,
       child: onTap == null ? content : InkWell(onTap: onTap, child: content),

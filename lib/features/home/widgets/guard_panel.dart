@@ -13,6 +13,7 @@ class GuardPanel extends StatelessWidget {
     required this.status,
     required this.onOpenFlagged,
     required this.onOpenSettings,
+    required this.onCheckMessage,
     super.key,
   });
 
@@ -21,6 +22,10 @@ class GuardPanel extends StatelessWidget {
 
   /// Opens Automatic checking, to turn it on or to give SMS access.
   final VoidCallback onOpenSettings;
+
+  /// Opens the manual check. Offered in every state: pasting or sharing a
+  /// message needs no SMS access.
+  final VoidCallback onCheckMessage;
 
   @override
   Widget build(BuildContext context) {
@@ -72,6 +77,11 @@ class GuardPanel extends StatelessWidget {
               onPressed: onOpenFlagged,
             ),
           ],
+          SecondaryButton(
+            label: 'Check a message',
+            gloss: 'Suriin ang mensahe',
+            onPressed: onCheckMessage,
+          ),
         ],
       ),
     );

@@ -3,13 +3,18 @@ import 'package:flutter/material.dart';
 /// Wording and icons for the fixed intents and place kinds. Intent ids and
 /// place kinds come from the pack; the text shown for them is decided here.
 abstract final class CardLabels {
-  /// The eight quick buttons on Home, in display order: the four a typhoon
-  /// night needs first.
+  /// The quick buttons on Home, in display order: what a typhoon night
+  /// needs in one tap.
   static const quickIntents = [
     'flood_rescue',
     'medical_emergency',
     'fire',
     'crime_police',
+  ];
+
+  /// Cards normally reached by typing. They get buttons too while the
+  /// language model is missing, since typing then only searches.
+  static const typedIntents = [
     'injury',
     'need_medicine',
     'need_clinic',

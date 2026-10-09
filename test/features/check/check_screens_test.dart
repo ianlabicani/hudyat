@@ -148,9 +148,10 @@ void main() {
   });
 
   group('Home', () {
-    testWidgets('has Look up and Check a message side by side', (tester) async {
+    testWidgets('opens Check a message from the guard panel', (tester) async {
       await pump(tester, const HomeScreen());
-      expect(find.text('Look up'), findsOneWidget);
+      // Looking something up is typing it into the box, not a button.
+      expect(find.text('Look up'), findsNothing);
       await tester.tap(find.text('Check a message'));
       await tester.pumpAndSettle();
       expect(find.text('Is this message real?'), findsOneWidget);

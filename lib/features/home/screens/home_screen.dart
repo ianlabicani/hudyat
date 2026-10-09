@@ -35,8 +35,8 @@ class _Understood {
   final Duration elapsed;
 }
 
-/// Home: the emergency number, the message box, the quick buttons and what
-/// automatic checking has found.
+/// Home in two blocks: getting help (the emergency number, the message box
+/// and the quick buttons) and the message guard.
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -217,10 +217,6 @@ class _HomeScreenState extends State<HomeScreen> {
     final store = scope.store;
     final emergency = store.nationalEmergency();
     final byId = {for (final intent in store.intents()) intent.id: intent};
-    final quick = [
-      for (final id in CardLabels.quickIntents)
-        if (byId[id] != null) byId[id]!,
-    ];
     return Scaffold(
       body: SafeArea(
         child: ListenableBuilder(
@@ -229,6 +225,14 @@ class _HomeScreenState extends State<HomeScreen> {
             final models = scope.models;
             final understands = models.matcher != null;
             final understood = _understood;
+            final quick = [
+              for (final id in [
+                ...CardLabels.quickIntents,
+                // Without the model, typing cannot open these cards.
+                if (!understands) ...CardLabels.typedIntents,
+              ])
+                if (byId[id] != null) byId[id]!,
+            ];
             return ListView(
               padding: const EdgeInsets.all(HudyatShape.gutter),
               children: [
@@ -344,18 +348,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   status: scope.timed.status,
                   onOpenFlagged: () => _push(const FlaggedScreen()),
                   onOpenSettings: () => _push(const TimedCheckScreen()),
-                ),
-                const SizedBox(height: 10),
-                SecondaryButton(
-                  label: 'Check a message',
-                  gloss: 'Suriin ang mensahe',
-                  onPressed: () => _push(const CheckScreen()),
-                ),
-                const SizedBox(height: 10),
-                SecondaryButton(
-                  label: 'Look up',
-                  gloss: 'Agencies, officials',
-                  onPressed: _search,
+                  onCheckMessage: () => _push(const CheckScreen()),
                 ),
                 const SizedBox(height: 20),
                 DecoratedBox(

@@ -237,6 +237,14 @@ void main() {
       expect(rich('Where are you?'), findsOneWidget);
     });
 
+    testWidgets('without the model, every card keeps a button', (tester) async {
+      await pump(tester, const HomeScreen());
+      // Typing only searches here, so these cards need their buttons.
+      for (final label in ['Medical', 'Injury', 'Medicine', 'Clinic']) {
+        expect(find.text(label), findsOneWidget);
+      }
+    });
+
     testWidgets('typing goes to keyword search', (tester) async {
       await pump(tester, const HomeScreen());
       await tester.enterText(find.byType(TextField), 'passport');
@@ -353,6 +361,17 @@ void main() {
       expect(find.text('Search results'), findsOneWidget);
     });
 
+    testWidgets('shows only the one-tap buttons; the rest are typed', (
+      tester,
+    ) async {
+      await pump(tester, const HomeScreen());
+      // The fixture pack has one of the four one-tap intents.
+      expect(find.text('Medical'), findsOneWidget);
+      for (final label in ['Injury', 'Medicine', 'Clinic']) {
+        expect(find.text(label), findsNothing);
+      }
+    });
+
     testWidgets('names what it understood once typing pauses', (tester) async {
       gps.fix = pasigPosition;
       await pump(tester, const HomeScreen());
@@ -467,6 +486,8 @@ void main() {
       await pump(tester, const HomeScreen());
       expect(find.text('Open automatic checking'), findsOneWidget);
       expect(find.text('Mukhang scam'), findsNothing);
+      // Pasting a message needs no SMS access, so this stays.
+      expect(find.text('Check a message'), findsOneWidget);
     });
 
     testWidgets('holds up with large text on a narrow screen', (tester) async {

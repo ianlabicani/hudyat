@@ -53,7 +53,7 @@ class Notice extends StatelessWidget {
             child: DecoratedBox(
               decoration: BoxDecoration(
                 shape: .circle,
-                border: Border.fromBorderSide(HudyatShape.primaryBorder),
+                border: Border.fromBorderSide(HudyatShape.panelBorder),
               ),
               child: SizedBox.square(
                 dimension: 28,
@@ -86,7 +86,8 @@ class Notice extends StatelessWidget {
 }
 
 /// Labels which level a hotline list comes from. Outlined means the user's
-/// own city; filled means a wider fallback.
+/// own city; filled means a wider fallback. The outline is the rule colour:
+/// a label is read, not tapped.
 class LevelBadge extends StatelessWidget {
   const LevelBadge({required this.level, this.name, super.key});
 
@@ -112,7 +113,9 @@ class LevelBadge extends StatelessWidget {
       decoration: BoxDecoration(
         color: filled ? HudyatColors.ink : null,
         borderRadius: HudyatShape.badgeRadius,
-        border: const Border.fromBorderSide(HudyatShape.secondaryBorder),
+        border: Border.fromBorderSide(
+          filled ? HudyatShape.secondaryBorder : HudyatShape.ruleBorder,
+        ),
       ),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
@@ -127,7 +130,8 @@ class LevelBadge extends StatelessWidget {
   }
 }
 
-/// A small outlined tag, such as a record kind on a search result.
+/// A small tag, such as a record kind on a search result. Outlined in the
+/// rule colour, so it does not look like a chip or a switch.
 class Tag extends StatelessWidget {
   const Tag(this.text, {super.key});
 
@@ -138,7 +142,7 @@ class Tag extends StatelessWidget {
     return DecoratedBox(
       decoration: const BoxDecoration(
         borderRadius: HudyatShape.badgeRadius,
-        border: Border.fromBorderSide(HudyatShape.secondaryBorder),
+        border: Border.fromBorderSide(HudyatShape.ruleBorder),
       ),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),

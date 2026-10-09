@@ -628,7 +628,7 @@ that is not here, add it to the canvas and this section first.
 | Data face | IBM Plex Mono, 400 and 500, for numbers, addresses, badges and footers |
 | Text sizes | 28 screen title, 20 section heading, 16 body, 13 minimum |
 | Shape | Radius 6; badges 3; pills fully round |
-| Borders | Ink means "tap me": 2px ink on buttons and text boxes, 1.5px ink on rows that open something. Information that cannot be tapped (notes, facts, plain rows, panels) is boxed in the rule colour, 2px or 1.5px, never ink |
+| Borders | Ink means "tap me": 2px ink on buttons and text boxes, 1.5px ink on rows that open something. Information that cannot be tapped (notes, facts, plain rows, panels) is boxed in the rule colour, 2px or 1.5px, never ink. The same holds for small marks: tags ("ON", a record kind), the city level badge, the "!" circle and first-aid step numbers are outlined in the rule colour with ink text. Small ink-filled badges in mono capitals (a fallback level, the AI label, "SCAM") are labels and are never tappable |
 | Dashed border | Optional, AI-written or locked content only |
 | Touch targets | 44 minimum; Call 48; primary actions 52 to 60 |
 

@@ -64,7 +64,7 @@ class ReasonRow extends StatelessWidget {
             child: DecoratedBox(
               decoration: BoxDecoration(
                 shape: .circle,
-                border: Border.fromBorderSide(HudyatShape.primaryBorder),
+                border: Border.fromBorderSide(HudyatShape.panelBorder),
               ),
               child: SizedBox.square(
                 dimension: 28,

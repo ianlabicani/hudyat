@@ -79,7 +79,7 @@ class _StepNumber extends StatelessWidget {
       child: DecoratedBox(
         decoration: const BoxDecoration(
           shape: BoxShape.circle,
-          border: Border.fromBorderSide(HudyatShape.primaryBorder),
+          border: Border.fromBorderSide(HudyatShape.panelBorder),
         ),
         child: SizedBox.square(
           dimension: 32,

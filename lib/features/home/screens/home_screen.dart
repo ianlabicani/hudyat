@@ -220,7 +220,11 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       body: SafeArea(
         child: ListenableBuilder(
-          listenable: Listenable.merge([scope.models, scope.timed]),
+          listenable: Listenable.merge([
+            scope.models,
+            scope.timed,
+            ?scope.protection,
+          ]),
           builder: (context, _) {
             final models = scope.models;
             final understands = models.matcher != null;
@@ -306,6 +310,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     icon: understood.intent == null
                         ? null
                         : CardLabels.icon(understood.intent!.id),
+                    iconColor: understood.intent == null
+                        ? HudyatColors.ink
+                        : CardLabels.iconColor(understood.intent!.id),
                     firstAidTitle: understood.firstAid?.title,
                     elapsed: understood.elapsed,
                     onPressed: () => _open(understood),
@@ -346,6 +353,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 const SizedBox(height: 22),
                 GuardPanel(
                   status: scope.timed.status,
+                  appsOn: scope.protection?.status.appsOn ?? false,
                   onOpenFlagged: () => _push(const FlaggedScreen()),
                   onOpenSettings: () => _push(const TimedCheckScreen()),
                   onCheckMessage: () => _push(const CheckScreen()),

@@ -11,6 +11,7 @@ class UnderstoodStrip extends StatelessWidget {
     required this.onPressed,
     this.intentLabel,
     this.icon,
+    this.iconColor = HudyatColors.ink,
     this.firstAidTitle,
     super.key,
   });
@@ -19,6 +20,7 @@ class UnderstoodStrip extends StatelessWidget {
   /// will go to keyword search.
   final String? intentLabel;
   final IconData? icon;
+  final Color iconColor;
 
   /// The matched first-aid card's title, when there is one.
   final String? firstAidTitle;
@@ -52,7 +54,7 @@ class UnderstoodStrip extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             child: Row(
               children: [
-                Icon(icon ?? Icons.search, size: 26, color: HudyatColors.ink),
+                Icon(icon ?? Icons.search, size: 26, color: iconColor),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(

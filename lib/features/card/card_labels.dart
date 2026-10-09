@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../core/theme/tokens.dart';
+
 /// Wording and icons for the fixed intents and place kinds. Intent ids and
 /// place kinds come from the pack; the text shown for them is decided here.
 abstract final class CardLabels {
@@ -31,6 +33,17 @@ abstract final class CardLabels {
     'need_clinic' => Icons.medical_services_outlined,
     'shelter' => Icons.night_shelter_outlined,
     _ => Icons.help_outline,
+  };
+
+  /// The icon's colour, so the kinds of help differ by more than shape.
+  static Color iconColor(String intentId) => switch (intentId) {
+    'flood_rescue' => HudyatColors.water,
+    'medical_emergency' || 'injury' => HudyatColors.danger,
+    'fire' => HudyatColors.fire,
+    'crime_police' => HudyatColors.police,
+    'need_medicine' || 'need_clinic' => HudyatColors.care,
+    'shelter' => HudyatColors.shelter,
+    _ => HudyatColors.ink,
   };
 
   /// Short label for a quick button.

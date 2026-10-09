@@ -367,6 +367,10 @@ void main() {
       await pump(tester, const HomeScreen());
       // The fixture pack has one of the four one-tap intents.
       expect(find.text('Medical'), findsOneWidget);
+      expect(
+        tester.widget<Icon>(find.byIcon(Icons.local_hospital_outlined)).color,
+        HudyatColors.danger,
+      );
       for (final label in ['Injury', 'Medicine', 'Clinic']) {
         expect(find.text(label), findsNothing);
       }
@@ -464,6 +468,11 @@ void main() {
       await pump(tester, const HomeScreen());
       expect(find.text('ON'), findsOneWidget);
       expect(find.text('3'), findsOneWidget);
+      // Each count carries its verdict's colour.
+      Color? colourOf(String text) =>
+          tester.widget<Text>(find.text(text)).style?.color;
+      expect(colourOf('3'), HudyatColors.danger);
+      expect(colourOf('1'), HudyatColors.caution);
       expect(find.text('Mukhang scam'), findsOneWidget);
       expect(find.text('Mag-ingat'), findsOneWidget);
       expect(find.text('Sugal promo'), findsOneWidget);
@@ -512,6 +521,10 @@ void main() {
       await tester.pump(const Duration(milliseconds: 700));
       await tester.pump();
       expect(rich('Naintindihan'), findsOneWidget);
+      // A count of zero is muted, so nothing found does not look alarming.
+      final zeros = tester.widgetList<Text>(find.text('0'));
+      expect(zeros, hasLength(2));
+      expect(zeros.every((t) => t.style?.color == HudyatColors.muted), isTrue);
 
       // The card, with its lead call, at the same size.
       await tester.tap(find.text('Find help'));

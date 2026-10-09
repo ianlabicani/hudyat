@@ -13,9 +13,10 @@ String? adviceFor(Verdict verdict) => switch (verdict) {
   Verdict.clear => null,
 };
 
-/// The verdict at the top of a result: ink fill for "Mukhang scam",
-/// outlined for "Mag-ingat", dashed and muted for "Walang nakitang
-/// problema". The call accent is never used here.
+/// The verdict at the top of a result: danger fill for "Mukhang scam",
+/// outlined in the caution colour for "Mag-ingat", dashed and muted for
+/// "Walang nakitang problema". Shape differs as well as colour. The call
+/// accent is never used here, and neither is green.
 class VerdictBadge extends StatelessWidget {
   const VerdictBadge({required this.verdict, super.key});
 
@@ -26,6 +27,13 @@ class VerdictBadge extends StatelessWidget {
     final filled = verdict == Verdict.scam;
     final dashed = verdict == Verdict.clear;
     final ink = filled ? HudyatColors.surface : HudyatColors.ink;
+    // The colour that carries the verdict; body text stays ink for contrast.
+    final tone = switch (verdict) {
+      Verdict.scam => HudyatColors.danger,
+      Verdict.caution => HudyatColors.caution,
+      Verdict.clear => HudyatColors.muted,
+    };
+    final accent = filled ? HudyatColors.surface : tone;
     final advice = adviceFor(verdict);
     final content = Column(
       crossAxisAlignment: .start,
@@ -34,14 +42,14 @@ class VerdictBadge extends StatelessWidget {
         DecoratedBox(
           decoration: BoxDecoration(
             borderRadius: HudyatShape.badgeRadius,
-            border: Border.all(
-              color: dashed ? HudyatColors.muted : ink,
-              width: 1.5,
-            ),
+            border: Border.all(color: accent, width: 1.5),
           ),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-            child: Text('VERDICT', style: HudyatText.data.copyWith(color: ink)),
+            child: Text(
+              'VERDICT',
+              style: HudyatText.data.copyWith(color: accent),
+            ),
           ),
         ),
         Semantics(
@@ -49,7 +57,7 @@ class VerdictBadge extends StatelessWidget {
           child: Text(
             verdict.label,
             style: HudyatText.title.copyWith(
-              color: ink,
+              color: dashed ? HudyatColors.ink : accent,
               fontSize: dashed ? 26 : 28,
             ),
           ),
@@ -69,9 +77,9 @@ class VerdictBadge extends StatelessWidget {
     }
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: filled ? HudyatColors.ink : HudyatColors.surface,
+        color: filled ? tone : HudyatColors.surface,
         borderRadius: HudyatShape.radius,
-        border: const Border.fromBorderSide(HudyatShape.primaryBorder),
+        border: Border.all(color: tone, width: 2),
       ),
       child: Padding(padding: const EdgeInsets.all(16), child: content),
     );
@@ -87,18 +95,19 @@ class VerdictTag extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final filled = verdict == Verdict.scam;
+    final tone = filled ? HudyatColors.danger : HudyatColors.caution;
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: filled ? HudyatColors.ink : null,
+        color: filled ? tone : null,
         borderRadius: HudyatShape.badgeRadius,
-        border: const Border.fromBorderSide(HudyatShape.secondaryBorder),
+        border: Border.all(color: tone, width: 1.5),
       ),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
         child: Text(
           filled ? 'SCAM' : 'MAG-INGAT',
           style: HudyatText.data.copyWith(
-            color: filled ? HudyatColors.surface : HudyatColors.ink,
+            color: filled ? HudyatColors.surface : tone,
           ),
         ),
       ),

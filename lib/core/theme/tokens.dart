@@ -12,6 +12,21 @@ abstract final class HudyatColors {
 
   /// Call buttons and the emergency link only.
   static const call = Color(0xFFB93A0B);
+
+  /// "Mukhang scam", and the icon for medical help.
+  static const danger = Color(0xFFA31621);
+
+  /// "Mag-ingat". "Walang nakitang problema" has no colour of its own: it
+  /// stays muted and is never green, which would read as "safe".
+  static const caution = Color(0xFF8A5200);
+
+  /// Icon colours that tell the kinds of help apart. Icons only; labels and
+  /// borders stay ink.
+  static const water = Color(0xFF1F5FA8);
+  static const fire = Color(0xFFB85300);
+  static const police = Color(0xFF1E2F6B);
+  static const care = Color(0xFF0F6B63);
+  static const shelter = Color(0xFF5B3A8C);
 }
 
 abstract final class HudyatText {

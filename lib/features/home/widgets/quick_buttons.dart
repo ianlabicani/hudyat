@@ -35,7 +35,12 @@ class QuickButtons extends StatelessWidget {
                 width: width,
                 child: OutlinedButton.icon(
                   onPressed: enabled ? () => onTap(intent) : null,
-                  icon: Icon(CardLabels.icon(intent.id), size: 28),
+                  icon: Icon(
+                    CardLabels.icon(intent.id),
+                    size: 28,
+                    // Null when disabled, so it greys with the label.
+                    color: enabled ? CardLabels.iconColor(intent.id) : null,
+                  ),
                   label: Column(
                     crossAxisAlignment: .start,
                     mainAxisSize: .min,

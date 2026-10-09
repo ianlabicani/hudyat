@@ -592,6 +592,10 @@ that is not here, add it to the canvas and this section first.
 | Muted text / rule | `#55534D` / `#CFCCC2` |
 | Disabled fill / disabled text | `#CFCCC2` / `#3F3D39` |
 | Call accent | `#B93A0B`, used only on Call buttons and the emergency link |
+| Danger | `#A31621`, for "Mukhang scam" and the medical and injury icons |
+| Caution | `#8A5200`, for "Mag-ingat" |
+| No verdict colour | "Walang nakitang problema" stays muted. Green is not in the palette, since it would read as "safe" |
+| Help icons | Flood `#1F5FA8`, fire `#B85300`, police `#1E2F6B`, medicine and clinic `#0F6B63`, shelter `#5B3A8C`. Icons only; labels and borders stay ink |
 | Text face | Atkinson Hyperlegible, 400 and 700 |
 | Data face | IBM Plex Mono, 400 and 500, for numbers, addresses, badges and footers |
 | Text sizes | 28 screen title, 20 section heading, 16 body, 13 minimum |
@@ -619,7 +623,7 @@ submission disclosures.
 | `AiNote` | Dashed box labelled "AI-WRITTEN · MAY BE WRONG" |
 | `FirstAidSection` | Primary panel tagged "FIRST AID · FIXED CARD": title with its Filipino gloss, numbered Tagalog steps, and the source name and link as text |
 | `PackFooter` | Hotline source, OpenStreetMap attribution, pack build date |
-| `VerdictBadge` | Ink fill for "Mukhang scam"; outlined for "Mag-ingat"; dashed and muted for "Walang nakitang problema". No new colour |
+| `VerdictBadge` | Danger fill for "Mukhang scam"; outlined and titled in the caution colour for "Mag-ingat"; dashed and muted for "Walang nakitang problema". Shape differs as well as colour |
 | `ReasonRow` | One fixed-text reason and the pack fact behind it |
 | `MessageQuote` | The checked message in the data face, with sender and source app; says so when it may be cut short |
 | Buttons | Primary (ink fill), secondary (outlined), call (accent fill) |
@@ -700,7 +704,10 @@ submission disclosures.
   garantiya" Notice.
 - Reasons and the advice under a verdict are fixed text filled with pack
   data. Only the `AiNote` is generated.
-- The call accent is not used for verdicts.
+- The call accent is not used for verdicts. Verdict colours are danger
+  and caution only; a count of zero is shown muted.
+- Colour never carries meaning alone: a verdict also differs by fill,
+  outline and its words, and a quick button by its icon and label.
 
 ## 6. Tools
 

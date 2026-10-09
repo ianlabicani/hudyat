@@ -56,7 +56,7 @@ affiliation.
 | Emergency flow | Taglish message to a card with hotlines and nearest facilities |
 | First aid | About 8 fixed cards for flood and typhoon cases |
 | Everyday lookup | National agencies, LGU officials and contacts, hotlines, services list |
-| Map | Offline map of Metro Manila with a line and distance to a place |
+| Map | Offline map of Metro Manila with a ripple on the place, its distance, and a button for road directions in Google Maps (needs internet) |
 | Packs | One downloadable data file per area; Metro Manila is the first |
 | Message check | Scam check by paste, share or text selection, a scan of the SMS inbox by range, plus automatic checking of incoming messages with alerts |
 
@@ -523,7 +523,7 @@ Flutter, Android first.
 | `LocationService` | GPS fix, last known position, manual city choice | Platform location |
 | `Resolver` | Intent plus location to a `Card` | `PackStore` |
 | `Explainer` | Stream the English sentences for a `Card` | `ModelManager` |
-| `MapView` | Offline map, markers, line and distance | `maplibre_gl` |
+| `MapView` | Offline map, markers, ripple and distance | `maplibre_gl` |
 | `MessageChecker` | Text and optional sender to a verdict and reason ids | `PackStore`, `IntentMatcher`'s embedder |
 | `ShareEntry` | Receive text from the share sheet and the selection menu | Android intents |
 | `TimedCheck` | Turn the timed SMS check on and off, report its counts | `InboxCheck.kt`, `InboxAlarm.kt`, `ScamWidget.kt` through a method channel |
@@ -543,7 +543,7 @@ Backup model runner: `llamadart`.
    - A first-aid card if one matched.
 5. The Card screen shows immediately.
 6. `Explainer` streams its sentences under the card.
-7. Tapping a place opens the Map screen with a line and distance.
+7. Tapping a place opens the Map screen with a ripple on the place and its distance. "Directions in Google Maps" hands the place to Google Maps, which needs internet.
 
 Message check flow:
 
@@ -562,7 +562,7 @@ Message check flow:
   guard panel, pack status.
 - **Card:** hotlines with tap-to-call, places list, first-aid card, AI
   sentences, source credits.
-- **Map:** offline map, user position, place markers, line and distance.
+- **Map:** offline map, user position, place markers, a ripple on the selected place, distance, and a Google Maps directions button (needs internet).
 - **Check:** paste box and a Check button.
 - **Result:** verdict, reasons, official contact with Call, AI
   explanation.

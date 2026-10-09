@@ -103,7 +103,7 @@ Units and their dependencies:
 | `LocationService` | GPS fix, last known position, manual city choice | Platform location |
 | `Resolver` | Intent plus location to a `Card` | `PackStore` |
 | `Explainer` | Stream the English sentences for a `Card` | `ModelManager` |
-| `MapView` | Offline map, markers, line and distance | `maplibre_gl` |
+| `MapView` | Offline map, markers, ripple and distance | `maplibre_gl` |
 
 Flow: Home message → `IntentMatcher` → `LocationService` → `Resolver` builds the `Card` → Card screen shows immediately → `Explainer` streams sentences under it → tapping a place opens Map.
 

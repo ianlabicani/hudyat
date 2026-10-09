@@ -36,7 +36,7 @@ void main() {
     );
   });
 
-  test('with a position: marks the user and draws a line to the place', () {
+  test('with a position: marks the user, with no line to the place', () {
     final hospitals = store.places(kinds: ['hospital']);
     final selected = hospitals.first;
     final style = buildMapStyle(
@@ -49,20 +49,49 @@ void main() {
     // The selected place is not drawn twice.
     expect(features(style, 'others'), hasLength(hospitals.length - 1));
     expect(features(style, 'user'), hasLength(1));
-    final line = features(style, 'line').single as Map;
-    expect((line['geometry'] as Map)['coordinates'], [
-      [pasigPosition.lon, pasigPosition.lat],
-      [selected.lon, selected.lat],
-    ]);
+    expect((style['sources'] as Map).containsKey('line'), isFalse);
+    expect(
+      (style['layers'] as List).any(
+        (layer) =>
+            (layer as Map)['type'] == 'line' && layer['source'] != 'basemap',
+      ),
+      isFalse,
+    );
   });
 
-  test('without a position: no user marker and no line', () {
+  test('without a position: no user marker', () {
     final style = buildMapStyle(
       mapPath: '/m.pmtiles',
       selected: store.places(kinds: ['hospital']).first,
     );
     expect(features(style, 'user'), isEmpty);
-    expect(features(style, 'line'), isEmpty);
+  });
+
+  test('the ripple sits under the selected marker and starts hidden', () {
+    final style = buildMapStyle(
+      mapPath: '/m.pmtiles',
+      selected: store.places(kinds: ['hospital']).first,
+    );
+    final ids = [
+      for (final layer in style['layers'] as List) (layer as Map)['id'],
+    ];
+    expect(ids.indexOf(rippleLayer), lessThan(ids.indexOf('selected')));
+    final ripple = (style['layers'] as List).firstWhere(
+      (layer) => (layer as Map)['id'] == rippleLayer,
+    ) as Map;
+    expect(ripple['source'], 'selected');
+    expect((ripple['paint'] as Map)['circle-opacity'], 0);
+  });
+
+  test('the ripple grows and fades through a cycle', () {
+    final start = rippleAt(0);
+    final middle = rippleAt(0.5);
+    final end = rippleAt(1);
+    expect(start.radius, lessThan(middle.radius));
+    expect(middle.radius, lessThan(end.radius));
+    expect(start.opacity, greaterThan(middle.opacity));
+    expect(end.opacity, 0);
+    expect(rippleAt(2), end);
   });
 
   test('zooms out as the place gets farther away', () {

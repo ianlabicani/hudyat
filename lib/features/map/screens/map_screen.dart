@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -12,8 +13,8 @@ import '../../../core/widgets/buttons.dart';
 import '../../../core/widgets/panels.dart';
 import '../map_style.dart';
 
-/// The offline map for one place: where it is, where the user is, and the
-/// straight line between them.
+/// The offline map for one place: where it is, marked with a ripple, and
+/// where the user is.
 class MapScreen extends StatefulWidget {
   const MapScreen({
     required this.mapPath,
@@ -29,7 +30,7 @@ class MapScreen extends StatefulWidget {
   /// The other places on the card, drawn as plain markers.
   final List<PackRecord> others;
 
-  /// Null without a GPS fix: no "You" marker, line or distance.
+  /// Null without a GPS fix: no "You" marker or distance.
   final LatLon? position;
 
   @override
@@ -39,6 +40,11 @@ class MapScreen extends StatefulWidget {
 class _MapScreenState extends State<MapScreen> {
   MapLibreMapController? _map;
   bool _loaded = false;
+  Timer? _ripple;
+  bool _drawing = false;
+  final _clock = Stopwatch();
+
+  static const _rippleCycle = Duration(milliseconds: 1800);
 
   late final double? _km = PackStore.distanceTo(widget.place, widget.position);
   late final String _style = jsonEncode(
@@ -51,10 +57,52 @@ class _MapScreenState extends State<MapScreen> {
   );
 
   @override
+  void dispose() {
+    _ripple?.cancel();
+    super.dispose();
+  }
+
+  void _onStyleLoaded() {
+    setState(() => _loaded = true);
+    // The marker alone is enough when the phone asks for less motion.
+    if (MediaQuery.disableAnimationsOf(context)) return;
+    _clock.start();
+    _ripple ??= Timer.periodic(
+      const Duration(milliseconds: 50),
+      (_) => _drawRipple(),
+    );
+  }
+
+  Future<void> _drawRipple() async {
+    final map = _map;
+    if (map == null || _drawing) return;
+    _drawing = true;
+    final frame = rippleAt(
+      (_clock.elapsedMilliseconds % _rippleCycle.inMilliseconds) /
+          _rippleCycle.inMilliseconds,
+    );
+    try {
+      // Unset properties go back to their defaults, so the colour is resent.
+      await map.setLayerProperties(
+        rippleLayer,
+        CircleLayerProperties(
+          circleRadius: frame.radius,
+          circleOpacity: frame.opacity,
+          circleColor: rippleColor,
+        ),
+      );
+    } on Exception {
+      // The map is being torn down or reloading; the marker still shows.
+    } finally {
+      _drawing = false;
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final place = widget.place;
     final position = widget.position;
-    // Centre between the two ends when there is a line to show.
+    // Centre between the place and the user when both are known.
     final target = position == null
         ? LatLng(place.lat!, place.lon!)
         : LatLng(
@@ -76,7 +124,7 @@ class _MapScreenState extends State<MapScreen> {
                       zoom: zoomForDistance(_km),
                     ),
                     onMapCreated: (controller) => _map = controller,
-                    onStyleLoadedCallback: () => setState(() => _loaded = true),
+                    onStyleLoadedCallback: _onStyleLoaded,
                     rotateGesturesEnabled: false,
                     tiltGesturesEnabled: false,
                     compassEnabled: false,
@@ -172,12 +220,21 @@ class _MapButton extends StatelessWidget {
   }
 }
 
-/// The selected place: name, address, phone, distance and the two actions.
+/// The selected place: name, address, phone, distance and the actions.
 class _PlaceSheet extends StatelessWidget {
   const _PlaceSheet({required this.place, required this.km});
 
   final PackRecord place;
   final double? km;
+
+  Future<void> _openDirections(BuildContext context) async {
+    final messenger = ScaffoldMessenger.of(context);
+    if (!await openDirections(place.lat!, place.lon!)) {
+      messenger.showSnackBar(
+        const SnackBar(content: Text('Could not open Google Maps.')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -245,6 +302,11 @@ class _PlaceSheet extends StatelessWidget {
                   ),
                 ),
               ],
+            ),
+            SecondaryButton(
+              label: 'Directions in Google Maps',
+              gloss: 'needs internet',
+              onPressed: () => _openDirections(context),
             ),
             Text(
               km == null

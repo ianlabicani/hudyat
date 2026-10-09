@@ -2,8 +2,8 @@ import '../../core/geo.dart';
 import '../../core/pack/pack_record.dart';
 
 /// Builds the MapLibre style for the Map screen: the offline basemap plus the
-/// places, the user's position and a straight line between the two. Markers
-/// are circle layers, so the style needs no icon or font files.
+/// places, the user's position and a ripple under the selected place.
+/// Markers are circle layers, so the style needs no icon or font files.
 ///
 /// Street labels are left out: they need glyph files the app does not ship.
 Map<String, dynamic> buildMapStyle({
@@ -62,19 +62,6 @@ Map<String, dynamic> buildMapStyle({
       ]),
       'selected': collection([point(selectedLat, selectedLon)]),
       'user': collection([if (user != null) point(user.lat, user.lon)]),
-      'line': collection([
-        if (user != null)
-          {
-            'type': 'Feature',
-            'geometry': {
-              'type': 'LineString',
-              'coordinates': [
-                [user.lon, user.lat],
-                [selectedLon, selectedLat],
-              ],
-            },
-          },
-      ]),
     },
     'layers': [
       {
@@ -104,25 +91,44 @@ Map<String, dynamic> buildMapStyle({
           ],
         },
       },
+      circle('others', 'others', radius: 7, color: '#FFFFFF', stroke: 2),
+      // Starts hidden; the Map screen animates it with [rippleAt].
       {
-        'id': 'line',
-        'type': 'line',
-        'source': 'line',
+        'id': rippleLayer,
+        'type': 'circle',
+        'source': 'selected',
         'paint': {
-          'line-color': '#1B1B19',
-          'line-width': 3,
-          'line-dasharray': [2, 2],
+          'circle-radius': _selectedRadius,
+          'circle-color': rippleColor,
+          'circle-opacity': 0,
         },
       },
-      circle('others', 'others', radius: 7, color: '#FFFFFF', stroke: 2),
-      circle('selected', 'selected', radius: 11, color: '#B93A0B', stroke: 3),
+      circle(
+        'selected',
+        'selected',
+        radius: _selectedRadius,
+        color: rippleColor,
+        stroke: 3,
+      ),
       circle('user', 'user', radius: 9, color: '#FFFFFF', stroke: 3),
       circle('user-dot', 'user', radius: 3, color: '#1B1B19', stroke: 0),
     ],
   };
 }
 
-/// A zoom level that keeps both ends of a [km]-long line on a phone screen.
+/// The layer the Map screen animates, and its colour (the call accent).
+const rippleLayer = 'ripple';
+const rippleColor = '#B93A0B';
+const double _selectedRadius = 11;
+
+/// The ripple's radius and opacity at [t], from 0 to 1 through one cycle: it
+/// grows out from the selected marker's edge and fades to nothing.
+({double radius, double opacity}) rippleAt(double t) {
+  final phase = t.clamp(0.0, 1.0);
+  return (radius: _selectedRadius + 33 * phase, opacity: 0.4 * (1 - phase));
+}
+
+/// A zoom level that keeps a place [km] away and the user on a phone screen.
 double zoomForDistance(double? km) {
   if (km == null) return 15;
   const levels = [

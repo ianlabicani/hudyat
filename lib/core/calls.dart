@@ -37,6 +37,11 @@ Future<bool> openWebPage(String url) async {
   }
 }
 
+/// Opens Google Maps with road directions to a place. Needs internet; the
+/// offline map in the app does not.
+Future<bool> openDirections(double lat, double lon) =>
+    openWebPage('https://www.google.com/maps/dir/?api=1&destination=$lat,$lon');
+
 /// Dials the record's number, or asks which one when it has several.
 Future<void> callRecord(BuildContext context, PackRecord record) =>
     callNumbers(context, record.name, record.dialable);

@@ -12,9 +12,10 @@ import '../../../core/theme/tokens.dart';
 import '../../../core/widgets/buttons.dart';
 import '../../../core/widgets/panels.dart';
 import '../map_style.dart';
+import '../services/map_icons.dart';
 
-/// The offline map for one place: where it is, marked with a ripple, and
-/// where the user is.
+/// The offline map for one place: a pin where it is, and a person with a
+/// ripple where the user is.
 class MapScreen extends StatefulWidget {
   const MapScreen({
     required this.mapPath,
@@ -64,13 +65,69 @@ class _MapScreenState extends State<MapScreen> {
 
   void _onStyleLoaded() {
     setState(() => _loaded = true);
-    // The marker alone is enough when the phone asks for less motion.
+    unawaited(_addIcons(MediaQuery.devicePixelRatioOf(context)));
+    // Nothing to ripple without a position, and the marker alone is enough
+    // when the phone asks for less motion.
+    if (widget.position == null) return;
     if (MediaQuery.disableAnimationsOf(context)) return;
     _clock.start();
     _ripple ??= Timer.periodic(
       const Duration(milliseconds: 50),
       (_) => _drawRipple(),
     );
+  }
+
+  /// Puts a pin on the place and a person on the user. If the map refuses
+  /// either, the plain circle it would have replaced stays.
+  Future<void> _addIcons(double pixelRatio) async {
+    final map = _map;
+    if (map == null) return;
+    try {
+      await map.addImage(
+        'pin',
+        await renderMapIcon(
+          Icons.location_on,
+          color: HudyatColors.call,
+          size: 44,
+          pixelRatio: pixelRatio,
+        ),
+      );
+      await map.addSymbolLayer(
+        'selected',
+        'selected-pin',
+        const SymbolLayerProperties(
+          iconImage: 'pin',
+          iconAnchor: 'bottom',
+          iconAllowOverlap: true,
+          iconIgnorePlacement: true,
+        ),
+        enableInteraction: false,
+      );
+      await map.removeLayer(selectedLayer);
+      if (widget.position == null) return;
+      await map.addImage(
+        'person',
+        await renderMapIcon(
+          Icons.person,
+          color: HudyatColors.ink,
+          size: 20,
+          pixelRatio: pixelRatio,
+        ),
+      );
+      await map.addSymbolLayer(
+        'user',
+        'user-person',
+        const SymbolLayerProperties(
+          iconImage: 'person',
+          iconAllowOverlap: true,
+          iconIgnorePlacement: true,
+        ),
+        enableInteraction: false,
+      );
+      await map.removeLayer(userDotLayer);
+    } on Exception {
+      // The circles from the style still mark both points.
+    }
   }
 
   Future<void> _drawRipple() async {

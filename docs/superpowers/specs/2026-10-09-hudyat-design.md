@@ -56,7 +56,7 @@ affiliation.
 | Emergency flow | Taglish message to a card with hotlines and nearest facilities |
 | First aid | About 8 fixed cards for flood and typhoon cases |
 | Everyday lookup | National agencies, LGU officials and contacts, hotlines, services list |
-| Map | Offline map of Metro Manila with a ripple on the place, its distance, and a button for road directions in Google Maps (needs internet) |
+| Map | Offline map of Metro Manila with a pin on the place, a person with a ripple at the user's position, the distance, and a button for road directions in Google Maps (needs internet) |
 | Packs | One downloadable data file per area; Metro Manila is the first |
 | Message check | Scam check by paste, share or text selection, a scan of the SMS inbox by range, plus automatic checking of incoming messages with alerts |
 
@@ -544,7 +544,7 @@ Backup model runner: `llamadart`.
    - A first-aid card if one matched.
 5. The Card screen shows immediately.
 6. `Explainer` streams its sentences under the card.
-7. Tapping a place opens the Map screen with a ripple on the place and its distance. "Directions in Google Maps" hands the place to Google Maps, which needs internet.
+7. Tapping a place opens the Map screen with a pin on the place, a person with a ripple at the user's position, and the distance. "Directions in Google Maps" hands the place to Google Maps, which needs internet.
 
 Message check flow:
 
@@ -563,7 +563,7 @@ Message check flow:
   guard panel, pack status.
 - **Card:** hotlines with tap-to-call, places list, first-aid card, AI
   sentences, source credits.
-- **Map:** offline map, user position, place markers, a ripple on the selected place, distance, and a Google Maps directions button (needs internet).
+- **Map:** offline map, user position, a pin on the selected place, a person with a ripple at the user's position, distance, and a Google Maps directions button (needs internet).
 - **Check:** paste box and a Check button.
 - **Result:** verdict, reasons, official contact with Call, AI
   explanation.

@@ -67,7 +67,7 @@ void main() {
     expect(features(style, 'user'), isEmpty);
   });
 
-  test('the ripple sits under the selected marker and starts hidden', () {
+  test('the ripple sits under the user marker and starts hidden', () {
     final style = buildMapStyle(
       mapPath: '/m.pmtiles',
       selected: store.places(kinds: ['hospital']).first,
@@ -75,11 +75,11 @@ void main() {
     final ids = [
       for (final layer in style['layers'] as List) (layer as Map)['id'],
     ];
-    expect(ids.indexOf(rippleLayer), lessThan(ids.indexOf('selected')));
+    expect(ids.indexOf(rippleLayer), lessThan(ids.indexOf(userLayer)));
     final ripple = (style['layers'] as List).firstWhere(
       (layer) => (layer as Map)['id'] == rippleLayer,
     ) as Map;
-    expect(ripple['source'], 'selected');
+    expect(ripple['source'], 'user');
     expect((ripple['paint'] as Map)['circle-opacity'], 0);
   });
 

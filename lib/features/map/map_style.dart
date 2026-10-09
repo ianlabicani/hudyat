@@ -2,8 +2,9 @@ import '../../core/geo.dart';
 import '../../core/pack/pack_record.dart';
 
 /// Builds the MapLibre style for the Map screen: the offline basemap plus the
-/// places, the user's position and a ripple under the selected place.
-/// Markers are circle layers, so the style needs no icon or font files.
+/// places, the user's position and a ripple under it. Markers are circle
+/// layers, so the style needs no icon or font files; the Map screen swaps in
+/// a pin and a person icon once the style has loaded.
 ///
 /// Street labels are left out: they need glyph files the app does not ship.
 Map<String, dynamic> buildMapStyle({
@@ -96,36 +97,50 @@ Map<String, dynamic> buildMapStyle({
       {
         'id': rippleLayer,
         'type': 'circle',
-        'source': 'selected',
+        'source': 'user',
         'paint': {
-          'circle-radius': _selectedRadius,
+          'circle-radius': _userRadius,
           'circle-color': rippleColor,
           'circle-opacity': 0,
         },
       },
       circle(
-        'selected',
+        selectedLayer,
         'selected',
         radius: _selectedRadius,
-        color: rippleColor,
+        color: '#B93A0B',
         stroke: 3,
       ),
-      circle('user', 'user', radius: 9, color: '#FFFFFF', stroke: 3),
-      circle('user-dot', 'user', radius: 3, color: '#1B1B19', stroke: 0),
+      circle(
+        userLayer,
+        'user',
+        radius: _userRadius,
+        color: '#FFFFFF',
+        stroke: 3,
+      ),
+      circle(userDotLayer, 'user', radius: 4, color: '#1B1B19', stroke: 0),
     ],
   };
 }
 
-/// The layer the Map screen animates, and its colour (the call accent).
+/// The layer the Map screen animates, and its colour (the user's blue).
 const rippleLayer = 'ripple';
-const rippleColor = '#B93A0B';
+const rippleColor = '#1F5FA8';
+
+/// The plain markers. The Map screen puts a pin in place of [selectedLayer]
+/// and a person in place of [userDotLayer]; [userLayer] stays as the person's
+/// white backing.
+const selectedLayer = 'selected';
+const userLayer = 'user';
+const userDotLayer = 'user-dot';
 const double _selectedRadius = 11;
+const double _userRadius = 14;
 
 /// The ripple's radius and opacity at [t], from 0 to 1 through one cycle: it
-/// grows out from the selected marker's edge and fades to nothing.
+/// grows out from the user marker's edge and fades to nothing.
 ({double radius, double opacity}) rippleAt(double t) {
   final phase = t.clamp(0.0, 1.0);
-  return (radius: _selectedRadius + 33 * phase, opacity: 0.4 * (1 - phase));
+  return (radius: _userRadius + 34 * phase, opacity: 0.4 * (1 - phase));
 }
 
 /// A zoom level that keeps a place [km] away and the user on a phone screen.

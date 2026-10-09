@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../../core/app_scope.dart';
+import '../../../core/calls.dart';
 import '../../../core/models/model_manager.dart';
 import '../../../core/models/model_runtime.dart';
 import '../../../core/theme/tokens.dart';
@@ -12,7 +14,10 @@ import '../../../core/widgets/panels.dart';
 /// needed to use the app, and it ships inside it, so Continue is never
 /// locked here.
 class SetupScreen extends StatelessWidget {
-  const SetupScreen({super.key});
+  const SetupScreen({super.key, this.openPage = openWebPage});
+
+  /// Opens a model's page in the browser; replaced in tests.
+  final Future<bool> Function(String url) openPage;
 
   @override
   Widget build(BuildContext context) {
@@ -59,6 +64,9 @@ class SetupScreen extends StatelessWidget {
                 progress: models.embeddingProgress,
                 error: models.embeddingError,
                 files: const [ModelFiles.embedding, ModelFiles.tokenizer],
+                page: ModelFiles.embeddingPage,
+                folder: models.sideloadFolder,
+                openPage: openPage,
                 onDownload: models.canDownload
                     ? models.downloadEmbedding
                     : null,
@@ -73,17 +81,13 @@ class SetupScreen extends StatelessWidget {
                 progress: models.chatProgress,
                 error: models.chatError,
                 files: const [ModelFiles.chat],
+                page: ModelFiles.chatPage,
+                folder: models.sideloadFolder,
+                openPage: openPage,
                 onDownload: models.canDownload ? models.downloadChat : null,
               ),
               if (!models.allReady) ...[
                 const SizedBox(height: 16),
-                if (models.sideloadFolder case final folder?)
-                  Text(
-                    'To add a model without downloading, copy its files over '
-                    'USB into:\n$folder',
-                    style: HudyatText.data,
-                  ),
-                const SizedBox(height: 10),
                 SecondaryButton(
                   label: models.loading ? 'Loading models…' : 'Check again',
                   onPressed: models.loading ? null : models.load,
@@ -143,6 +147,9 @@ class _ModelCard extends StatelessWidget {
     required this.progress,
     required this.error,
     required this.files,
+    required this.page,
+    required this.folder,
+    required this.openPage,
     required this.onDownload,
   });
 
@@ -152,6 +159,13 @@ class _ModelCard extends StatelessWidget {
   final int progress;
   final String? error;
   final List<String> files;
+
+  /// Where the files are published. The person accepts the Gemma terms there.
+  final String page;
+
+  /// Where the app picks the files up; null if the phone gives no such folder.
+  final String? folder;
+  final Future<bool> Function(String url) openPage;
 
   /// Null when the build has no download token; the files are copied instead.
   final VoidCallback? onDownload;
@@ -184,8 +198,8 @@ class _ModelCard extends StatelessWidget {
         if (state == ModelState.failed && error != null)
           Text(error, style: HudyatText.data),
         if (state == ModelState.missing || state == ModelState.failed) ...[
-          Text('Files: ${files.join(', ')}', style: HudyatText.data),
-          if (onDownload != null)
+          if (onDownload != null) ...[
+            Text('Files: ${files.join(', ')}', style: HudyatText.data),
             Align(
               alignment: .centerRight,
               child: SecondaryButton(
@@ -193,6 +207,13 @@ class _ModelCard extends StatelessWidget {
                 expand: false,
                 onPressed: onDownload,
               ),
+            ),
+          ] else
+            _AddSteps(
+              files: files,
+              page: page,
+              folder: folder,
+              openPage: openPage,
             ),
         ],
       ],
@@ -204,5 +225,111 @@ class _ModelCard extends StatelessWidget {
             state == ModelState.checking
         ? Panel(child: content)
         : DashedPanel(child: content);
+  }
+}
+
+/// How to put a model on the phone by hand: its files are behind the Gemma
+/// terms, which each person accepts on their own account.
+class _AddSteps extends StatelessWidget {
+  const _AddSteps({
+    required this.files,
+    required this.page,
+    required this.folder,
+    required this.openPage,
+  });
+
+  final List<String> files;
+  final String page;
+  final String? folder;
+  final Future<bool> Function(String url) openPage;
+
+  Future<void> _open(BuildContext context) async {
+    final messenger = ScaffoldMessenger.of(context);
+    if (!await openPage(page)) {
+      messenger
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(content: Text('Could not open the browser. Go to $page')),
+        );
+    }
+  }
+
+  Future<void> _copy(BuildContext context, String folder) async {
+    final messenger = ScaffoldMessenger.of(context);
+    await Clipboard.setData(ClipboardData(text: folder));
+    messenger
+      ..hideCurrentSnackBar()
+      ..showSnackBar(const SnackBar(content: Text('Folder path copied')));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final folder = this.folder;
+    return Column(
+      crossAxisAlignment: .start,
+      spacing: 8,
+      children: [
+        const Text('To add it yourself', style: HudyatText.bodyBold),
+        const _Step(
+          number: 1,
+          text:
+              'Open the model page, sign in to Hugging Face and accept the '
+              'Gemma terms.',
+        ),
+        SecondaryButton(
+          label: 'Open model page',
+          onPressed: () => _open(context),
+        ),
+        _Step(
+          number: 2,
+          text: files.length == 1
+              ? 'Download this file:'
+              : 'Download these files:',
+          data: files.join('\n'),
+        ),
+        if (folder != null) ...[
+          _Step(
+            number: 3,
+            text: 'Move them into this folder on the phone:',
+            data: folder,
+          ),
+          SecondaryButton(
+            label: 'Copy folder path',
+            onPressed: () => _copy(context, folder),
+          ),
+        ],
+        _Step(number: folder == null ? 3 : 4, text: 'Tap "Check again" below.'),
+      ],
+    );
+  }
+}
+
+class _Step extends StatelessWidget {
+  const _Step({required this.number, required this.text, this.data});
+
+  final int number;
+  final String text;
+
+  /// A file name or path, shown in the data face under the step.
+  final String? data;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: .start,
+      children: [
+        SizedBox(width: 22, child: Text('$number.', style: HudyatText.body)),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: .start,
+            spacing: 2,
+            children: [
+              Text(text, style: HudyatText.body),
+              if (data case final data?) Text(data, style: HudyatText.data),
+            ],
+          ),
+        ),
+      ],
+    );
   }
 }

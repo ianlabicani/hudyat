@@ -25,6 +25,18 @@ Future<bool> openSmsThread(String sender) async {
   }
 }
 
+/// Opens [url] in the phone's browser.
+Future<bool> openWebPage(String url) async {
+  try {
+    return await launchUrl(
+      Uri.parse(url),
+      mode: LaunchMode.externalApplication,
+    );
+  } on Exception {
+    return false;
+  }
+}
+
 /// Dials the record's number, or asks which one when it has several.
 Future<void> callRecord(BuildContext context, PackRecord record) =>
     callNumbers(context, record.name, record.dialable);

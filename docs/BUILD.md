@@ -103,8 +103,15 @@ The app works without the models: the rules, keyword search, hotlines
 and the map do not need them. The models add understanding of typed
 messages, the wording check and the optional AI notes.
 
-Accept the Gemma terms on Hugging Face, download these three files, and
-push them to the app's folder:
+Setup in the app walks through this on the phone itself: each missing
+model has an **Open model page** button, the file names, and the folder
+with a **Copy folder path** button. Download the files in the phone's
+browser and move them with its file manager.
+
+From a computer, accept the Gemma terms on Hugging Face
+([EmbeddingGemma](https://huggingface.co/litert-community/embeddinggemma-300m),
+[Gemma 3 1B](https://huggingface.co/litert-community/Gemma3-1B-IT)),
+download these three files, and push them to the app's folder:
 
 ```sh
 adb shell mkdir -p /sdcard/Android/data/com.example.hudyat/files/models

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hudyat/core/app_scope.dart';
 import 'package:hudyat/core/geo.dart';
@@ -19,6 +20,7 @@ import 'package:sqlite3/sqlite3.dart' show sqlite3;
 import 'package:hudyat/features/home/screens/home_screen.dart';
 import 'package:hudyat/features/location/state/location_controller.dart';
 import 'package:hudyat/features/search/screens/search_screen.dart';
+import 'package:hudyat/features/setup/screens/setup_screen.dart';
 
 import '../support/fixture_pack.dart';
 
@@ -654,12 +656,93 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('Test pack pack'), findsOneWidget);
       expect(find.text('NOT ON PHONE'), findsNWidgets(2));
-      expect(find.textContaining('/phone/models'), findsOneWidget);
-      // No download token in this build, so no Download button.
+      // No download token in this build, so no Download button: each model
+      // shows how to add it by hand.
       expect(find.text('Download'), findsNothing);
+      expect(find.text('To add it yourself'), findsNWidgets(2));
+      expect(find.text('Open model page'), findsNWidgets(2));
+      expect(find.text('/phone/models'), findsNWidgets(2));
+      expect(
+        find.text(
+          'embeddinggemma-300M_seq256_mixed-precision.tflite\n'
+          'sentencepiece.model',
+        ),
+        findsOneWidget,
+      );
       await tester.tap(find.text('Continue'));
       await tester.pumpAndSettle();
       expect(find.text('Or tap what you need'), findsOneWidget);
+    });
+
+    testWidgets('copies the folder path and opens the model page', (
+      tester,
+    ) async {
+      String? copied;
+      tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        SystemChannels.platform,
+        (call) async {
+          if (call.method == 'Clipboard.setData') {
+            copied = (call.arguments as Map)['text'] as String?;
+          }
+          return null;
+        },
+      );
+      addTearDown(
+        () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+          SystemChannels.platform,
+          null,
+        ),
+      );
+      final opened = <String>[];
+      var browser = true;
+      await models.load();
+      await pump(
+        tester,
+        SetupScreen(
+          openPage: (url) async {
+            opened.add(url);
+            return browser;
+          },
+        ),
+      );
+      await tester.tap(find.text('Copy folder path').first);
+      await tester.pump();
+      expect(copied, '/phone/models');
+      expect(find.text('Folder path copied'), findsOneWidget);
+
+      await tester.tap(find.text('Open model page').first);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Open model page').last);
+      await tester.pumpAndSettle();
+      expect(opened, [
+        'https://huggingface.co/litert-community/embeddinggemma-300m',
+        'https://huggingface.co/litert-community/Gemma3-1B-IT',
+      ]);
+
+      // With no browser to open, the page's address is given instead.
+      browser = false;
+      await tester.tap(find.text('Open model page').first);
+      await tester.pumpAndSettle();
+      expect(
+        find.textContaining(
+          'Go to https://huggingface.co/litert-community/embeddinggemma-300m',
+        ),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('a build with a download token offers Download instead', (
+      tester,
+    ) async {
+      models.dispose();
+      models = ModelManager(
+        runtime: FakeRuntime(canDownload: true),
+        intents: store.intents(),
+      );
+      await models.load();
+      await pump(tester, const SetupScreen());
+      expect(find.text('Download'), findsNWidgets(2));
+      expect(find.text('To add it yourself'), findsNothing);
     });
 
     testWidgets('picks up models copied over after "Check again"', (

@@ -49,4 +49,8 @@ abstract final class ModelFiles {
   static const tokenizerUrl =
       '$_hub/embeddinggemma-300m/resolve/main/$tokenizer';
   static const chatUrl = '$_hub/Gemma3-1B-IT/resolve/main/$chat';
+
+  /// The pages a person opens to accept the Gemma terms and get the files.
+  static const embeddingPage = '$_hub/embeddinggemma-300m';
+  static const chatPage = '$_hub/Gemma3-1B-IT';
 }

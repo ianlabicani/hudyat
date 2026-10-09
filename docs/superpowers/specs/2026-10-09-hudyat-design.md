@@ -664,6 +664,7 @@ submission disclosures.
 |---|---|---|---|
 | Setup | Pack not ready | Continue is locked | `Setup` (rule) |
 | Setup | Pack ready, models still downloading | Continue is enabled | `Setup` |
+| Setup | A model is not on the phone and the build has no download token | The model's dashed panel lists numbered steps: "Open model page" opens its Hugging Face page in the browser, where the person signs in and accepts the Gemma terms; the file names to download; the folder to move them into, with "Copy folder path"; then "Check again". A snackbar gives the page's address if no browser opens. A build with a token shows "Download" instead | `Setup` |
 | Home | Ready | Two blocks. Help: the emergency call, the text box and four quick buttons (flood, medical, fire, police). Guard: the "Message guard" panel, which always ends with "Check a message". The other four cards are reached by typing | `Main` |
 | Home | Matching | "Find help" disabled, reads "Finding help…"; message stays visible | `HomeMatching` |
 | Home | Embedding model missing | Notice; text box runs keyword search; all eight quick buttons show, since typing cannot open a card | `HomeNoModel` |

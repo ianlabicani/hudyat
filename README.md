@@ -209,8 +209,15 @@ incomplete is set out in full in [docs/DATA.md](docs/DATA.md).
 
 **Models**
 
-- EmbeddingGemma: `embeddinggemma-300M_seq256_mixed-precision.tflite`
-- Gemma 3 1B: `Gemma3-1B-IT_multi-prefill-seq_q4_ekv4096.litertlm`
+- [EmbeddingGemma](https://huggingface.co/litert-community/embeddinggemma-300m):
+  `embeddinggemma-300M_seq256_mixed-precision.tflite` and
+  `sentencepiece.model`
+- [Gemma 3 1B](https://huggingface.co/litert-community/Gemma3-1B-IT):
+  `Gemma3-1B-IT_multi-prefill-seq_q4_ekv4096.litertlm`
+
+Both are Google's open models, used under the
+[Gemma terms](https://ai.google.dev/gemma/terms). They were not trained
+or fine-tuned for this project, and the files are not in the repository.
 
 **Technologies and frameworks**
 
@@ -232,13 +239,14 @@ incomplete is set out in full in [docs/DATA.md](docs/DATA.md).
 
 | Source | Used for | Licence |
 |---|---|---|
-| `bettergovph/bettergov` | Agencies, officials, services, national hotlines, official websites | CC0-1.0 |
-| `bettergovph/hotlines` | City hotlines | None listed |
-| OpenStreetMap contributors | Places and the map | ODbL |
-| Protomaps | Base map tiles, cut to Metro Manila | Built from OpenStreetMap data |
+| [`bettergovph/bettergov`](https://github.com/bettergovph/bettergov) | Agencies, officials, services, national hotlines, official websites | CC0-1.0 |
+| [`bettergovph/hotlines`](https://github.com/bettergovph/hotlines) | City hotlines | None listed |
+| [OpenStreetMap](https://www.openstreetmap.org/copyright) contributors, through the [Overpass API](https://overpass-api.de) | Places and the map | ODbL |
+| [Protomaps](https://protomaps.com) | Base map tiles, cut to Metro Manila | Built from OpenStreetMap data |
 | Company websites | Official company websites and hotlines | Facts, cited per company |
 | British Red Cross, MedlinePlus, World Health Organization | First-aid cards, reworded in Tagalog | Cited per card |
 | Own lists | Gambling brands, sender rules, scam wording | Own work |
+| Public scam warnings (agencies, companies, news, blogs) | 29 scam texts quoted word for word in `pack/data/collected_scams.json`, each with its page. Used only to test the switched-off classifier; not in the app | Quoted with source |
 
 **Synthetic data.** The 42 scam phrases used by the wording check and
 the 169 labelled examples in `pack/data/ask_examples.json` were written
@@ -253,6 +261,10 @@ The scheduled-alarm approach and the coding conventions follow the
 builder's earlier apps, Barya and AfterYou.
 
 **AI development tools.** Claude Code, Devin and Codex.
+
+**Demo video.** Animated with [Remotion](https://www.remotion.dev); the
+voice-over was generated with [ElevenLabs](https://elevenlabs.io). The
+app screens in it are recreated, not recorded.
 
 **Affiliation.** Hudyat is independent. It uses BetterGov's open data
 with credit and is not endorsed by BetterGov or any agency.

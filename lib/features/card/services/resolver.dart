@@ -1,4 +1,5 @@
 import '../../../core/geo.dart';
+import '../../../core/pack/first_aid_card.dart';
 import '../../../core/pack/pack_record.dart';
 import '../../../core/pack/pack_store.dart';
 import '../../location/state/location_controller.dart';
@@ -26,6 +27,7 @@ class Resolver {
     required String city,
     required CitySource citySource,
     LatLon? position,
+    FirstAidCard? firstAid,
   }) {
     final categories = intent.hotlineCategories;
     final province = _store.provinceOf(city);
@@ -61,6 +63,7 @@ class Resolver {
           : _store.nationalEmergency(),
       places: _places(intent.placeKinds, city, position),
       buildDate: _store.meta.buildDate,
+      firstAid: firstAid,
     );
   }
 

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:sqlite3/sqlite3.dart';
 
 import '../geo.dart';
+import 'first_aid_card.dart';
 import 'pack_record.dart';
 import 'scam_records.dart';
 
@@ -43,6 +44,19 @@ class PackStore {
     for (final row in _db.select('SELECT * FROM intents'))
       IntentDef.fromRow(row),
   ];
+
+  /// The fixed first-aid cards, or nothing in a pack built before they
+  /// were written.
+  List<FirstAidCard> firstAidCards() {
+    try {
+      return [
+        for (final row in _db.select('SELECT * FROM first_aid_cards'))
+          FirstAidCard.fromRow(row),
+      ];
+    } on SqliteException {
+      return const [];
+    }
+  }
 
   /// Organisations the message check knows, companies first.
   List<OfficialSender> officialSenders() => [

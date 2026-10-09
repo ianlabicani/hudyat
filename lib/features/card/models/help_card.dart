@@ -1,3 +1,4 @@
+import '../../../core/pack/first_aid_card.dart';
 import '../../../core/pack/pack_record.dart';
 import '../../../core/pack/pack_store.dart';
 import '../../location/state/location_controller.dart';
@@ -22,7 +23,11 @@ class HelpCard {
     required this.nationalEmergency,
     required this.places,
     required this.buildDate,
+    this.firstAid,
   });
+
+  /// The first-aid card the user's message matched, if any.
+  final FirstAidCard? firstAid;
 
   final IntentDef intent;
   final String city;

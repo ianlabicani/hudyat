@@ -7,7 +7,7 @@ import { convertCityHotlines, convertNationalHotlines } from "./sources/hotlines
 import { convertOverpass } from "./sources/osm";
 import { convertAgencySenders, convertCompanies, mergeSenders } from "./sources/senders";
 import { convertServices } from "./sources/services";
-import type { Intent, PackRecord } from "./types";
+import type { FirstAidCard, Intent, PackRecord } from "./types";
 import { writePack } from "./write";
 
 const ROOT = join(import.meta.dir, "..");
@@ -42,6 +42,7 @@ const places = convertOverpass(read("overpass.json"));
 const records: PackRecord[] = [...hotlines, ...agencies, ...officials, ...services, ...places];
 const data = (name: string) => JSON.parse(readFileSync(join(ROOT, "data", name), "utf8"));
 const intents: Intent[] = data("intents.json");
+const firstAid: FirstAidCard[] = data("first_aid.json");
 
 const senderRules = data("sender_rules.json");
 const senders = mergeSenders(
@@ -62,10 +63,16 @@ writePack(OUT, {
       { name: "bettergovph/bettergov websites list", used_for: "Official agency websites", licence: "CC0-1.0" },
       { name: "Company websites", used_for: "Official company websites and hotlines", licence: "Facts, cited per company" },
       { name: "Hand-made gambling list", used_for: "Online gambling brands, domains and promo wording", licence: "Own work" },
+      {
+        name: [...new Set(firstAid.map((card) => card.source_name))].join(", "),
+        used_for: "First-aid cards, reworded in Tagalog",
+        licence: "Cited per card",
+      },
     ],
   },
   records,
   intents,
+  firstAid,
   scam: {
     senders,
     examples: data("scam_examples.json"),
@@ -86,5 +93,6 @@ for (const kind of ["hotline", "agency", "official", "service", "place"]) {
   console.log(`  ${kind}: ${count(kind)}`);
 }
 console.log(`  official senders: ${senders.length} (${senders.filter((s) => s.phones.length > 0).length} with a number)`);
+console.log(`  first-aid cards: ${firstAid.length}`);
 const dialable = records.filter((r) => r.phones.some((p) => p.dial)).length;
 console.log(`  records with a dialable number: ${dialable} of ${records.length}`);

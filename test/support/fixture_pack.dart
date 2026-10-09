@@ -40,6 +40,7 @@ class FakeEmbedder implements TextEmbedder {
     'na-lock',
     'i-verify',
     'ayuda',
+    'paso',
   ];
 
   int calls = 0;
@@ -125,7 +126,7 @@ class FakeRuntime implements ModelRuntime {
 
 /// A small in-memory pack with the same tables as the real one. Tests never
 /// open the real pack.
-PackStore fixtureStore({bool gambling = true}) {
+PackStore fixtureStore({bool gambling = true, bool firstAid = true}) {
   final db = sqlite3.openInMemory()
     ..execute('''
 CREATE TABLE meta (key TEXT PRIMARY KEY, value TEXT NOT NULL);
@@ -195,6 +196,47 @@ CREATE TABLE scam_reasons (
   intent('injury', 'Injury', urgent, ['hospital'], ['nasugatan, may dugo']);
   intent('general_lookup', 'Look up', [], [], ['paano kumuha ng passport']);
   intent('need_clinic', 'Clinic', [], ['clinic'], ['magpa-checkup sa klinika']);
+
+  // An older pack has no first-aid table at all.
+  if (firstAid) {
+    db.execute('''
+CREATE TABLE first_aid_cards (
+  id TEXT PRIMARY KEY, title TEXT NOT NULL, title_tl TEXT NOT NULL,
+  steps TEXT NOT NULL, source_name TEXT NOT NULL, source_url TEXT NOT NULL,
+  examples TEXT NOT NULL
+);
+''');
+    void card(
+      String id,
+      String title,
+      String titleTl,
+      List<String> steps,
+      List<String> examples,
+    ) =>
+        db.execute('INSERT INTO first_aid_cards VALUES (?, ?, ?, ?, ?, ?, ?)', [
+          id,
+          title,
+          titleTl,
+          jsonEncode(steps),
+          'Test Red Cross',
+          'https://example.org/$id',
+          jsonEncode(examples),
+        ]);
+    card(
+      'bleeding',
+      'Severe bleeding',
+      'Malakas na pagdurugo',
+      ['Diinan nang mariin ang sugat.', 'Tumawag sa hotline sa itaas.'],
+      ['malalim ang sugat, maraming dugo'],
+    );
+    card(
+      'burn',
+      'Burn',
+      'Paso',
+      ['Palamigin sa umaagos na tubig nang 20 minuto.', 'Takpan nang maluwag.'],
+      ['napaso ng mainit na tubig'],
+    );
+  }
 
   void record(
     String kind,

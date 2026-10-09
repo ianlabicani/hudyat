@@ -390,7 +390,7 @@ the Flagged list holds manually checked messages only.
 | `bettergovph/bettergov` | Agencies, LGU officials and contacts, services | CC0 |
 | `bettergovph/hotlines` | Emergency hotlines by city and category | None listed |
 | OpenStreetMap | Hospitals, clinics, pharmacies, police, fire, shelters, roads, map tiles | ODbL, attribution required |
-| DOH, Red Cross, WHO guidance | Text of first-aid cards | Cited per card |
+| British Red Cross, WHO and MedlinePlus first-aid pages | Text of the 8 first-aid cards, reworded in Tagalog (`pack/data/first_aid.json`) | Cited per card |
 | `bettergovph/bettergov` websites list | Official websites, emails and contacts of 723 agencies, for the message check | CC0 |
 | Hand-made company list | About 15 commonly impersonated companies (e-wallets, banks, couriers, telcos) with official websites, each verified when added | Own work |
 | Hand-made gambling list | About 15 online gambling brands with aliases, the domains seen in their texts, and promo wording | Own work |
@@ -413,7 +413,7 @@ One SQLite file per pack, built on the laptop by a script.
 | `records` | One row per hotline, agency, official, service or place |
 | `records_fts` | FTS5 keyword index over `records` |
 | `intents` | Intent id, label, example phrases, linked record kinds |
-| `first_aid_cards` | Title, steps, source name, source link, example phrases |
+| `first_aid_cards` | Title, Filipino title, Tagalog steps, source name, source link, example phrases |
 | `official_senders` | Name, aliases, kind (agency or company), official domains, contact numbers to show, source URL |
 | `scam_examples` | Example phrasing, scam type |
 | `scam_reasons` | Reason id, fixed Tagalog text with placeholders |
@@ -559,6 +559,7 @@ submission disclosures.
 | `LevelBadge` | Outlined for the user's city; filled for a province or national fallback |
 | `Notice` | The "!" box: a bold line and one sentence |
 | `AiNote` | Dashed box labelled "AI-WRITTEN · MAY BE WRONG" |
+| `FirstAidSection` | Primary panel tagged "FIRST AID · FIXED CARD": title with its Filipino gloss, numbered Tagalog steps, and the source name and link as text |
 | `PackFooter` | Hotline source, OpenStreetMap attribution, pack build date |
 | `VerdictBadge` | Ink fill for "Mukhang scam"; outlined for "Mag-ingat"; dashed and muted for "Walang nakitang problema". No new colour |
 | `ReasonRow` | One fixed-text reason and the pack fact behind it |
@@ -577,6 +578,8 @@ submission disclosures.
 | Card | GPS fix | Hotlines, nearest places with distances | `Card`, `CardFirstAid` |
 | Card | No GPS fix | "chosen manually"; distances hidden; "Try GPS again" | `CardNoGps`, `PickCity` |
 | Card | No city hotline | Province or national numbers with a Notice and a filled badge | `HotlineProvince`, `HotlineFallback` |
+| Card | Typed message matched a first-aid card | `FirstAidSection` between the hotlines and the places; no `AiNote` | `CardFirstAid` |
+| Card | Opened from a quick button, or no first-aid match | No `FirstAidSection`; nothing else changes | Rule only |
 | Card | Chat model missing or slow | No `AiNote`; nothing else changes | Rule only |
 | Card | Map file missing | `PlaceRow` has no chevron and does not open the Map | Rule only |
 | Map | Place has no phone number | No Call button; show "No phone number listed" | Rule only |
@@ -596,6 +599,7 @@ submission disclosures.
 | Result | Scam phrases not ready | The Phrasing row reads "Not ready yet"; the verdict comes from links and sender | Rule only |
 | Result | Message read from a notification | `MessageQuote` says it may be cut short | `CheckResultCaution` |
 | Result | Chat model missing or slow | No `AiNote`; nothing else changes | Rule only |
+| Result | Note names a number or link that is not in the reasons, or calls the message safe | The `AiNote` is dropped; nothing else changes | Rule only |
 | Alert | Mukhang scam on an incoming message | Standard Android notification: sender in the title, first reason in the body, one "Tingnan" action that opens the result | `ScamAlert` |
 | Flagged | Has messages | Grouped by verdict; each row opens its result and has a "Remove from this list" icon button; Clear all. One line says removing does not delete the text from the SMS app | `Flagged` |
 | Flagged | Empty | "No flagged messages" and a link to Watcher setup | Rule only |
@@ -713,7 +717,8 @@ checkpoint.
   `maplibre_gl`, `notification_listener_service`,
   `flutter_local_notifications`.
 - **Data:** BetterGov open data, OpenStreetMap, own lists of company
-  websites and scam examples.
+  websites and scam examples, and first-aid steps reworded from British
+  Red Cross, WHO and MedlinePlus pages, cited on each card.
 - **Cloud use:** first-run download of models and packs only.
 - **AI development tools:** Claude Code.
 - **Existing code:** none; built during the hackathon.

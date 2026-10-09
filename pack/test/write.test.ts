@@ -3,8 +3,9 @@ import { afterAll, describe, expect, test } from "bun:test";
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import type { PackRecord } from "../src/types";
-import { validateRecords, validateScamData, writePack } from "../src/write";
+import firstAidData from "../data/first_aid.json";
+import type { FirstAidCard, PackRecord } from "../src/types";
+import { validateFirstAid, validateRecords, validateScamData, writePack } from "../src/write";
 
 const dir = mkdtempSync(join(tmpdir(), "hudyat-pack-"));
 afterAll(() => rmSync(dir, { recursive: true, force: true }));
@@ -110,5 +111,56 @@ describe("gambling rules", () => {
 
   test("reject an empty word", () => {
     expect(() => validateScamData({ ...scam, gambling: { ...gambling, terms: [" "] } })).toThrow("Empty gambling word");
+  });
+});
+
+describe("first-aid cards", () => {
+  const card: FirstAidCard = {
+    id: "burn",
+    title: "Burn",
+    title_tl: "Paso",
+    steps: ["Palamigin sa umaagos na tubig.", "Takpan nang maluwag."],
+    source_name: "British Red Cross",
+    source_url: "https://example.org/burns",
+    examples: ["napaso ang kamay", "nabanlian ng sabaw", "burned my hand"],
+  };
+
+  test("are stored with their steps, source and examples", () => {
+    const path = join(dir, "first-aid.sqlite");
+    writePack(path, {
+      meta: { name: "Test", area: "Test", buildDate: "2026-10-09", bbox: [0, 0, 1, 1], sources: [] },
+      records: [hotline],
+      intents: [],
+      firstAid: [card],
+    });
+    const db = new Database(path, { readonly: true });
+    const row = db.query("SELECT * FROM first_aid_cards WHERE id = 'burn'").get() as Record<string, string>;
+    db.close();
+    expect(row.title).toBe("Burn");
+    expect(row.title_tl).toBe("Paso");
+    expect(JSON.parse(row.steps)).toEqual(card.steps);
+    expect(row.source_url).toBe("https://example.org/burns");
+    expect(JSON.parse(row.examples)).toHaveLength(3);
+  });
+
+  test("reject a card with no steps to follow", () => {
+    expect(() => validateFirstAid([{ ...card, steps: ["Isa lang."] }])).toThrow("without steps");
+    expect(() => validateFirstAid([{ ...card, steps: ["Una.", " "] }])).toThrow("without steps");
+  });
+
+  test("reject a card that cannot be cited", () => {
+    expect(() => validateFirstAid([{ ...card, source_name: "" }])).toThrow("without a source");
+    expect(() => validateFirstAid([{ ...card, source_url: "redcross.org" }])).toThrow("without a source");
+  });
+
+  test("reject a card that could not be matched or told apart", () => {
+    expect(() => validateFirstAid([{ ...card, examples: ["napaso"] }])).toThrow("too few examples");
+    expect(() => validateFirstAid([card, card])).toThrow("repeated id");
+    expect(() => validateFirstAid([{ ...card, title_tl: "" }])).toThrow("without a title");
+  });
+
+  test("the shipped cards are all valid", () => {
+    expect(() => validateFirstAid(firstAidData)).not.toThrow();
+    expect(firstAidData.length).toBe(8);
   });
 });

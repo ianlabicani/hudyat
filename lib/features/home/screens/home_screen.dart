@@ -15,6 +15,7 @@ import '../../card/screens/card_screen.dart';
 import '../../check/screens/check_screen.dart';
 import '../../check/screens/flagged_screen.dart';
 import '../../check/screens/timed_check_screen.dart';
+import '../../intent/services/first_aid_matcher.dart';
 import '../../location/screens/pick_city_screen.dart';
 import '../../location/state/location_controller.dart';
 import '../../search/screens/search_screen.dart';
@@ -129,10 +130,10 @@ class _HomeScreenState extends State<HomeScreen> {
     } on Object {
       intent = null;
     }
-    // Only a message that opens a card can carry first aid. A failure here
+    // Only a message about an injury can carry first aid. A failure here
     // means a card without it, never no card.
     FirstAidCard? firstAid;
-    if (intent != null) {
+    if (intent != null && FirstAidMatcher.intents.contains(intent.id)) {
       try {
         firstAid = await scope.models.firstAid?.match(text);
       } on Object {

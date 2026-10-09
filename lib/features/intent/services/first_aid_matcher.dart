@@ -27,6 +27,11 @@ class FirstAidMatcher {
   /// this class logs in a debug build.
   static const defaultThreshold = 0.56;
 
+  /// The intents whose card may carry first aid (spec 3.1). A message
+  /// about anything else gets none, however close it is to a card: a flood
+  /// message with no one hurt once matched "Broken bone".
+  static const intents = {'injury'};
+
   final List<FirstAidCard> _cards;
   final ExampleVectors _vectors;
   final double threshold;

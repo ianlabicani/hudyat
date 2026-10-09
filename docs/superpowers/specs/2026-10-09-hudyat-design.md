@@ -120,7 +120,8 @@ data):
 
 First-aid card selection uses the same method: the message is compared
 to example phrases for each card, and a card is attached only above a
-threshold.
+threshold, and only when the intent is `injury`. A message about
+anything else gets no first-aid card, however close it is to one.
 
 ### 3.2 Wording step (chat model)
 

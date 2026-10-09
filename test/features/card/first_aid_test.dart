@@ -244,6 +244,19 @@ void main() {
       expect(find.text('AI-WRITTEN · MAY BE WRONG'), findsOneWidget);
     });
 
+    testWidgets('a message that is not about an injury gets no first aid, '
+        'however close it is to a card', (tester) async {
+      await models.load();
+      // "paso" is close to the burn card, but the message asks for medicine.
+      expect(
+        (await models.firstAid!.match('kailangan ng gamot sa paso'))?.id,
+        'burn',
+      );
+      await findHelp(tester, 'kailangan ng gamot sa paso');
+      expect(find.text('Medicine'), findsOneWidget);
+      expect(find.text(tag), findsNothing);
+    });
+
     testWidgets('a quick button, with no message, shows no first aid', (
       tester,
     ) async {

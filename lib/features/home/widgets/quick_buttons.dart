@@ -24,7 +24,7 @@ class QuickButtons extends StatelessWidget {
     final scale = MediaQuery.textScalerOf(context).scale(1);
     return LayoutBuilder(
       builder: (context, constraints) {
-        final columns = constraints.maxWidth < 300 || scale > 1.5 ? 1 : 2;
+        final columns = constraints.maxWidth < 320 || scale > 1.3 ? 1 : 2;
         final width = (constraints.maxWidth - gap * (columns - 1)) / columns;
         return Wrap(
           spacing: gap,
@@ -35,13 +35,26 @@ class QuickButtons extends StatelessWidget {
                 width: width,
                 child: OutlinedButton.icon(
                   onPressed: enabled ? () => onTap(intent) : null,
-                  icon: Icon(CardLabels.icon(intent.id), size: 22),
-                  label: Text(CardLabels.quickLabel(intent.id, intent.label)),
+                  icon: Icon(CardLabels.icon(intent.id), size: 28),
+                  label: Column(
+                    crossAxisAlignment: .start,
+                    mainAxisSize: .min,
+                    children: [
+                      Text(CardLabels.quickLabel(intent.id, intent.label)),
+                      if (CardLabels.quickGloss(intent.id) case final gloss?)
+                        Text(
+                          gloss,
+                          style: HudyatText.gloss.copyWith(
+                            color: enabled ? null : HudyatColors.disabledText,
+                          ),
+                        ),
+                    ],
+                  ),
                   style: OutlinedButton.styleFrom(
                     backgroundColor: HudyatColors.surface,
                     foregroundColor: HudyatColors.ink,
-                    side: HudyatShape.secondaryBorder,
-                    minimumSize: const Size.fromHeight(52),
+                    side: HudyatShape.primaryBorder,
+                    minimumSize: const Size.fromHeight(64),
                     alignment: .centerLeft,
                     padding: const EdgeInsets.symmetric(
                       horizontal: 12,
@@ -50,7 +63,7 @@ class QuickButtons extends StatelessWidget {
                     shape: const RoundedRectangleBorder(
                       borderRadius: HudyatShape.radius,
                     ),
-                    textStyle: HudyatText.button.copyWith(fontSize: 15),
+                    textStyle: HudyatText.button,
                   ),
                 ),
               ),

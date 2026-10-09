@@ -3,13 +3,14 @@ import 'package:flutter/material.dart';
 /// Wording and icons for the fixed intents and place kinds. Intent ids and
 /// place kinds come from the pack; the text shown for them is decided here.
 abstract final class CardLabels {
-  /// The eight quick buttons on Home, in display order.
+  /// The eight quick buttons on Home, in display order: the four a typhoon
+  /// night needs first.
   static const quickIntents = [
-    'medical_emergency',
-    'injury',
-    'fire',
     'flood_rescue',
+    'medical_emergency',
+    'fire',
     'crime_police',
+    'injury',
     'need_medicine',
     'need_clinic',
     'shelter',
@@ -33,6 +34,19 @@ abstract final class CardLabels {
         'medical_emergency' => 'Medical',
         _ => fallback,
       };
+
+  /// The Filipino word under a quick button's label.
+  static String? quickGloss(String intentId) => switch (intentId) {
+    'flood_rescue' => 'Baha',
+    'medical_emergency' => 'Medikal',
+    'fire' => 'Sunog',
+    'crime_police' => 'Pulis',
+    'injury' => 'Sugat',
+    'need_medicine' => 'Gamot',
+    'need_clinic' => 'Klinika',
+    'shelter' => 'Evacuation',
+    _ => null,
+  };
 
   /// Section title and Filipino gloss for a list of places of one kind.
   static ({String plural, String gloss}) places(String kind) => switch (kind) {

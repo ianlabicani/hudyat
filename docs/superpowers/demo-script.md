@@ -14,12 +14,12 @@ mocked. The narration never says more than the stories do.
 
 Do these in order. Each one changes what the camera sees.
 
-1. **Build on the phone.** A debug build, so the scheduled check fires
-   every 2 minutes instead of about every 12 hours. Installing is yours
-   to do; do not uninstall or clear data.
-2. **Turn on Automatic checking first.** Texts already in the inbox when
-   it is turned on are counted but not alerted. The scam text must
-   arrive after the switch is on.
+1. **Build on the phone.** A debug build, so the recovery check also
+   fires every 2 minutes instead of about every 12 hours. Installing is
+   yours to do; do not uninstall or clear data.
+2. **Turn on Automatic checking first** and allow both SMS permissions.
+   Texts already in the inbox when it is turned on are counted but not
+   alerted. The scam text must arrive after the switch is on.
 3. **Allow notifications** for Hudyat and put the widget on the home
    screen.
 4. **Second phone ready**, with an ordinary mobile number, to send the
@@ -52,17 +52,17 @@ The scam text to send from the second phone:
 | 1 | Home screen, widget showing counts | None | "This is Lola Nena's phone. Her apo set up Hudyat once. She does nothing after that." |
 | 2 | SMS app, the scam text arriving | Send the text from the second phone | "A text says her GCash is locked, with a link to fix it." |
 | 3 | Recent apps | Swipe Hudyat away, then turn airplane mode on | "Hudyat is closed. The phone is offline." |
-| 4 | Caption: "a few minutes later · debug build, checks every 2 minutes" | Cut the wait | "Hudyat checks her texts on a schedule, about every 12 hours. For this video the schedule is shortened." |
-| 5 | The notification arriving | None | "Nobody opened the app. The warning names the sender and gives the reason." |
-| 6 | Flagged list, then the result | Tap "Tingnan", then the message | "Mukhang scam. The link is broken up to get past filters, and it is not GCash's website." |
-| 7 | The contact section with the Call button | Scroll to it | "This is GCash's real contact, from data on the phone. Not from the AI." |
-| 8 | Home screen widget, count gone up, then Hudyat's Home with the "Bantay sa text" panel | Press Home, then open Hudyat | "The widget and the app show counts only. Never a message, never a sender." |
+| 4 | The notification arriving within seconds | None | "Nobody opened the app. Hudyat checks the text the moment it arrives, with rules kept on the phone. The warning names the sender and gives the reason." |
+| 5 | The saved result | Tap "View result" | "Mukhang scam. The link is broken up to get past filters, and it is not GCash's website." |
+| 6 | The contact section with the Call button | Scroll to it | "This is GCash's real contact, from data on the phone. Not from the AI." |
+| 7 | Home screen widget, count gone up, then Hudyat's Home with the "Message guard" panel | Press Home, then open Hudyat | "The widget and the app show counts only. Never a message, never a sender." |
 
-**If the alert does not come within about four minutes:** open Hudyat.
-It checks recent texts on opening and the alert appears then. Change
+**If the alert does not come within about a minute:** open Hudyat.
+Opening checks recent texts and the alert appears then; the recovery
+check (every 2 minutes on the debug build) is the backstop. Change
 line 5 to "Opening Hudyat checks her texts at once."
 
-**Cut first if short on time:** step 8.
+**Cut first if short on time:** step 7.
 
 ## Part 2: the Reyes family (1:20 to 2:35)
 
@@ -71,7 +71,7 @@ Airplane mode stays on and the icon stays in frame.
 | # | Screen | Action | Narration |
 |---|---|---|---|
 | 1 | Hudyat Home | Show the airplane icon | "Typhoon night in Pasig. No data. Still in airplane mode." |
-| 2 | Home, text box | Type "Binabaha na dito, hanggang tuhod na, may matanda kami" and stop. Wait for the strip "Naintindihan: Flood rescue", then tap it | "Liza types what is happening, in Taglish. Before she presses anything, the phone has understood: flood rescue. That time is measured on this phone, offline." |
+| 2 | Home, text box | Type "Binabaha na dito, hanggang tuhod na, may matanda kami" and stop. Wait for the strip "Understood: Flood rescue", then tap it | "Liza types what is happening, in Taglish. Before she presses anything, the phone has understood: flood rescue. That time is measured on this phone, offline." |
 | 3 | City list | Pick Pasig | "No GPS indoors, so Hudyat asks for her city." |
 | 4 | Card: Pasig City DRRMO Emergency Hotline with Call | Hold on the card | "The AI on the phone picked what she needs. The number is Pasig's disaster office, copied from the data, with the date it was built." |
 | 5 | Home, text box | Type "nasugatan si tatay, ang daming dugo, ayaw tumigil", tap "Find help" | "Her father is bleeding." |
@@ -95,7 +95,7 @@ did not wait for it." Do not read the sentences out.
 | Screen | Narration |
 |---|---|
 | Home screen with the pack line and "Ready offline" | "Two open models run on this budget phone: EmbeddingGemma decides, Gemma writes. Nothing Lola Nena receives and nothing Liza types leaves the device." |
-| Result screen, "Walang nakitang problema" with the "Hindi ito garantiya" notice | "Hudyat never tells you a message is safe. It tells you what it found, and who to really call." |
+| Result screen, "Walang nakitang problema" with the "This is not a guarantee" notice | "Hudyat never tells you a message is safe. It tells you what it found, and who to really call." |
 | Credits: BetterGov open data, OpenStreetMap contributors, first-aid sources, Claude Code | "Built in one night on open data. Hudyat." |
 
 ## Lines that must not be said

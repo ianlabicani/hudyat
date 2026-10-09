@@ -14,7 +14,7 @@ The practical user stories are in `docs/superpowers/stories/2026-10-09-user-stor
 
 ## Current state
 
-Built on branch `feat/mvp`, with Dart tests: the pack builder (`pack/`), `PackStore`, `Resolver`, `LocationService`, keyword search, the model layer (`ModelManager`, `IntentMatcher`, `Explainer`) and the Home, Card, city picker, Search, No match, Setup and Map screens. The message check (spec 3.4) is built: pack tables, `MessageChecker`, `ScamPhrases` (threshold 0.56, measured on the phone), `FlaggedStore`, `ShareEntry` (Android side in `ShareActivity.kt`), `TimedCheck` for automatic checking (an alarm-driven SMS check, alert and home screen widget, all in Kotlin: `InboxAlarm.kt`, `InboxCheck.kt`, `ScamWidget.kt`), `InboxScanner` with `ScanIndex` and `SmsReader.kt` for scanning the SMS inbox by range, and the Check, Result, Flagged, Scan and Automatic checking screens. Raise `checkerVersion` in `message_checker.dart` when the rules change, so scanned texts are rechecked. The message rules exist twice: in Dart (`message_checker.dart`, `links.dart`, `gambling.dart`, the source of truth) and as a Kotlin copy for the timed check (`android/app/src/main/kotlin/com/example/hudyat/check/`). After changing a rule or the pack's scam lists, rewrite the shared cases and bring the Kotlin copy in line (commands below). The AI note on results (`ResultExplainer`, with a one-line `enabled` switch) and first-aid cards (`pack/data/first_aid.json`, `FirstAidMatcher`, `FirstAidSection`) are built; the first-aid threshold of 0.56 is a starting value, not yet measured on the phone.
+Built on branch `feat/mvp`, with Dart tests: the pack builder (`pack/`), `PackStore`, `Resolver`, `LocationService`, keyword search, the model layer (`ModelManager`, `IntentMatcher`, `Explainer`) and the Home, Card, city picker, Search, No match, Setup and Map screens. The message check (spec 3.4) is built: pack tables, `MessageChecker`, `ScamPhrases` (threshold 0.56, measured on the phone), `FlaggedStore`, `ShareEntry` (Android side in `ShareActivity.kt`), `TimedCheck` for automatic checking (an alarm-driven SMS check, alert and home screen widget, all in Kotlin: `InboxAlarm.kt`, `InboxCheck.kt`, `ScamWidget.kt`), `InboxScanner` with `ScanIndex` and `SmsReader.kt` for scanning the SMS inbox by range, and the Check, Result, Flagged, Scan and Automatic checking screens. Raise `checkerVersion` in `message_checker.dart` when the rules change, so scanned texts are rechecked. The message rules exist twice: in Dart (`message_checker.dart`, `links.dart`, `gambling.dart`, the source of truth) and as a Kotlin copy for the timed check (`android/app/src/main/kotlin/com/example/hudyat/check/`). After changing a rule or the pack's scam lists, rewrite the shared cases and bring the Kotlin copy in line (commands below). The AI note on results (`ResultExplainer`, with a one-line `enabled` switch) and first-aid cards (`pack/data/first_aid.json`, `FirstAidMatcher`, `FirstAidSection`) are built; the first-aid threshold of 0.56 is a starting value, not yet measured on the phone. Live checking is built per `docs/superpowers/plans/2026-10-09-live-scamshield.md`: `LiveSmsReceiver.kt` and `ScamNotificationListener.kt` feed one serial native pipeline (`ProtectionEngine`, `ProtectionStore` on the shared `flagged.sqlite`), with `ProtectionPlatform`/`ProtectionController` on the Dart side; phone verification is still open.
 
 The pack and map ship as assets (`assets/pack/`). The 53 MB map file is git-ignored; rebuild it with `bun run map` in `pack/`. The throwaway model and map test app is in `spikes/model_test/` and is excluded from analysis.
 
@@ -91,7 +91,7 @@ Handoff. Summarise the behaviour changed, the tests run, and what still needs ch
 Two open models run on the phone, with separate jobs:
 
 - **Decision step:** EmbeddingGemma embeds the message and compares it by cosine similarity to about 10 example phrases per intent. The output is an intent id and a score, never free text. Below the threshold, the message is treated as an everyday lookup and goes to keyword search.
-- **Wording step:** Gemma 3 1B writes one or two Taglish sentences under the card from the card's facts. It is optional: if it is missing, slow or errors, the sentences are not shown and the card is unaffected.
+- **Wording step:** Gemma 3 1B writes one or two English sentences under the card from the card's facts. It is optional: if it is missing, slow or errors, the sentences are not shown and the card is unaffected.
 
 Units and their dependencies:
 
@@ -102,7 +102,7 @@ Units and their dependencies:
 | `IntentMatcher` | Message to intent id and score; first-aid card match | `ModelManager` |
 | `LocationService` | GPS fix, last known position, manual city choice | Platform location |
 | `Resolver` | Intent plus location to a `Card` | `PackStore` |
-| `Explainer` | Stream the Taglish sentences for a `Card` | `ModelManager` |
+| `Explainer` | Stream the English sentences for a `Card` | `ModelManager` |
 | `MapView` | Offline map, markers, line and distance | `maplibre_gl` |
 
 Flow: Home message → `IntentMatcher` → `LocationService` → `Resolver` builds the `Card` → Card screen shows immediately → `Explainer` streams sentences under it → tapping a place opens Map.

@@ -18,11 +18,16 @@ a story here shows. The people are invented; the behaviour is not.
    person sees comes from the pack. The AI never supplies one.
 3. **Never "safe".** The app never tells anyone a message is safe or
    real. "Walang nakitang problema" still means be careful.
-4. **No promised alert time.** Scheduled checks run about every 12 hours
-   and Android may delay them. Opening Hudyat checks recent texts at
-   once. A story never says an alert arrives by a set time.
-5. **SMS only, automatically.** Messenger, Viber and WhatsApp messages
-   are checked only when the person shares or pastes them.
+4. **No promised alert time.** When live checking is on, an SMS warning
+   can appear as the text arrives; messaging apps are checked from their
+   visible notifications, which Android can withhold. The about-12-hour
+   check is the recovery path and Android may delay it. A story never
+   says an alert arrives by a set time.
+5. **SMS and messaging apps, with consent.** Automatic SMS capture needs
+   the SMS permissions the user grants. Messenger, WhatsApp, Viber and
+   Telegram are checked from their visible notifications only after
+   notification access is switched on and the app is picked. Anything
+   else is checked only when someone shares or pastes it.
 6. **Metro Manila for places.** Places and the map cover Metro Manila.
    Hotlines and lookups are nationwide.
 7. **The classifier is not in a story** until it passes its release
@@ -48,19 +53,19 @@ calls. Her apo set the phone up.
 
 1. A text arrives: "GCash: your account is locked, verify at
    gcash-verify. com".
-2. Hudyat checks her texts at its next scheduled check, or the moment
-   she opens it.
+2. Hudyat checks the text as it arrives, on the phone, with no model
+   load and no network.
 3. A notification appears. The title is the sender; the body is the
    reason: the link is not GCash's official website.
-4. She taps "Tingnan" and the Flagged list opens. The result reads
-   "Mukhang scam", with the reason in plain Tagalog and the real GCash
+4. She taps "View result" and the saved result opens. It reads
+   "Mukhang scam", with the reason in plain English and the real GCash
    contact with a Call button.
 5. She calls the real number or shows her apo. She does not tap the
    link.
 
 The widget is the quiet version: three counts for the last 7 days,
 never a message or a sender. Home shows the same counts in its
-"Bantay sa text" panel, with a button to the Flagged list.
+"Message guard" panel, with a button to the Flagged list.
 
 **Typhoon night.**
 
@@ -70,9 +75,11 @@ never a message or a sender. Home shows the same counts in its
 
 **Where it falls short.**
 
-- She may read the scam text before Hudyat warns her (rule 4).
+- She may still open the text before its warning appears (rule 4).
 - She needs someone for the setup. She will not do it alone.
-- A scam on Messenger is not checked unless someone shares it.
+- A scam on Messenger is checked from its notification only if her apo
+  also turned on notification access for that app; muted or hidden
+  conversations stay unchecked.
 
 **Relies on.** Spec 3.4 automatic path; states Alert, Flagged "Has
 messages", Result "Mukhang scam", Widget "Counts", Card "GPS fix".
@@ -100,7 +107,8 @@ phone. He is the one his parents ask "totoo ba ito?".
 
 **Where it falls short.**
 
-- He has to do the sharing. Nothing checks Messenger by itself.
+- Without notification access he does the sharing himself; with it,
+  the message's notification is checked as it arrives.
 - With no sender, one of the checks cannot run, so the verdict rests on
   the link and the wording.
 - A short link hides where it goes. By itself that gives "Mag-ingat",

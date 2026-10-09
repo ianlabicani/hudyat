@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter/services.dart';
+
 import 'package:hudyat/core/geo.dart';
 import 'package:hudyat/core/models/model_runtime.dart';
 import 'package:hudyat/core/pack/pack_store.dart';
@@ -576,6 +578,9 @@ class FakeTimedCheck implements TimedCheckPlatform {
   int notificationRequests = 0;
   int runs = 0;
 
+  /// Thrown by [turnOn], as the phone does when the check itself fails.
+  PlatformException? turnOnError;
+
   TimedStatus get _status => TimedStatus(
     on: on,
     hasAccess: found.hasAccess,
@@ -599,6 +604,7 @@ class FakeTimedCheck implements TimedCheckPlatform {
 
   @override
   Future<TimedStatus> turnOn() async {
+    if (turnOnError case final error?) throw error;
     on = true;
     runs++;
     return _status;

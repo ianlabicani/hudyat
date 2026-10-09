@@ -43,7 +43,8 @@ class _TimedCheckScreenState extends State<TimedCheckScreen> {
     if (!mounted) return;
     setState(() {
       _asking = false;
-      _refused = !on;
+      // Off because the check itself failed is not a refusal of access.
+      _refused = !on && timed.failure == null;
     });
   }
 
@@ -217,6 +218,13 @@ class _TimedCheckScreenState extends State<TimedCheckScreen> {
                       body:
                           'SMS checking stays off. Messaging app coverage '
                           'can still be enabled separately.',
+                    ),
+                  if (timed.failure case final failure?)
+                    Notice(
+                      title: 'SMS checking could not start',
+                      body:
+                          'This is a fault in Hudyat, not a missing '
+                          'permission. Try again. ($failure)',
                     ),
                   const SizedBox(height: 10),
                   PrimaryButton(

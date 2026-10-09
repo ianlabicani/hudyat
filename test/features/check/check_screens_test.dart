@@ -387,6 +387,23 @@ void main() {
   });
 
   group('TimedCheck', () {
+    test(
+      'a check that fails on the phone is not a refusal of access',
+      () async {
+        inbox.granted = true;
+        phone.turnOnError = PlatformException(
+          code: 'check_failed',
+          message: 'SQLiteException',
+        );
+        expect(await timed.turnOn(), isFalse);
+        expect(timed.failure, 'SQLiteException');
+
+        phone.turnOnError = null;
+        expect(await timed.turnOn(), isTrue);
+        expect(timed.failure, isNull);
+      },
+    );
+
     test('is off until turned on, and asks for SMS access first', () async {
       inbox.granted = false;
       await timed.refresh();

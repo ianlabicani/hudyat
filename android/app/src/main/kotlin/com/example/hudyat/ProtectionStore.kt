@@ -35,7 +35,9 @@ internal object ProtectionStore {
             null,
             SQLiteDatabase.OPEN_READWRITE or SQLiteDatabase.CREATE_IF_NECESSARY,
         )
-        db.execSQL("PRAGMA busy_timeout = 3000")
+        // This PRAGMA answers with a row, and Android's execSQL refuses any
+        // statement that does: it must go through rawQuery.
+        db.rawQuery("PRAGMA busy_timeout = 3000", null).use { it.moveToFirst() }
         db.enableWriteAheadLogging()
         db.execSQL(
             """CREATE TABLE IF NOT EXISTS flagged (

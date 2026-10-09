@@ -161,7 +161,11 @@ class MainActivity : FlutterActivity() {
                 work()
                 runOnUiThread { result.success(timedStatus()) }
             } catch (error: Exception) {
-                runOnUiThread { result.error("check_failed", error.javaClass.simpleName, null) }
+                // The exception's own message: SQL text or a file path, never
+                // a message body or a sender.
+                runOnUiThread {
+                    result.error("check_failed", error.javaClass.simpleName, error.message)
+                }
                 throw error
             }
         }

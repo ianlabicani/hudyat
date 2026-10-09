@@ -112,12 +112,25 @@ class TimedCheck extends ChangeNotifier {
 
   TimedStatus status = const TimedStatus();
 
+  /// Why the last check or switch failed on the phone, or null when it
+  /// worked. A failure here is not a refusal of SMS access, and the screen
+  /// must not say it was.
+  String? failure;
+
   Future<void> _apply(Future<TimedStatus> Function() call) async {
     try {
       status = await call();
+      failure = null;
       notifyListeners();
     } on PlatformException catch (error) {
       debugPrint('TimedCheck: $error');
+      // The phone sends the exception's name as the message and its own
+      // text as the details.
+      failure = [
+        error.message ?? error.code,
+        if (error.details case final String detail) detail,
+      ].join(': ');
+      notifyListeners();
     } on MissingPluginException {
       // Not on Android: there is no timed check, and the screen says off.
     }

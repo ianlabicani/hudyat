@@ -19,6 +19,7 @@ import '../models/help_card.dart';
 import '../services/explainer.dart';
 import '../widgets/card_header.dart';
 import '../widgets/first_aid_section.dart';
+import '../widgets/lead_call.dart';
 
 /// The help card for one intent. It is built from the pack alone and shows
 /// at once; nothing here waits for a model.
@@ -172,9 +173,16 @@ class _CardScreenState extends State<CardScreen> {
           name: card.hotlineLevelName,
         ),
       ),
-      for (final hotline in shown) ...[
+      for (final (index, hotline) in shown.indexed) ...[
         const SizedBox(height: 10),
-        HotlineRow(record: hotline, onCall: () => callRecord(context, hotline)),
+        // The first number is the one to call: it gets the whole width.
+        if (index == 0 && hotline.dialable.isNotEmpty)
+          LeadCall(record: hotline, onCall: () => callRecord(context, hotline))
+        else
+          HotlineRow(
+            record: hotline,
+            onCall: () => callRecord(context, hotline),
+          ),
       ],
       if (hidden > 0) ...[
         const SizedBox(height: 10),

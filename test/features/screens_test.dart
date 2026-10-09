@@ -8,6 +8,7 @@ import 'package:hudyat/core/theme/tokens.dart';
 import 'package:hudyat/core/widgets/rows.dart';
 import 'package:hudyat/features/card/screens/card_screen.dart';
 import 'package:hudyat/features/card/services/resolver.dart';
+import 'package:hudyat/features/card/widgets/lead_call.dart';
 import 'package:hudyat/features/check/services/flagged_store.dart';
 import 'package:hudyat/features/check/services/inbox_scanner.dart';
 import 'package:hudyat/features/check/services/scan_index.dart';
@@ -137,6 +138,9 @@ void main() {
       expect(rich('from GPS'), findsOneWidget);
       expect(find.text('CITY · PASIG'), findsOneWidget);
       expect(find.text('Pasig City DRRMO Emergency Hotline'), findsOneWidget);
+      // The first number leads as one wide call button.
+      expect(find.byType(LeadCall), findsOneWidget);
+      expect(find.text('Tawagan · Call'), findsOneWidget);
       expect(find.text('Nearest hospitals'), findsOneWidget);
       expect(find.text('Straight-line distance'), findsOneWidget);
       expect(find.text('Pasig Hospital West'), findsOneWidget);

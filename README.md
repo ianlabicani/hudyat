@@ -29,6 +29,63 @@ emergency, and warn you when a message looks like a scam.
 - **Everyday lookup.** Search national agencies, local officials,
   hotlines and government services.
 
+## Try it in two minutes
+
+You need an Android phone running Android 11 or later.
+
+1. **Install the app.** Use the APK on this repository's Releases page if
+   one is attached. Otherwise build it with the steps under
+   [Build and run](#build-and-run).
+2. **Open Hudyat and continue past Setup.** The data pack and the map are
+   inside the app, so there is nothing to download.
+3. **Turn on airplane mode.** Everything below works without a
+   connection.
+
+### Check a message
+
+On Home, tap **Check a message**, paste one of these, and tap **Check**.
+These results come from the rules and the data on the phone, so they work
+even before the AI models are installed.
+
+| Paste this | Expected verdict | Why |
+|---|---|---|
+| `GCash: I-verify ang account mo sa https://gcash-verify.com` | Mukhang scam | The link imitates GCash but is not its website |
+| `Mula sa DSWD: kunin ang ayuda sa dswd-ayuda.net ngayon` | Mukhang scam | The link imitates DSWD |
+| `Para sa refund, pumunta sa csraftersales. com at pakitanggal ang space` | Mukhang scam | The link is broken up to get past filters |
+| `Congrats! Claim your 100% welcome bonus, free spins at cashback sa https://lucky-casino88.com` | Mag-ingat | An online gambling promo |
+| `Ma, nakauwi na ako. Anong ulam natin mamaya?` | Walang nakitang problema | Nothing found, with a note that this is not a guarantee |
+
+A "Mukhang scam" result also shows the real contact details of the
+organisation the message pretends to be, with a Call button.
+
+You can also select text in any app and choose **Check with Hudyat**, or
+share a message to Hudyat.
+
+### Ask for help
+
+On Home, type one of these under **What happened?** and tap **Find
+help**. Pick a city if the phone has no GPS fix.
+
+| Type this | Expected card |
+|---|---|
+| `Tumataas ang tubig, nasa bubong na kami ng pamilya ko` | Flood rescue, with the city's disaster hotline |
+| `May sunog dito sa compound namin, mabilis kumalat` | Fire, with the fire hotline and nearest fire stations |
+| `Nabagsakan ng kahoy ang paa ni tatay, namamaga at hindi maigalaw` | Injury, with nearest hospitals and a first-aid card when one matches |
+| `Ubos na ang gamot sa high blood ni mama, saan may botika` | Medicine, with nearest pharmacies |
+
+Tap a place on a card to see it on the offline map.
+
+- **With the AI models installed**, Hudyat understands these sentences
+  and shows "Understood: Flood rescue" as you type.
+- **Without the models**, typing runs a keyword search instead. The quick
+  buttons on Home open the most common cards directly.
+
+### To see the AI parts
+
+The two models are not inside the APK. Copy them to the phone as
+described under [Models](#models), then tap **Check again** in Setup. The
+[demo video](#hudyat) shows the app with both models running.
+
 ## Why the AI runs on the phone
 
 > A typhoon takes the signal at the exact moment people need help. Hudyat

@@ -125,7 +125,8 @@ threshold.
 ### 3.2 Wording step (chat model)
 
 - **Model:** Gemma 3 1B.
-- **Job:** write one or two Taglish sentences under the card.
+- **Job:** write one or two English sentences under the card. English,
+  because the model writes it better than Taglish.
 - **Input:** the user message plus the card's facts as structured text.
 - **Rules:** the prompt forbids adding numbers, names or steps that are
   not in the facts. The sentences are labelled as AI-written.
@@ -165,8 +166,9 @@ model.
 - **Verdicts:** "Mukhang scam", "Mag-ingat", "Walang nakitang problema".
   The app never says a message is safe or legitimate.
 - **Reasons:** fixed text per reason id, filled with pack data, e.g.
-  "Ang link ay hindi opisyal na website ng GCash" or "Nagpapakilalang
-  DSWD pero galing sa ordinaryong mobile number".
+  "It claims to be DSWD but comes from an ordinary mobile number". The
+  pack holds each reason in Tagalog and English; the app shows the
+  English.
 
 **Link rules.**
 
@@ -299,11 +301,11 @@ labelled, including on flagged results. These are rules on existing boards.
 **Stage 2: explanation.** Runs only when the user opens a result.
 
 - **Model:** Gemma 3 1B.
-- **Job:** one or two Tagalog sentences explaining the verdict, written
+- **Job:** one or two English sentences explaining the verdict, written
   from the reasons and the pack facts.
 - **Rules and failure handling:** as in 3.2. The verdict and reasons do
   not depend on it.
-- **Cut rule:** the prompt gets 30 minutes of work. If the Tagalog is
+- **Cut rule:** the prompt gets 30 minutes of work. If the wording is
   still poor on the phone, results show no `AiNote`; the fixed reasons
   already explain the verdict.
 
@@ -464,7 +466,7 @@ One SQLite file per pack, built on the laptop by a script.
 | `first_aid_cards` | Title, Filipino title, Tagalog steps, source name, source link, example phrases |
 | `official_senders` | Name, aliases, kind (agency or company), official domains, contact numbers to show, source URL |
 | `scam_examples` | Example phrasing, scam type |
-| `scam_reasons` | Reason id, fixed Tagalog text with placeholders |
+| `scam_reasons` | Reason id, fixed text with placeholders, in Tagalog and English. The app shows the English; the Android alert uses the Tagalog |
 
 Flagged messages are stored in a separate SQLite file in app storage,
 never in the pack.
@@ -495,7 +497,7 @@ Flutter, Android first.
 | `IntentMatcher` | Message to intent id and score; first-aid card match | `ModelManager` |
 | `LocationService` | GPS fix, last known position, manual city choice | Platform location |
 | `Resolver` | Intent plus location to a `Card` | `PackStore` |
-| `Explainer` | Stream the Taglish sentences for a `Card` | `ModelManager` |
+| `Explainer` | Stream the English sentences for a `Card` | `ModelManager` |
 | `MapView` | Offline map, markers, line and distance | `maplibre_gl` |
 | `MessageChecker` | Text and optional sender to a verdict and reason ids | `PackStore`, `IntentMatcher`'s embedder |
 | `ShareEntry` | Receive text from the share sheet and the selection menu | Android intents |
@@ -526,7 +528,7 @@ Message check flow:
 4. Automatic path: on each alarm the Kotlin rules check the last 7 days
    of texts, alert for a new "Mukhang scam" one and update the widget.
    The text reaches the Flagged list when the app next opens.
-5. Opening a result runs `Explainer` for the Tagalog explanation.
+5. Opening a result runs `Explainer` for the English explanation.
 
 ### 5.2 Screens
 
@@ -552,7 +554,7 @@ Message check flow:
 These screens are on the wireframe canvas in the "Message check" row:
 `Check`, `CheckResultScam`, `CheckResultCaution`, `CheckResultClear`,
 `ScamAlert`, `Flagged` and `WatcherSetup` (the Automatic checking
-screen). Home's "Bantay sa text" panel holds the "Check a message"
+screen). Home's "Message guard" panel holds the "Check a message"
 button. Home has no "Look up" button: looking something up is typing it
 into the box. The share sheet and the text selection menu are
 Android's own UI and have no board.
@@ -614,8 +616,8 @@ submission disclosures.
 |---|---|
 | `TopBar` | Back button with a semantic label, screen title |
 | `HotlineRow` | Name, number, Call button |
-| `LeadCall` | The first hotline on a card as one full-width call-accent button: "Tawagan · Call", name, number |
-| `GuardPanel` | Home's "Bantay sa text" panel: ON or OFF tag, the widget's three counts, when texts were checked |
+| `LeadCall` | The first hotline on a card as one full-width call-accent button: "Call", name, number |
+| `GuardPanel` | Home's "Message guard" panel: ON or OFF tag, the widget's three counts, when texts were checked |
 | `UnderstoodStrip` | Under Home's box: what the on-device model made of the message, and how long it took |
 | `PlaceRow` | Name, address, distance, chevron; opens the Map |
 | `LevelBadge` | Outlined for the user's city; filled for a province or national fallback |
@@ -634,12 +636,12 @@ submission disclosures.
 |---|---|---|---|
 | Setup | Pack not ready | Continue is locked | `Setup` (rule) |
 | Setup | Pack ready, models still downloading | Continue is enabled | `Setup` |
-| Home | Ready | Two blocks. Help: the emergency call, the text box and four quick buttons (flood, medical, fire, police). Guard: the "Bantay sa text" panel, which always ends with "Check a message". The other four cards are reached by typing | `Main` |
+| Home | Ready | Two blocks. Help: the emergency call, the text box and four quick buttons (flood, medical, fire, police). Guard: the "Message guard" panel, which always ends with "Check a message". The other four cards are reached by typing | `Main` |
 | Home | Matching | "Find help" disabled, reads "Finding help…"; message stays visible | `HomeMatching` |
 | Home | Embedding model missing | Notice; text box runs keyword search; all eight quick buttons show, since typing cannot open a card | `HomeNoModel` |
-| Home | Understood while typing | After a pause in typing, with three words or more, a strip under the box reads "Naintindihan: [intent label]", the first-aid card's title when one matched, and "AI on this phone" with the measured time. Tapping it opens the card. "Find help" reuses the answer | `Main` |
-| Home | Typed message is not an emergency | The strip reads "Hahanapin sa listahan" and opens keyword search | Rule only |
-| Home | Guard off | "Bantay sa text" panel tagged OFF, one sentence and "Turn on", which opens Automatic checking | `Main` |
+| Home | Understood while typing | After a pause in typing, with three words or more, a strip under the box reads "Understood: [intent label]", the first-aid card's title when one matched, and "AI on this phone" with the measured time. Tapping it opens the card. "Find help" reuses the answer | `Main` |
+| Home | Typed message is not an emergency | The strip reads "Will search the directory" and opens keyword search | Rule only |
+| Home | Guard off | "Message guard" panel tagged OFF, one sentence and "Turn on", which opens Automatic checking | `Main` |
 | Home | Guard on | The panel is tagged ON with the widget's three counts, "Last 7 days · n texts checked · time" and "See flagged messages". Counts only, never a message or a sender | `Main` |
 | Home | Guard on, SMS access not given | The panel says Hudyat cannot read texts and offers "Open automatic checking" | Rule only |
 | Card | GPS fix | Hotlines, nearest places with distances | `Card`, `CardFirstAid` |
@@ -659,7 +661,7 @@ submission disclosures.
 | Check | Shared content has no text | Empty paste box with a Notice | Rule only |
 | Result | Mukhang scam | Filled verdict, reasons, real contact with Call, `AiNote` | `CheckResultScam` |
 | Result | Mag-ingat | Outlined verdict, reasons, real contact with Call, `AiNote` | `CheckResultCaution` |
-| Result | Walang nakitang problema | Dashed verdict, "Hindi ito garantiya" Notice, list of checks run | `CheckResultClear` |
+| Result | Walang nakitang problema | Dashed verdict, "This is not a guarantee" Notice, list of checks run | `CheckResultClear` |
 | Result | No official sender matched | No contact section; one line says why | `CheckResultClear` |
 | Result | Gambling promo | "Mag-ingat" with the fixed gambling reason; the fact line names the brand or the link's domain. No contact section | Rule only |
 | Result | Flagged, sender given | "Open in Messages / Buksan sa Messages" opens that sender's conversation in the SMS app, with one line saying Hudyat cannot delete texts. A snackbar if it cannot open | Rule only |
@@ -690,8 +692,12 @@ submission disclosures.
 
 **Copy rules**
 
-- Labels are in English, with a short Filipino gloss on screen titles,
-  section headings and main actions.
+- One language on screen: English. Labels, headings, reasons, advice
+  and the `AiNote` are English, with no Filipino line under them. A
+  language switch is not built.
+- Three things stay Tagalog: the verdict words, each with its English
+  line under it; the first-aid steps, which the pack holds in Tagalog
+  only; and the Android alert and widget.
 - Every number, address and first-aid step is pack data.
 - Every card shows the pack build date and "Numbers may be out of date".
 - The hotline level is always labelled.
@@ -700,8 +706,8 @@ submission disclosures.
 - Distances always say "straight line".
 - Verdict words are fixed Tagalog: "Mukhang scam", "Mag-ingat", "Walang
   nakitang problema". The app never says "safe" or "legit".
-- A "Walang nakitang problema" result always carries the "Hindi ito
-  garantiya" Notice.
+- A "Walang nakitang problema" result always carries the "This is not
+  a guarantee" Notice.
 - Reasons and the advice under a verdict are fixed text filled with pack
   data. Only the `AiNote` is generated.
 - The call accent is not used for verdicts. Verdict colours are danger

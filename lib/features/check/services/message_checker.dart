@@ -4,6 +4,10 @@ import 'gambling.dart';
 import 'links.dart';
 import 'scam_phrases.dart';
 
+/// Raise this when the rules in [MessageChecker] change, so texts an inbox
+/// scan checked with the old rules are checked again.
+const checkerVersion = 2;
+
 /// Stage 1 of the message check (spec 3.4): links, claimed sender,
 /// gambling promos and phrasing, giving a verdict and reason ids. One checker serves paste,
 /// share, selection and notifications.
@@ -40,6 +44,7 @@ class MessageChecker {
     String? sender,
     String? app,
     bool truncated = false,
+    bool phrasing = true,
   }) async {
     final from = sender?.trim();
     final broken = brokenLinkHosts(text);
@@ -109,9 +114,11 @@ class MessageChecker {
       add(CheckReason(ReasonId.gamblingPromo, {'source': promo}));
     }
 
-    final phrasing = phrases?.call();
-    if (phrasing != null && phrasing.isReady) {
-      final type = await phrasing.match(text);
+    // The wording check costs about a second on a phone, so an inbox scan
+    // can leave it out.
+    final wording = phrasing ? phrases?.call() : null;
+    if (wording != null && wording.isReady) {
+      final type = await wording.match(text);
       if (type != null) add(CheckReason(ReasonId.phrasing, {'type': type}));
     }
 
@@ -119,7 +126,9 @@ class MessageChecker {
       text: text,
       verdict: verdictFor(reasons),
       reasons: reasons,
-      phrasing: phrasing != null && phrasing.isReady
+      phrasing: !phrasing
+          ? PhrasingState.skipped
+          : wording != null && wording.isReady
           ? PhrasingState.checked
           : PhrasingState.notReady,
       sender: from == null || from.isEmpty ? null : from,

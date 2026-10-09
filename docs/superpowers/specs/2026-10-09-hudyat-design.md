@@ -57,7 +57,7 @@ affiliation.
 | Everyday lookup | National agencies, LGU officials and contacts, hotlines, services list |
 | Map | Offline map of Metro Manila with a line and distance to a place |
 | Packs | One downloadable data file per area; Metro Manila is the first |
-| Message check | Scam check by paste, share or text selection, plus automatic checking of incoming messages with alerts |
+| Message check | Scam check by paste, share or text selection, a scan of the SMS inbox by range, plus automatic checking of incoming messages with alerts |
 
 - Lookup data (hotlines, agencies, LGU contacts) is nationwide.
 - Places and the map are Metro Manila only.
@@ -319,6 +319,32 @@ when the user opens the message.
 - **Limit:** long messages can be cut short in a notification, so the
   check sees only what the notification shows.
 
+**Scan path.** "Scan my messages" checks the texts already in the SMS
+inbox.
+
+- **Permission:** `READ_SMS`, asked for only when the user starts a scan.
+  Paste, share, selection and the automatic path never need it. SMS only:
+  Android gives no access to Messenger, Viber or WhatsApp history.
+- **Range:** last 7 days, last 30 days, last 3 months, or all messages.
+  The screen shows how many texts in the range are not yet checked.
+- **Index:** a table next to the flagged messages records, for each text
+  a scan has checked, Android's id for it, when it arrived, the verdict
+  and which version of the rules judged it. It never records the text or
+  the sender. A later scan skips every text in the index, so only new
+  texts, or texts outside earlier ranges, are checked.
+- **Rules version:** a fingerprint of the pack's lists plus a version
+  number in the checker. When either changes, earlier entries no longer
+  match and those texts are checked again.
+- **Two passes:** the rules (links, hidden links, sender, gambling) run
+  on every unchecked text, about a second for 600. The wording check is
+  an optional second pass over texts the rules left clear, newest first,
+  at about a second each; it can be stopped and continued later.
+- **Storage:** as everywhere else, only "Mukhang scam" and "Mag-ingat"
+  texts are kept, under the time they arrived. "Forget what was checked"
+  empties the index and leaves the flagged list alone.
+- **Nothing is changed:** the scan reads. It never deletes, moves or
+  marks a text.
+
 **What a result shows:** the verdict, the reasons, the real contact
 details of whoever the message claims to be with a Call button, and the
 explanation in an `AiNote`.
@@ -446,6 +472,9 @@ Message check flow:
   Clear all.
 - **Watcher setup:** what is read, what is kept, and the switch that
   opens Android's notification access setting.
+- **Scan:** range choice, how many texts are not yet checked, the
+  optional wording pass, and a summary of the last scan. Its board is
+  `Scan` in the same canvas row.
 
 These screens are on the wireframe canvas in the "Message check" row:
 `Check`, `CheckResultScam`, `CheckResultCaution`, `CheckResultClear`,
@@ -465,6 +494,7 @@ Android's own UI and have no board.
 | Map file missing | Places list with distances still works |
 | Message outside all cards | Show the emergency hotline and "call this number" |
 | Notification access not granted | Manual check still works; Watcher setup shows how to grant it |
+| SMS access not granted | Nothing is scanned; the Scan screen says how to allow it; paste, share and automatic checking still work |
 | Embedding model unavailable in the background | Link and sender checks only; phrasing check on open |
 | Message cut short in the notification | Check what is visible; the result says the message may be incomplete |
 | No official sender matched | Verdict from links and phrasing only; no contact shown |
@@ -549,6 +579,14 @@ submission disclosures.
 | Flagged | Empty | "No flagged messages" and a link to Watcher setup | Rule only |
 | Watcher setup | Off, access not granted | What is read, kept and sent; Notice about Android settings; Turn on | `WatcherSetup` |
 | Watcher setup | On | Badge reads ON; the button reads "Turn off"; no Notice | Rule only |
+| Scan | Ready | What is read and kept; range chips; "n not yet checked in this range · Already checked: n"; wording switch; Scan | `Scan` |
+| Scan | SMS access not yet given | No pending count, since counting needs the inbox; Scan asks for access | Rule only |
+| Scan | SMS access refused | Notice with the restricted-settings hint; Scan stays available | Rule only |
+| Scan | Running | Progress bar, "Checking n of m" or "Checking the wording: n of m", Stop | Rule only |
+| Scan | Finished | Summary panel: read, already checked and skipped, checked now, counts per verdict; button to Flagged | `Scan` |
+| Scan | Nothing new | Summary reads "Nothing new to check" | Rule only |
+| Scan | Stopped part-way | Summary reads "Stopped part-way" and says the rest continues on the next scan | Rule only |
+| Scan | Language model not ready | Wording switch disabled with the reason | Rule only |
 | Search | Message outside all cards | Emergency hotline and "Call this number" | `NoMatch` |
 
 **Copy rules**
@@ -580,6 +618,7 @@ submission disclosures.
 | Pack builder | Script on the laptop (Bun and TypeScript) |
 | Models | Gemma 3 1B, EmbeddingGemma |
 | Reading notifications | `notification_listener_service` |
+| Reading the SMS inbox | Android's SMS content provider through a method channel (`SmsReader.kt`). No package |
 | Posting alerts | `flutter_local_notifications` |
 | Share sheet and selection menu | A small Android activity (`ShareActivity`) with `SEND` and `PROCESS_TEXT` intent filters, passing the text to the app over a method channel. No package |
 

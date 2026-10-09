@@ -105,7 +105,11 @@ class ResultScreen extends StatelessWidget {
               const SizedBox(height: 10),
               CheckedRow(
                 name: 'Phrasing',
-                outcome: notReady ? 'Not ready yet' : 'No scam match',
+                outcome: switch (result.phrasing) {
+                  PhrasingState.notReady => 'Not ready yet',
+                  PhrasingState.skipped => 'Not run in this scan',
+                  PhrasingState.checked => 'No scam match',
+                },
               ),
             ],
             if (claimed != null) ...[

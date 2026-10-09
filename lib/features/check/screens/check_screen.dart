@@ -6,6 +6,7 @@ import '../../../core/widgets/buttons.dart';
 import '../../../core/widgets/panels.dart';
 import 'flagged_screen.dart';
 import 'result_screen.dart';
+import 'scan_screen.dart';
 import 'watcher_setup_screen.dart';
 
 /// Paste a message and check it. Also where a message shared or selected in
@@ -201,6 +202,14 @@ class _CheckScreenState extends State<CheckScreen> {
                     builder: (_) => const FlaggedScreen(),
                   ),
                 ),
+              ),
+            ),
+            const SizedBox(height: 10),
+            SecondaryButton(
+              label: 'Scan my messages',
+              gloss: 'I-scan ang mga mensahe',
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(builder: (_) => const ScanScreen()),
               ),
             ),
             const SizedBox(height: 10),

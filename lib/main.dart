@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
+import 'package:sqlite3/sqlite3.dart' show sqlite3;
 
 import 'core/app_scope.dart';
 import 'core/models/edge_ai_runtime.dart';
@@ -14,6 +15,9 @@ import 'core/theme/tokens.dart';
 import 'core/widgets/buttons.dart';
 import 'features/card/services/resolver.dart';
 import 'features/check/services/flagged_store.dart';
+import 'features/check/services/inbox_scanner.dart';
+import 'features/check/services/scan_index.dart';
+import 'features/check/services/sms_inbox.dart';
 import 'features/check/screens/check_screen.dart';
 import 'features/check/screens/result_screen.dart';
 import 'features/check/services/android_watcher.dart';
@@ -43,6 +47,7 @@ class _HudyatAppState extends State<HudyatApp> {
   MessageChecker? _checker;
   FlaggedStore? _flagged;
   MessageWatcher? _watcher;
+  InboxScanner? _scanner;
   Object? _error;
 
   final _navigator = GlobalKey<NavigatorState>();
@@ -76,9 +81,16 @@ class _HudyatAppState extends State<HudyatApp> {
         phrases: () => models.scamPhrases,
       );
       // Flagged messages live in their own file, apart from the pack.
-      final flagged = FlaggedStore.open(
-        p.join(support.path, 'flagged.sqlite'),
-        senders: senders,
+      final kept = sqlite3.open(p.join(support.path, 'flagged.sqlite'));
+      final flagged = FlaggedStore(kept, senders: senders);
+      final scanner = InboxScanner(
+        inbox: const AndroidSmsInbox(),
+        checker: checker,
+        flagged: flagged,
+        // In the same file, but it holds ids and verdicts, never text.
+        index: ScanIndex(kept),
+        rules: '${store.rulesVersion()}-$checkerVersion',
+        phrases: () => models.scamPhrases,
       );
       final watcher = MessageWatcher(
         source: const AndroidNotificationSource(),
@@ -101,6 +113,7 @@ class _HudyatAppState extends State<HudyatApp> {
         _checker = checker;
         _flagged = flagged;
         _watcher = watcher;
+        _scanner = scanner;
       });
       // Text shared while the app was closed, then anything shared later.
       _share.listen(_openShared);
@@ -142,6 +155,7 @@ class _HudyatAppState extends State<HudyatApp> {
   @override
   void dispose() {
     _watcher?.dispose();
+    _scanner?.dispose();
     _share.dispose();
     _location?.dispose();
     _models?.dispose();
@@ -158,12 +172,14 @@ class _HudyatAppState extends State<HudyatApp> {
     final checker = _checker;
     final flagged = _flagged;
     final watcher = _watcher;
+    final scanner = _scanner;
     if (store == null ||
         location == null ||
         models == null ||
         checker == null ||
         flagged == null ||
-        watcher == null) {
+        watcher == null ||
+        scanner == null) {
       return MaterialApp(
         title: 'Hudyat',
         theme: hudyatTheme(),
@@ -178,6 +194,7 @@ class _HudyatAppState extends State<HudyatApp> {
       checker: checker,
       flagged: flagged,
       watcher: watcher,
+      scanner: scanner,
       child: MaterialApp(
         title: 'Hudyat',
         navigatorKey: _navigator,

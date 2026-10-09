@@ -41,7 +41,13 @@ class CheckReason {
 }
 
 /// Where the phrasing check stood when the message was checked.
-enum PhrasingState { checked, notReady }
+enum PhrasingState {
+  checked,
+  notReady,
+
+  /// Left out on purpose: an inbox scan runs the fast rules first.
+  skipped,
+}
 
 /// Everything a check produces. No free text: a verdict, reason ids and
 /// facts from the pack.

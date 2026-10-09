@@ -78,6 +78,15 @@ class PackStore {
   /// trusted, since a sender name can be faked.
   List<String> knownSenderIds() => _metaList('sender_ids');
 
+  /// Identifies the message-check lists in this pack. Falls back to the
+  /// build date for a pack made before it was recorded.
+  String rulesVersion() {
+    final rows = _db.select(
+      "SELECT value FROM meta WHERE key = 'rules_version'",
+    );
+    return rows.isEmpty ? meta.buildDate : rows.first['value'] as String;
+  }
+
   List<String> _metaList(String key) {
     final rows = _db.select('SELECT value FROM meta WHERE key = ?', [key]);
     if (rows.isEmpty) return const [];

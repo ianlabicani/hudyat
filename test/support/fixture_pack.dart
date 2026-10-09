@@ -5,6 +5,7 @@ import 'package:hudyat/core/geo.dart';
 import 'package:hudyat/core/models/model_runtime.dart';
 import 'package:hudyat/core/pack/pack_store.dart';
 import 'package:hudyat/features/check/services/message_watcher.dart';
+import 'package:hudyat/features/check/services/sms_inbox.dart';
 import 'package:hudyat/features/location/services/location_service.dart';
 import 'package:sqlite3/sqlite3.dart';
 
@@ -551,4 +552,29 @@ class FakeAlerter implements Alerter {
     required String title,
     required String body,
   }) async => alerts.add((id: flaggedId, title: title, body: body));
+}
+
+/// An SMS inbox the test fills, with access granted or refused as it says.
+class FakeSmsInbox implements SmsInbox {
+  FakeSmsInbox({this.granted = true, this.grantsOnRequest = true});
+
+  bool granted;
+  bool grantsOnRequest;
+  final messages = <SmsMessage>[];
+  int reads = 0;
+
+  @override
+  Future<bool> hasPermission() async => granted;
+
+  @override
+  Future<bool> requestPermission() async => granted = grantsOnRequest;
+
+  @override
+  Future<List<SmsMessage>> read({DateTime? since}) async {
+    reads++;
+    return [
+      for (final message in messages)
+        if (since == null || !message.sentAt.isBefore(since)) message,
+    ]..sort((a, b) => a.id.compareTo(b.id));
+  }
 }

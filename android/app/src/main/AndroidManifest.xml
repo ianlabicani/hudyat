@@ -5,6 +5,8 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <!-- Hudyat's own alert for a message checked as "Mukhang scam". -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <!-- "Scan my messages": asked for only when the user starts a scan. -->
+    <uses-permission android:name="android.permission.READ_SMS"/>
     <application
         android:label="Hudyat"
         android:name="${applicationName}"

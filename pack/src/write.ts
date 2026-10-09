@@ -177,6 +177,9 @@ export function writePack(path: string, contents: PackContents): void {
     }
     const scam = contents.scam;
     if (scam) {
+      // Changes whenever the lists do, so the app rechecks texts it scanned
+      // with older ones.
+      insertMeta.run("rules_version", Bun.hash(JSON.stringify(scam)).toString(16));
       insertMeta.run("link_shorteners", JSON.stringify(scam.shorteners));
       insertMeta.run("neutral_hosts", JSON.stringify(scam.neutralHosts));
       insertMeta.run("sender_ids", JSON.stringify(scam.senderIds));

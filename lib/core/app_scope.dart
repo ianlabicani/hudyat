@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 
 import '../features/card/services/resolver.dart';
 import '../features/check/services/flagged_store.dart';
+import '../features/check/services/inbox_scanner.dart';
 import '../features/check/services/message_checker.dart';
 import '../features/check/services/message_watcher.dart';
 import '../features/location/state/location_controller.dart';
@@ -18,6 +19,7 @@ class AppScope extends InheritedWidget {
     required this.checker,
     required this.flagged,
     required this.watcher,
+    required this.scanner,
     required super.child,
     super.key,
   });
@@ -29,6 +31,7 @@ class AppScope extends InheritedWidget {
   final MessageChecker checker;
   final FlaggedStore flagged;
   final MessageWatcher watcher;
+  final InboxScanner scanner;
 
   static AppScope of(BuildContext context) =>
       context.dependOnInheritedWidgetOfExactType<AppScope>()!;
@@ -41,5 +44,6 @@ class AppScope extends InheritedWidget {
       models != oldWidget.models ||
       checker != oldWidget.checker ||
       flagged != oldWidget.flagged ||
-      watcher != oldWidget.watcher;
+      watcher != oldWidget.watcher ||
+      scanner != oldWidget.scanner;
 }

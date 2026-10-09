@@ -351,6 +351,7 @@ fonts keep their own licences, listed under Disclosures.
 
 ## More detail
 
+- [Building and installing](docs/BUILD.md)
 - [How the components work](docs/ARCHITECTURE.md)
 - [How the AI works](docs/AI.md)
 - [Where the data comes from](docs/DATA.md)

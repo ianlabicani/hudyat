@@ -200,9 +200,10 @@ payments all day. Her inbox is full of promos and "wrong send" texts.
 3. The rules pass finishes in about a second for a few hundred texts. A
    progress line shows "Checking n of m".
 4. The summary shows how many were read and the counts per verdict.
-5. In the Flagged list, the casino and bingo promos have their own
-   group, "Sugal promo", with a count. The reason names the brand or
-   the link's domain. It does not call the operator illegal.
+5. The Flagged list has one row per sender. A casino's or bingo
+   site's row counts its promos as "Sugal promo"; opening the sender
+   shows them in their own group with a count. The reason names the
+   brand or the link's domain. It does not call the operator illegal.
 6. She opens a promo. Under "Want fewer of these?" it says how many
    that sender has sent, and she taps "Block this sender in Messages" to
    block it herself in her SMS app. The same section gives a free line

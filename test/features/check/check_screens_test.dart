@@ -524,8 +524,12 @@ void main() {
       expect(find.text('No flagged messages'), findsOneWidget);
     });
 
-    testWidgets('gambling promos get a group of their own', (tester) async {
+    testWidgets('one row per sender, worst first, with its counts', (
+      tester,
+    ) async {
       flagged
+        ..keep(await checker.check(scamText, sender: 'GCASH'))
+        ..keep(await checker.check('Tingnan mo bit.ly/abc', sender: 'GCASH'))
         ..keep(await checker.check('Tingnan mo bit.ly/abc'))
         ..keep(
           await checker.check(
@@ -534,42 +538,104 @@ void main() {
           ),
         );
       await pump(tester, const FlaggedScreen());
-      expect(find.text('Mag-ingat · 1'), findsOneWidget);
-      expect(find.text('Sugal promo · 1'), findsOneWidget);
+      expect(find.text('4 messages kept · 3 senders'), findsOneWidget);
+      expect(find.text('GCASH'), findsOneWidget);
+      expect(find.text('1 Mukhang scam · 1 Mag-ingat'), findsOneWidget);
+      expect(find.text('1 Sugal promo'), findsOneWidget);
+      expect(find.text('1 Mag-ingat'), findsOneWidget);
+      expect(find.text('Sender not given'), findsOneWidget);
+      expect(find.text('SCAM'), findsOneWidget);
+      expect(find.text('MAG-INGAT'), findsNWidgets(2));
+      expect(find.byTooltip('Remove from this list'), findsNothing);
+      expect(
+        tester.getTopLeft(find.text('GCASH')).dy,
+        lessThan(tester.getTopLeft(find.text('BingoPlus')).dy),
+      );
     });
 
-    testWidgets('groups by verdict, opens a result, clears', (tester) async {
+    testWidgets('a sender opens its messages by kind, then a result', (
+      tester,
+    ) async {
+      flagged
+        ..keep(await checker.check(scamText, sender: 'GCASH'))
+        ..keep(await checker.check('Tingnan mo bit.ly/abc', sender: 'GCASH'))
+        ..keep(
+          await checker.check(
+            'Get UP TO 1.5% Rebate! bingoplus.com/channels/slot',
+            sender: 'BingoPlus',
+          ),
+        );
+      await pump(tester, const FlaggedScreen());
+      await tester.tap(find.text('BingoPlus'));
+      await tester.pumpAndSettle();
+      expect(find.text('Sugal promo · 1'), findsOneWidget);
+      expect(find.textContaining('Mag-ingat ·'), findsNothing);
+      await tester.pageBack();
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('GCASH'));
+      await tester.pumpAndSettle();
+      expect(find.text('2 messages kept'), findsOneWidget);
+      expect(find.text('Mukhang scam · 1'), findsOneWidget);
+      expect(find.text('Mag-ingat · 1'), findsOneWidget);
+      expect(find.textContaining('Sugal promo'), findsNothing);
+      await tester.tap(find.text(scamText));
+      await tester.pumpAndSettle();
+      expect(find.text('Looks like a scam'), findsOneWidget);
+    });
+
+    testWidgets('clears every sender', (tester) async {
       flagged
         ..keep(await checker.check(scamText, sender: 'GCASH'))
         ..keep(await checker.check('Tingnan mo bit.ly/abc'));
       await pump(tester, const FlaggedScreen());
-      expect(find.text('2 messages kept'), findsOneWidget);
-      expect(find.text('SCAM'), findsOneWidget);
-      expect(find.text('MAG-INGAT'), findsOneWidget);
-      expect(find.text('Mukhang scam · 1'), findsOneWidget);
-      expect(find.text('Mag-ingat · 1'), findsOneWidget);
-      expect(find.textContaining('Sugal promo'), findsNothing);
-      expect(find.text('Sender not given'), findsOneWidget);
-      await tester.tap(find.text('GCASH'));
-      await tester.pumpAndSettle();
-      expect(find.text('Looks like a scam'), findsOneWidget);
-      await tester.pageBack();
-      await tester.pumpAndSettle();
+      expect(find.text('2 messages kept · 2 senders'), findsOneWidget);
       await tester.tap(find.text('Clear all'));
       await tester.pump();
       expect(find.text('No flagged messages'), findsOneWidget);
     });
 
-    testWidgets('one message can be removed from the list', (tester) async {
+    testWidgets('a message is removed on its sender screen, which closes '
+        'when none are left', (tester) async {
       flagged
         ..keep(await checker.check(scamText, sender: 'GCASH'))
+        ..keep(await checker.check('Tingnan mo bit.ly/abc', sender: 'GCASH'))
         ..keep(await checker.check('Tingnan mo bit.ly/abc'));
       await pump(tester, const FlaggedScreen());
+      await tester.tap(find.text('GCASH'));
+      await tester.pumpAndSettle();
       await tester.tap(find.byTooltip('Remove from this list').first);
-      await tester.pump();
+      await tester.pumpAndSettle();
       expect(find.text('1 message kept'), findsOneWidget);
+      expect(find.textContaining('Mukhang scam ·'), findsNothing);
+      expect(find.text('Mag-ingat · 1'), findsOneWidget);
+
+      await tester.tap(find.byTooltip('Remove from this list'));
+      await tester.pumpAndSettle();
+      expect(find.text('1 message kept · 1 sender'), findsOneWidget);
       expect(find.text('GCASH'), findsNothing);
       expect(find.text('Sender not given'), findsOneWidget);
+    });
+
+    testWidgets('holds up with large text on a narrow screen', (tester) async {
+      flagged
+        ..keep(await checker.check(scamText, sender: 'GCASH'))
+        ..keep(await checker.check('Tingnan mo bit.ly/abc', sender: 'GCASH'))
+        ..keep(
+          await checker.check(
+            'Get UP TO 1.5% Rebate! bingoplus.com/channels/slot',
+            sender: 'GCASH',
+          ),
+        );
+      await pump(tester, const FlaggedScreen());
+      tester.view.physicalSize = const Size(320, 4800);
+      tester.platformDispatcher.textScaleFactorTestValue = 2;
+      addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+      await tester.pumpAndSettle();
+      expect(find.text('GCASH'), findsOneWidget);
+      await tester.tap(find.text('GCASH'));
+      await tester.pumpAndSettle();
+      expect(find.text('3 messages kept'), findsOneWidget);
     });
   });
 }

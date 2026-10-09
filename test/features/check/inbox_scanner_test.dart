@@ -307,7 +307,7 @@ void main() {
 
       await tester.tap(find.text('Flagged messages'));
       await tester.pumpAndSettle();
-      expect(find.text('2 messages kept'), findsOneWidget);
+      expect(find.textContaining('2 messages kept · '), findsOneWidget);
     });
 
     testWidgets('a second scan says nothing was new', (tester) async {

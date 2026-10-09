@@ -566,8 +566,8 @@ Message check flow:
 - **Check:** paste box and a Check button.
 - **Result:** verdict, reasons, official contact with Call, AI
   explanation.
-- **Flagged list:** saved "Mukhang scam" and "Mag-ingat" messages, with
-  Clear all.
+- **Flagged list:** saved "Mukhang scam" and "Mag-ingat" messages, one
+  row per sender, with Clear all. A sender opens its kept messages.
 - **Automatic checking:** what is read, what is kept, the switch that
   asks for SMS access, and the counts from the last check.
 - **Home screen widget:** the same counts, outside the app. Its board is
@@ -696,7 +696,8 @@ submission disclosures.
 | Result | Chat model missing or slow | No `AiNote`; nothing else changes | Rule only |
 | Result | Note names a number or link that is not in the reasons, or calls the message safe | The `AiNote` is dropped; nothing else changes | Rule only |
 | Alert | A new Mukhang scam text found by the timed check | Standard Android notification: sender in the title, first reason in the body, one "Tingnan" action that opens the Flagged list | `ScamAlert` |
-| Flagged | Has messages | Three groups, each with its count: "Mukhang scam", "Mag-ingat", and "Sugal promo" for texts whose only reason is a gambling promo; each row opens its result and has a "Remove from this list" icon button; Clear all. One line says removing does not delete the text from the SMS app | `Flagged` |
+| Flagged | Has messages | "n messages kept · m senders" and Clear all, then one row per sender (sender and app together; texts with no sender share "Sender not given"): the worst verdict's tag, the sender, counts per kind ("Mukhang scam", "Mag-ingat", and "Sugal promo" for texts whose only reason is a gambling promo), the newest text on one line and the total. Senders with a "Mukhang scam" text come first, then the newest. A row opens that sender's messages. One line says clearing does not delete anything from the SMS app | `Flagged` |
+| Flagged sender | Has messages | The sender in the top bar and "n messages kept", then three groups, each with its count: "Mukhang scam", "Mag-ingat" and "Sugal promo"; each row opens its result and has a "Remove from this list" icon button. Removing the last one returns to the Flagged list. One line says removing does not delete the text from the SMS app | `Flagged` |
 | Flagged | Empty | "No flagged messages" and a link to Automatic checking | Rule only |
 | Automatic checking | Off | What is read, kept and sent; Notice that Android will ask for SMS access (or that it was not given); Turn on | `WatcherSetup` |
 | Automatic checking | On | Badge reads ON; a panel with the three counts, texts checked and the time; "Turn off" | `WatcherSetup` |

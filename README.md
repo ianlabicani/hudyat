@@ -1,23 +1,197 @@
 # Hudyat
 
-An Android app for offline message checks and finding Philippine public-service
-contacts. Metro Manila supplies the map and nearby places; the pack also includes
-national agencies and hotlines. Calls, external sites and directions open the
-phone's usual apps.
+**Hudyat** ("signal") is an Android app that runs AI on a budget phone to
+do two things with no internet: tell you who to call and where to go in an
+emergency, and warn you when a message looks like a scam.
 
-Both AI models run on the phone itself — a budget Android inside the flood
-zone, not a rescuer's laptop or an office server. The person who loses signal
-is the one carrying the help.
+> Hudyat is the official information you can trust when you can't get
+> online: who to call, where to go, and whether a message is real.
 
-The current implementation and release checklist is
-[the stabilization/classifier plan](docs/superpowers/plans/2026-10-09-stabilization-and-classifier.md).
-See the [design spec](docs/superpowers/specs/2026-10-09-hudyat-design.md) and
-[user stories](docs/superpowers/stories/2026-10-09-user-stories.md) for scope.
+- **Event:** AppBuildersPH Hackathon 2026, theme "Local AI"
+- **Team:** Ian Labicani (solo)
+- **Test phone:** Infinix X6876 (Dimensity 7400, 8 GB RAM), Android 16
+- **Demo video:** to be linked here before submission
 
-## Set up
+## What it does
 
-Use Flutter with Dart 3.13.1 or later, an Android SDK/JDK compatible with this
-project's Gradle wrapper, and Bun for pack tools. Keep the checked-in lockfiles.
+- **Find help.** Type what happened in Taglish, such as "Binabaha na dito,
+  may matanda kami". The phone works out what you need and shows a card:
+  the hotline for your city, the nearest hospitals, clinics, pharmacies,
+  police or fire stations, and a fixed first-aid card when one applies.
+- **Offline map.** Places are shown on a Metro Manila map stored on the
+  phone, with the straight-line distance.
+- **Check a message.** Paste a message, share it to Hudyat, or select the
+  text and tap "Check with Hudyat". The result gives a verdict, the
+  reasons, and the real contact details of whoever the message claims to
+  be.
+- **Automatic checking.** Once switched on, Hudyat checks incoming SMS
+  and message notifications and alerts you about a likely scam.
+- **Everyday lookup.** Search national agencies, local officials,
+  hotlines and government services.
+
+## Why the AI runs on the phone
+
+> A typhoon takes the signal at the exact moment people need help. Hudyat
+> keeps the data and the AI on a budget phone, so it still works, and
+> nothing you type or receive, from your emergency to your private
+> messages, leaves the device.
+
+Two reasons, and they hold separately:
+
+- **No signal.** The emergency flow has to work in airplane mode.
+- **Privacy.** A scam checker reads your messages. That is only
+  acceptable if they never leave the phone, even when you are online.
+
+## What runs on the phone, and what needs internet
+
+| Runs on the phone, offline | Needs internet |
+|---|---|
+| Both AI models | Opening a government service's website |
+| Understanding a typed request | Directions in another maps app |
+| Hotline, agency and official lookup | Downloading the models, if they are not copied over by cable |
+| Nearest places and the offline map | Rebuilding the data pack on a laptop |
+| First-aid cards | |
+| Every message check, alert and saved result | |
+
+Hudyat has no server of its own and calls no cloud AI service. Phone
+calls use the mobile network, which often still works when data does not.
+
+## How the AI is used
+
+Two open models run on the phone. Neither was trained by us.
+
+| Model | Job |
+|---|---|
+| EmbeddingGemma (about 300M) | Matches a typed request to one of a fixed list of needs, picks a first-aid card, and compares a message's wording with known scam wording |
+| Gemma 3 1B | Writes one or two sentences under a card or result, labelled "AI-written" |
+
+The design assumes a small model will sometimes be wrong:
+
+- **The data is the knowledge.** Every phone number, address, website and
+  first-aid step is copied from the data pack. The AI never writes them.
+- **The AI is the interface.** It understands the question; it does not
+  supply the answer.
+- **Rules come first in the message check.** Links, claimed senders and
+  gambling promos are checked against official data by rules. The wording
+  check is a second signal and cannot mark a message "Mukhang scam" on
+  its own.
+- **Everything degrades.** If a model is missing or slow, the quick
+  buttons, keyword search, rules and cards still work.
+
+Verdicts are "Mukhang scam", "Mag-ingat" and "Walang nakitang problema".
+Hudyat never says a message is safe.
+
+## Automatic checking
+
+- **As messages arrive.** With permission, Hudyat checks incoming SMS and
+  notifications from Messages, Messenger, WhatsApp, Viber and Telegram.
+  This path uses the rules only, so it does not load a model in the
+  background.
+- **Recovery.** A scheduled check of the SMS inbox runs about every 12
+  hours, and again whenever Hudyat is opened.
+- **Wording check.** The AI wording check runs while the app is open.
+- **Alerts.** Only "Mukhang scam" raises a notification. A home screen
+  widget shows counts and never shows a message or a sender.
+- **Storage.** Only flagged messages are kept, on the phone, in a list
+  you can clear.
+
+Phones that restrict background apps can delay an arrival-time alert
+until the recovery check runs or Hudyat is opened.
+
+## What is in the data pack
+
+Built on 2026-10-09.
+
+| Kind | Count | Coverage |
+|---|---|---|
+| Hotlines | 469 | Nationwide |
+| National agencies | 295 | Nationwide |
+| Local officials | 2,460 | Nationwide |
+| Government services | 194 | Nationwide |
+| Places (hospitals, clinics, pharmacies, police, fire, shelters) | 3,206 | Metro Manila |
+| Official senders for the message check | 263 | Agencies and companies |
+| First-aid cards | 8 | Flood and typhoon cases |
+
+## Disclosures
+
+**Models**
+
+- EmbeddingGemma: `embeddinggemma-300M_seq256_mixed-precision.tflite`
+- Gemma 3 1B: `Gemma3-1B-IT_multi-prefill-seq_q4_ekv4096.litertlm`
+
+**Technologies and frameworks**
+
+- Flutter and Dart; Kotlin for the background message checks and widget
+- `flutter_edge_ai`, `flutter_edge_ai_litertlm`,
+  `flutter_edge_ai_embeddings` (on-device models)
+- `sqlite3` with FTS5, `maplibre_gl` with PMTiles, `geolocator`,
+  `url_launcher`, `path_provider`, `crypto`
+- Bun and TypeScript for the data pack builder
+
+**APIs and cloud services**
+
+- None at run time.
+- At build time only: GitHub for BetterGov data, the OpenStreetMap
+  Overpass API for places, the Protomaps daily build for the base map,
+  and Hugging Face for the model files.
+
+**Data**
+
+| Source | Used for | Licence |
+|---|---|---|
+| `bettergovph/bettergov` | Agencies, officials, services, national hotlines, official websites | CC0-1.0 |
+| `bettergovph/hotlines` | City hotlines | None listed |
+| OpenStreetMap contributors | Places and the map | ODbL |
+| Protomaps | Base map tiles, cut to Metro Manila | Built from OpenStreetMap data |
+| Company websites | Official company websites and hotlines | Facts, cited per company |
+| British Red Cross, MedlinePlus, World Health Organization | First-aid cards, reworded in Tagalog | Cited per card |
+| Own lists | Gambling brands, sender rules, scam wording | Own work |
+
+**Synthetic data.** The 42 scam phrases used by the wording check and
+the 169 labelled examples in `pack/data/ask_examples.json` were written
+for this project, most of them by an AI assistant. They are not collected
+from real victims and are never used as test data.
+
+**Fonts.** Atkinson Hyperlegible and IBM Plex Mono, both under the SIL
+Open Font License. The licence texts are in `assets/fonts/`.
+
+**Existing code and assets.** The app was built during the hackathon.
+The scheduled-alarm approach and the coding conventions follow the
+builder's earlier apps, Barya and AfterYou.
+
+**AI development tools.** Claude Code and Devin.
+
+**Affiliation.** Hudyat is independent. It uses BetterGov's open data
+with credit and is not endorsed by BetterGov or any agency.
+
+## Limitations
+
+- **It cannot prove a message is safe**, confirm a sender name, or see
+  where a shortened link goes while offline.
+- **It does not block or delete messages.**
+- **Messenger, WhatsApp, Viber and Telegram** are seen only through their
+  notifications, which can cut a long message short. Their message
+  history cannot be read.
+- **The map and places cover Metro Manila only.** Hotlines and the
+  directory are nationwide.
+- **Contacts can go out of date.** Every card shows the pack's build
+  date.
+- **AI-written sentences can be wrong.** They are labelled, and no card
+  depends on them.
+- **The wording check is modest.** In an early test on the phone it
+  caught 12 of 20 synthetic scam examples at a threshold that flagged
+  none of 25 ordinary messages. This is not a real-world accuracy figure.
+- **A trained five-label classifier is included but switched off.** It
+  has not been measured on independent real messages, so the app ships
+  with the simpler wording check. The details are in
+  [pack/classifier/README.md](pack/classifier/README.md).
+- **First-aid cards** are reworded from the cited sources and are not a
+  substitute for emergency care.
+
+## Build and run
+
+Requirements: Flutter with Dart 3.13.1 or later, an Android SDK and JDK
+that match the project's Gradle wrapper, and Bun for the pack tools.
 
 ```sh
 flutter pub get
@@ -29,58 +203,34 @@ cd ..
 flutter build apk
 ```
 
-`fetch` downloads BetterGov directory/hotline data and OpenStreetMap places into
-ignored `pack/raw/`; cached downloads are reused (`--force` refreshes them).
-`build` combines those files with the curated lists in `pack/data/` into
-`assets/pack/metro-manila.sqlite`. `map` requires the `pmtiles` command and internet
-access; it cuts the Protomaps daily build to the Metro Manila bounding box at
-maximum zoom 15. The approximately 53 MB PMTiles asset is ignored by Git and must
-exist before a complete map build. Sources/licences and build dates are retained
-in the pack. Inspect changed contacts and first-aid sources before a release.
+- `fetch` downloads BetterGov data and OpenStreetMap places into the
+  ignored `pack/raw/` folder. Cached downloads are reused; `--force`
+  refreshes them.
+- `build` combines those files with the lists in `pack/data/` into
+  `assets/pack/metro-manila.sqlite`.
+- `map` needs the `pmtiles` command and internet access. It cuts the
+  Protomaps daily build to Metro Manila at a maximum zoom of 15. The
+  result is about 53 MB and is not stored in Git, so run it before
+  building the app.
 
-## Models and sideloading
+### Models
 
-Rules and keyword search work without models. EmbeddingGemma adds intent and
-wording matching; Gemma 3 adds optional labelled AI notes. Obtain the files after
-personally accepting the model publishers' Gemma terms:
+Accept the Gemma terms on Hugging Face, download these three files, and
+copy them to `/sdcard/Android/data/com.example.hudyat/files/models/` on
+the phone:
 
 - `embeddinggemma-300M_seq256_mixed-precision.tflite`
 - `sentencepiece.model`
 - `Gemma3-1B-IT_multi-prefill-seq_q4_ekv4096.litertlm`
 
-On a **user-chosen device/build**, copy them into
-`/sdcard/Android/data/com.example.hudyat/files/models/`, then use Setup's file
-check. Setup displays the actual folder. Sideloading avoids putting a private
-Hugging Face token in an APK. The optional network-download build uses
-`--dart-define=HUGGINGFACE_TOKEN=...`; do not commit or distribute private tokens.
-Installing an APK, clearing data or replacing a device's models requires the
-user's own initiation. This task does none of those actions.
+Then open Setup in the app and tap "Check again". Setup shows the exact
+folder. Rules and keyword search work before the models are in place.
 
-## Supported flows
+A build can also download the models itself when given
+`--dart-define=HUGGINGFACE_TOKEN=...`. Never commit or share a build that
+contains a private token.
 
-- Emergency buttons and typed help requests; city selection, keyword search,
-  contact cards, phone calls and an offline local map.
-- Paste a message, share text into Hudyat, or use Android text selection to check
-  it. Link and sender rules run first. A loaded embedding model adds a wording
-  check; labelled AI explanations are optional.
-- Scan the SMS inbox by range, with an explicit wording switch and Stop action.
-  Opening the app checks recent texts with fast rules, then processes pending
-  wording checks asynchronously in foreground passes capped at 30 seconds.
-  Clear and caution texts get AI checks; rules-scam texts keep their rule verdict.
-  Backgrounding stops after the current message; foreground entry resumes.
-- Flagged messages retain wording status and link counts. Legacy saved results
-  explicitly say their wording-check status was not recorded.
-- Automatic checking and the home-screen count widget use Kotlin rules only.
-  Checks are scheduled about every 12 hours; Android may delay them. Opening
-  Hudyat also checks recent texts. Debug builds retain the separate short interval.
-
-The experimental five-label **suspicious-request** classifier is **disabled** in
-the bundled pack. A missing, invalid, unapproved or model-incompatible artifact
-uses the existing phrasing matcher. Several AI labels count as one evidence
-group: AI alone is caution, while hard link findings and the existing two-group
-rule retain their scam verdicts.
-
-## Verify
+### Tests
 
 ```sh
 flutter analyze
@@ -89,48 +239,16 @@ cd pack && bun test
 cd ../android && ./gradlew :app:testDebugUnitTest
 ```
 
-If rules or source lists change, regenerate the shared Dart/Kotlin cases:
+The message rules exist in Dart and in Kotlin. If a rule or a source list
+changes, regenerate the shared cases from the project root, then rerun
+the Kotlin tests:
 
 ```sh
 UPDATE_CASES=1 flutter test test/features/check/checker_cases_test.dart
 ```
 
-Run that command from the project root, then rerun the Kotlin tests. The spike
-exporter has a separate check: `cd spikes/model_test && flutter analyze`.
-Classifier tooling, private data preparation, an explicit debug phone trial and release gates are documented in
-[pack/classifier/README.md](pack/classifier/README.md).
+## More detail
 
-## Measurements, limitations and disclosures
-
-The existing phrasing threshold is 0.56. The earlier phone experiment reported
-12/20 scam examples detected and a highest ordinary-message similarity of 0.546
-on 25 ordinary examples. Those 20 scams are now **regression only**; this is not
-an independent classifier result or a real-world accuracy estimate.
-
-All 169 new training examples and 42 existing scam phrases are synthetic. Their
-suspicious-request labels have been reviewed; ordinary OTP notices, routine
-advisories and ambiguous payment requests are negatives. Synthetic data is never
-eligible for classifier calibration or final testing. The available private
-ordinary corpus contains 217 texts; prepared groups require campaign review.
-The previous design note's 575-text claim is not supported by the available file.
-Private texts and vectors remain in ignored storage and do not ship.
-
-No production classifier has been fitted or measured: independent scam campaigns,
-phone query vectors, a final set of at least 20 scams and 100 ordinary messages,
-and a user-initiated phone pass remain pending. Laptop fixture tests establish
-code behaviour and numerical agreement, not classifier effectiveness. Enabling
-requires at least 13/20 regression detections, greater final scam detection than
-phrasing, no extra final ordinary warnings, and verified offline operation,
-responsiveness, resumption and fallback on the phone.
-
-Hudyat cannot prove a message safe, authenticate a sender name, resolve shortened
-links offline, delete/block SMS, or monitor Messenger automatically. Scheduled
-checks can be delayed; the widget reports rules counts, not foreground AI counts.
-Directory/map coverage and contact freshness depend on the pack. First-aid source
-review, the first-aid matching threshold and release alarm behaviour still need
-explicit content/device verification. Generated AI notes can be wrong; contacts,
-reason rows and first-aid steps come from fixed pack data.
-
-Feature stop: **October 10, 07:00**; submission target: **09:30**, Asia/Manila.
-Learned corrections, semantic service matching and new emergency-picker screens
-are deferred. No push or publication is part of this work.
+- [Design spec](docs/superpowers/specs/2026-10-09-hudyat-design.md)
+- [User stories](docs/superpowers/stories/2026-10-09-user-stories.md)
+- [Classifier tooling](pack/classifier/README.md)

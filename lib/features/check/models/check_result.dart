@@ -19,6 +19,7 @@ abstract final class ReasonId {
   static const senderMobile = 'sender_mobile';
   static const linkShortener = 'link_shortener';
   static const phrasing = 'phrasing';
+  static const linkHidden = 'link_hidden';
   static const gamblingPromo = 'gambling_promo';
 }
 

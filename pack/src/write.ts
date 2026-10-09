@@ -178,6 +178,8 @@ export function writePack(path: string, contents: PackContents): void {
     const scam = contents.scam;
     if (scam) {
       insertMeta.run("link_shorteners", JSON.stringify(scam.shorteners));
+      insertMeta.run("neutral_hosts", JSON.stringify(scam.neutralHosts));
+      insertMeta.run("sender_ids", JSON.stringify(scam.senderIds));
       if (scam.gambling) insertMeta.run("gambling", JSON.stringify(scam.gambling));
       const insertSender = db.prepare(
         `INSERT INTO official_senders

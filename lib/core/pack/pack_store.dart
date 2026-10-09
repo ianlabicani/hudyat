@@ -70,6 +70,20 @@ class PackStore {
     return (jsonDecode(rows.first['value'] as String) as List).cast<String>();
   }
 
+  /// Hosts anyone links to, such as facebook.com. A link there is never
+  /// "not their website".
+  List<String> neutralHosts() => _metaList('neutral_hosts');
+
+  /// Sender names real organisations text from. Shown on a result, never
+  /// trusted, since a sender name can be faked.
+  List<String> knownSenderIds() => _metaList('sender_ids');
+
+  List<String> _metaList(String key) {
+    final rows = _db.select('SELECT value FROM meta WHERE key = ?', [key]);
+    if (rows.isEmpty) return const [];
+    return (jsonDecode(rows.first['value'] as String) as List).cast<String>();
+  }
+
   /// Online gambling brands and wording, or nothing in an older pack.
   GamblingRules gamblingRules() {
     final rows = _db.select("SELECT value FROM meta WHERE key = 'gambling'");

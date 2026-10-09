@@ -44,6 +44,7 @@ void main() {
     checker = MessageChecker(
       senders: store.officialSenders(),
       shorteners: store.linkShorteners(),
+      neutralHosts: store.neutralHosts(),
       gambling: store.gamblingRules(),
       phrases: () => models.scamPhrases,
     );

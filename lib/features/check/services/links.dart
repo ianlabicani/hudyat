@@ -102,3 +102,39 @@ bool isMobileNumber(String sender) {
   final digits = sender.replaceAll(RegExp(r'[\s().-]'), '');
   return RegExp(r'^(\+?63|0)9\d{9}$').hasMatch(digits);
 }
+
+// "word. com", "word(dot)com", "word dot com". The ending must be in lower
+// case, so the start of a new sentence ("...sa app. Net pay...") is not read
+// as one.
+final _brokenAfterDot = RegExp(
+  r'(?<![\w.@])([A-Za-z][A-Za-z0-9-]{4,})'
+  r'(?:\.[ \t]+|[ \t]*[(\[]dot[)\]][ \t]*|[ \t]+dot[ \t]+)'
+  r'(com|ph|net|org|info|xyz|top|cc|site|online|shop)(?![A-Za-z0-9-])',
+);
+// "word .com" is also how a typo looks, so it counts only when the text says
+// to take the space out.
+final _brokenBeforeDot = RegExp(
+  r'(?<![\w.@])([A-Za-z][A-Za-z0-9-]{4,})[ \t]+\.[ \t]*'
+  r'(com|ph|net|org|info|xyz|top|cc|site|online|shop)(?![A-Za-z0-9-])',
+);
+final _saysRemoveSpace = RegExp(
+  r'\b(space|puwang|espasyo)\b',
+  caseSensitive: false,
+);
+
+/// Hosts written broken up so that a network's filter does not see a link:
+/// "csraftersales. com" with "pakitanggal ang space". Real senders do not
+/// write links this way.
+List<String> brokenLinkHosts(String text) {
+  final hosts = <String>[];
+  void take(RegExp pattern) {
+    for (final match in pattern.allMatches(text)) {
+      final host = '${match[1]!.toLowerCase()}.${match[2]}';
+      if (!hosts.contains(host)) hosts.add(host);
+    }
+  }
+
+  take(_brokenAfterDot);
+  if (_saysRemoveSpace.hasMatch(text)) take(_brokenBeforeDot);
+  return hosts;
+}

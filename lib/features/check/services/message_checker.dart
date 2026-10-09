@@ -11,13 +11,18 @@ class MessageChecker {
   MessageChecker({
     required this._senders,
     List<String> shorteners = const [],
+    List<String> neutralHosts = const [],
     GamblingRules gambling = GamblingRules.none,
     this.phrases,
   }) : _shorteners = shorteners.toSet(),
+       _neutral = neutralHosts.toSet(),
        _gambling = GamblingMatcher(gambling);
 
   final List<OfficialSender> _senders;
   final Set<String> _shorteners;
+
+  /// Hosts anyone links to, such as a Facebook page.
+  final Set<String> _neutral;
   final GamblingMatcher _gambling;
 
   /// Returns the phrasing check once its examples are embedded, else null.
@@ -37,7 +42,12 @@ class MessageChecker {
     bool truncated = false,
   }) async {
     final from = sender?.trim();
-    final hosts = linkHosts(text);
+    final broken = brokenLinkHosts(text);
+    final hosts = [
+      ...linkHosts(text),
+      for (final host in broken)
+        if (!linkHosts(text).contains(host)) host,
+    ];
     final claimed = claimedSenders(text);
     final reasons = <CheckReason>[];
 
@@ -48,6 +58,9 @@ class MessageChecker {
     OfficialSender? imitated;
     for (final host in hosts) {
       if (_isOfficial(host)) continue;
+      if (broken.contains(host)) {
+        add(CheckReason(ReasonId.linkHidden, {'domain': host}));
+      }
       final copied = _imitatedBy(host, text);
       if (copied != null) {
         imitated ??= copied;
@@ -60,7 +73,8 @@ class MessageChecker {
         );
       } else if (_isShortener(host)) {
         add(CheckReason(ReasonId.linkShortener, {'domain': host}));
-      } else if (claimed.isNotEmpty) {
+      } else if (claimed.isNotEmpty &&
+          !_neutral.any((domain) => isOnDomain(host, domain))) {
         final org = claimed.first;
         add(
           CheckReason(ReasonId.linkNotOfficial, {
@@ -110,7 +124,9 @@ class MessageChecker {
           : PhrasingState.notReady,
       sender: from == null || from.isEmpty ? null : from,
       app: app,
-      claimed: claimed.isNotEmpty ? claimed.first : imitated,
+      claimed: claimed.isNotEmpty
+          ? claimed.first
+          : imitated ?? (broken.isEmpty ? null : _firstMentioned(text)),
       linkCount: hosts.length,
       truncated: truncated,
     );
@@ -122,6 +138,7 @@ class MessageChecker {
     final ids = {for (final reason in reasons) reason.id};
     if (ids.isEmpty) return Verdict.clear;
     if (ids.contains(ReasonId.linkLookalike) ||
+        ids.contains(ReasonId.linkHidden) ||
         ids.contains(ReasonId.linkNotOfficial) ||
         ids.length >= 2) {
       return Verdict.scam;
@@ -140,6 +157,22 @@ class MessageChecker {
     }
     found.sort((a, b) => a.$1.compareTo(b.$1));
     return [for (final item in found) item.$2];
+  }
+
+  /// The organisation named earliest in [text], claimed or not. Used for
+  /// the contact when a hidden link shows the message is not from them.
+  OfficialSender? _firstMentioned(String text) {
+    OfficialSender? first;
+    var at = text.length;
+    for (final sender in _senders) {
+      for (final match in _mentions(sender, text)) {
+        if (match.start < at) {
+          at = match.start;
+          first = sender;
+        }
+      }
+    }
+    return first;
   }
 
   int? _claimPosition(OfficialSender sender, String text) {

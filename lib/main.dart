@@ -71,6 +71,7 @@ class _HudyatAppState extends State<HudyatApp> {
       final checker = MessageChecker(
         senders: senders,
         shorteners: store.linkShorteners(),
+        neutralHosts: store.neutralHosts(),
         gambling: store.gamblingRules(),
         phrases: () => models.scamPhrases,
       );

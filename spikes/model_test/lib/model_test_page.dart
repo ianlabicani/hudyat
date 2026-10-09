@@ -335,6 +335,63 @@ class _ModelTestPageState extends State<ModelTestPage>
     );
   });
 
+  /// Vectors for real ordinary messages, to set the phrasing threshold on
+  /// more than a hand-written list. Reads `inbox-texts.json` (a JSON list of
+  /// strings) pushed into the app's files folder; it is private, so it is
+  /// never bundled with the app.
+  Future<void> _exportInboxVectors() => _guard(() async {
+    final dir = _modelsDir!;
+    final files = Directory(dir).parent.path;
+    final source = File('$files/inbox-texts.json');
+    if (!source.existsSync()) {
+      _say('MISSING ${source.path}');
+      return;
+    }
+    final texts = (jsonDecode(await source.readAsString()) as List)
+        .cast<String>();
+    final examples = await _json('assets/scam_examples.json');
+    await FlutterEdgeAi.installEmbedder()
+        .modelFromFile('$dir/$embedFile')
+        .tokenizerFromFile('$dir/$tokenizerFile')
+        .install();
+    final embedder = await FlutterEdgeAi.getActiveEmbedder();
+    final watch = Stopwatch()..start();
+
+    final stored = <List<double>>[];
+    for (final example in examples) {
+      stored.add(
+        await embedder.generateEmbedding(
+          example['text'] as String,
+          taskType: TaskType.retrievalDocument,
+        ),
+      );
+    }
+    _say('examples ${stored.length} (${watch.elapsed.inSeconds}s)');
+    final vectors = <List<double>>[];
+    for (final text in texts) {
+      vectors.add(
+        await embedder.generateEmbedding(
+          text,
+          taskType: TaskType.retrievalQuery,
+        ),
+      );
+      if (vectors.length % 25 == 0) {
+        _say(
+          'messages ${vectors.length} of ${texts.length} '
+          '(${watch.elapsed.inSeconds}s)',
+        );
+      }
+    }
+    final out = File('$files/inbox-vectors.json');
+    await out.writeAsString(
+      jsonEncode({'examples': stored, 'messages': vectors}),
+    );
+    _say(
+      'RESULT inbox export: ${vectors.length} messages in '
+      '${watch.elapsed.inSeconds}s\n${out.path}',
+    );
+  });
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -365,6 +422,10 @@ class _ModelTestPageState extends State<ModelTestPage>
               FilledButton(
                 onPressed: _running ? null : _exportScamVectors,
                 child: const Text('4. Export scam vectors'),
+              ),
+              FilledButton(
+                onPressed: _running ? null : _exportInboxVectors,
+                child: const Text('5. Export inbox vectors'),
               ),
               OutlinedButton(
                 onPressed: () =>

@@ -180,6 +180,16 @@ model.
   organisation is claimed, since real senders use shorteners too.
 - A link to an ordinary site that is not in the pack gives no reason
   when the text claims no organisation.
+- **Neutral hosts:** a link to a platform anyone uses (`facebook.com`,
+  `m.me`, `youtube.com`, the app stores) is never "not theirs". Real
+  senders point to their Facebook support page.
+- **Hidden link:** the link is written broken up so the network's filter
+  does not read it: `csraftersales. com`, `site(dot)com`, `site dot com`.
+  `site .com` counts only when the text also says to remove the space,
+  since that form is also how a typo looks. This is a hard reason. It
+  came from the builder's own inbox: 32 of 618 texts were fake internet
+  provider "customer service" messages written this way, all from mobile
+  numbers. The contact shown is the organisation the text names.
 
 **Claiming is more than mentioning.** "Paki-GCash na lang yung hati mo"
 names GCash without pretending to be it. A message claims an
@@ -238,6 +248,7 @@ names the brand, or the link's domain when the brand is not listed.
 | Finding | Verdict |
 |---|---|
 | A look-alike link | Mukhang scam |
+| A hidden link | Mukhang scam |
 | An organisation is claimed and a link is not theirs | Mukhang scam |
 | Any two different reasons | Mukhang scam |
 | Exactly one of: organisation claimed from a mobile number, phrasing match, shortener link, gambling promo | Mag-ingat |
@@ -245,8 +256,17 @@ names the brand, or the link's domain when the brand is not listed.
 
 The phrasing check alone never gives "Mukhang scam".
 
+**Checked against a real inbox.** The builder's own SMS inbox (618
+texts over three months, digits masked) is kept outside the repository
+and replayed through the rules by a test that skips itself when the file
+is absent. Expected result: the 32 hidden-link texts as "Mukhang scam",
+the 9 gambling promos and 2 shortened links as "Mag-ingat", and the
+other 575 clear. The inbox also supplied the sender names real
+organisations text from. A result says when the sender matches one, but
+that never clears a message, because sender names can be faked.
+
 **Phrasing threshold.** Set from vectors exported on the Infinix for
-about 40 scam phrases and 25 ordinary messages (real one-time codes,
+about 40 scam phrases and 57 ordinary messages (real one-time codes,
 delivery notices, family texts, promos). It is the lowest score at which
 no ordinary message is flagged. The check stays in as a second signal
 even if it then catches under half of the scam phrases.

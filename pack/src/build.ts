@@ -71,6 +71,11 @@ writePack(OUT, {
     examples: data("scam_examples.json"),
     reasons: data("scam_reasons.json"),
     shorteners: senderRules.shorteners,
+    neutralHosts: senderRules.neutral_hosts,
+    senderIds: [
+      ...data("companies.json").flatMap((company: { sender_ids?: string[] }) => company.sender_ids ?? []),
+      ...senderRules.agency_sender_ids,
+    ],
     gambling: data("gambling.json"),
   },
 });

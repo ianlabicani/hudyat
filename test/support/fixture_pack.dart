@@ -366,6 +366,8 @@ CREATE TABLE scam_reasons (
   db.execute("INSERT INTO records_fts (records_fts) VALUES ('rebuild')");
 
   meta('link_shorteners', jsonEncode(['bit.ly', 'tinyurl.com']));
+  meta('neutral_hosts', jsonEncode(['facebook.com']));
+  meta('sender_ids', jsonEncode(['GCash', 'BDO Alert']));
   if (gambling) {
     meta(
       'gambling',
@@ -492,6 +494,12 @@ CREATE TABLE scam_reasons (
     'Kahawig ito ng mga kilalang scam.',
     'Close to known scam messages.',
     'Uri: {type}',
+  );
+  reason(
+    'link_hidden',
+    'Sinadyang putulin ang link.',
+    'The link is deliberately broken up.',
+    'Link: {domain}',
   );
   reason(
     'gambling_promo',

@@ -87,7 +87,7 @@ describe("gambling rules", () => {
     host_words: ["casino"],
     terms: ["rebate", "cashback"],
   };
-  const scam = { senders: [], examples: [], reasons: [], shorteners: [], gambling };
+  const scam = { senders: [], examples: [], reasons: [], shorteners: [], neutralHosts: [], senderIds: [], gambling };
 
   test("are stored under one meta key", () => {
     const path = join(dir, "gambling.sqlite");

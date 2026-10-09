@@ -198,5 +198,15 @@
     "text": "Your loan application is approved. Pay the insurance fee first to release your funds today.",
     "type": "loan",
     "type_label": "Alok na pautang"
+  },
+  {
+    "text": "Hello Ka-Fiber! Kung may concern kayo sa internet o billing, i-message kami sa aming website. Pakitanggal ang space bago ang com kapag ita-type.",
+    "type": "fake_support",
+    "type_label": "Pekeng customer service"
+  },
+  {
+    "text": "Customer service po ito ng internet provider ninyo. Para sa internet concern, pumunta sa website namin, alisin lang ang space sa link.",
+    "type": "fake_support",
+    "type_label": "Pekeng customer service"
   }
 ]

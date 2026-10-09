@@ -26,6 +26,7 @@ flutter test --plain-name "falls back to national"          # one test by name
 flutter build apk
 
 cd pack && bun test                           # pack builder tests
+bun run inbox                                 # senders and links in a saved SMS inbox, if one is in pack/raw/inbox/
 bun run fetch && bun run build                # re-download sources, rebuild the pack
 bun run map                                   # re-cut the Metro Manila map (needs `pmtiles`)
 ```
@@ -70,7 +71,8 @@ UI.
 
 Tests and checks.
 
-- Database tests use an in-memory SQLite database or a small fixture pack, never the real pack on a device.
+- Database tests use an in-memory SQLite database or a small fixture pack, never the real pack on a device. The one exception is `test/features/check/inbox_replay_test.dart`, which opens the built pack on the laptop and skips itself unless a private inbox file is in `pack/raw/inbox/`.
+- The saved SMS inbox is private. It stays in `pack/raw/` (git-ignored) and is never committed, bundled in an APK, or quoted in the repo. Only sender names, link domains and counts taken from it may be.
 - Do not weaken or delete a test to make a change pass.
 - Treat analyzer warnings and infos as failures. Format only the Dart files you touched.
 - Dart tests do not prove on-device behaviour (models, GPS, offline map, tap-to-call). Say so when device verification is still needed.

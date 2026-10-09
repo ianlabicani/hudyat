@@ -19,7 +19,10 @@
         "dial": "2882"
       }
     ],
-    "source_url": "https://help.gcash.com/hc/en-us/p/contact-us"
+    "source_url": "https://help.gcash.com/hc/en-us/p/contact-us",
+    "sender_ids": [
+      "GCash"
+    ]
   },
   {
     "name": "Maya",
@@ -43,7 +46,12 @@
         "dial": "0288457788"
       }
     ],
-    "source_url": "https://www.maya.ph/contact-us"
+    "source_url": "https://www.maya.ph/contact-us",
+    "sender_ids": [
+      "Maya",
+      "MayaSavings",
+      "MayaBank"
+    ]
   },
   {
     "name": "BDO",
@@ -62,7 +70,12 @@
         "dial": "0288880000"
       }
     ],
-    "source_url": "https://www.bdo.com.ph/about-bdo/learn/help-and-support/contact-us"
+    "source_url": "https://www.bdo.com.ph/about-bdo/learn/help-and-support/contact-us",
+    "sender_ids": [
+      "BDO",
+      "BDO Alert",
+      "BDO Deals"
+    ]
   },
   {
     "name": "BPI",
@@ -80,7 +93,8 @@
         "dial": "0288910000"
       }
     ],
-    "source_url": "https://www.bpi.com.ph/contactus"
+    "source_url": "https://www.bpi.com.ph/contactus",
+    "sender_ids": []
   },
   {
     "name": "Metrobank",
@@ -98,7 +112,8 @@
         "dial": "0288700700"
       }
     ],
-    "source_url": "https://www.metrobank.com.ph/contact-us"
+    "source_url": "https://www.metrobank.com.ph/contact-us",
+    "sender_ids": []
   },
   {
     "name": "Landbank",
@@ -118,7 +133,10 @@
         "dial": "0284057000"
       }
     ],
-    "source_url": "https://www.landbank.com/customer-service"
+    "source_url": "https://www.landbank.com/customer-service",
+    "sender_ids": [
+      "LANDBANK"
+    ]
   },
   {
     "name": "UnionBank",
@@ -136,7 +154,8 @@
         "dial": "0288418600"
       }
     ],
-    "source_url": "https://www.unionbankph.com/contact-us/directory"
+    "source_url": "https://www.unionbankph.com/contact-us/directory",
+    "sender_ids": []
   },
   {
     "name": "Globe",
@@ -161,7 +180,13 @@
         "dial": "211"
       }
     ],
-    "source_url": "https://www.globe.com.ph/contact-us"
+    "source_url": "https://www.globe.com.ph/contact-us",
+    "sender_ids": [
+      "GLOBE",
+      "GLOBEREWARD",
+      "TM",
+      "TM REWARDS"
+    ]
   },
   {
     "name": "Smart",
@@ -186,7 +211,10 @@
         "dial": "*888"
       }
     ],
-    "source_url": "https://smart.com.ph/Help/contact-support"
+    "source_url": "https://smart.com.ph/Help/contact-support",
+    "sender_ids": [
+      "SMART"
+    ]
   },
   {
     "name": "DITO",
@@ -205,7 +233,8 @@
         "dial": "185"
       }
     ],
-    "source_url": "https://dito.ph/faq"
+    "source_url": "https://dito.ph/faq",
+    "sender_ids": []
   },
   {
     "name": "LBC",
@@ -223,7 +252,8 @@
         "dial": "0288585999"
       }
     ],
-    "source_url": "https://www.lbcexpress.com/contact-support"
+    "source_url": "https://www.lbcexpress.com/contact-support",
+    "sender_ids": []
   },
   {
     "name": "J&T Express",
@@ -243,7 +273,8 @@
         "dial": "0289111888"
       }
     ],
-    "source_url": "https://www.jtexpress.ph/contact-us"
+    "source_url": "https://www.jtexpress.ph/contact-us",
+    "sender_ids": []
   },
   {
     "name": "Meralco",
@@ -260,7 +291,8 @@
         "dial": "16211"
       }
     ],
-    "source_url": "https://company.meralco.com.ph/contact-us"
+    "source_url": "https://company.meralco.com.ph/contact-us",
+    "sender_ids": []
   },
   {
     "name": "Shopee",
@@ -274,7 +306,11 @@
       "shopee.ph"
     ],
     "phones": [],
-    "source_url": "https://shopee.ph"
+    "source_url": "https://shopee.ph",
+    "sender_ids": [
+      "Shopee",
+      "SPayLaterPH"
+    ]
   },
   {
     "name": "Lazada",
@@ -287,6 +323,59 @@
       "lazada.com.ph"
     ],
     "phones": [],
-    "source_url": "https://www.lazada.com.ph"
+    "source_url": "https://www.lazada.com.ph",
+    "sender_ids": []
+  },
+  {
+    "name": "Converge",
+    "aliases": [
+      "Converge",
+      "Converge ICT",
+      "FiberX",
+      "GoFiber",
+      "Bida Fiber"
+    ],
+    "strict_aliases": [],
+    "domains": [
+      "convergeict.com",
+      "gofiber.ph",
+      "cnvrge.co"
+    ],
+    "phones": [
+      {
+        "display": "(02) 8667 0850",
+        "dial": "0286670850"
+      }
+    ],
+    "source_url": "https://www.convergeict.com/support/customer-support",
+    "sender_ids": [
+      "CONVERGE",
+      "Converge"
+    ]
+  },
+  {
+    "name": "PLDT",
+    "aliases": [
+      "PLDT",
+      "PLDT Home",
+      "PLDTHome"
+    ],
+    "strict_aliases": [],
+    "domains": [
+      "pldthome.com",
+      "pldt.com",
+      "pldt.com.ph"
+    ],
+    "phones": [
+      {
+        "display": "171",
+        "dial": "171"
+      }
+    ],
+    "source_url": "https://www.pldthome.com/contact",
+    "sender_ids": [
+      "PLDTHome",
+      "PLDT Deals"
+    ]
   }
 ]

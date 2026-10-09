@@ -22,8 +22,14 @@ class ResultScreen extends StatelessWidget {
     final n => '$n found, none flagged',
   };
 
-  String get _sender {
-    if (result.sender == null) return 'Not given / Hindi ibinigay';
+  /// [known] are sender names real organisations text from. Matching one
+  /// is worth saying, but it clears nothing: a sender name can be faked.
+  String _sender(List<String> known) {
+    final from = result.sender?.toLowerCase();
+    if (from == null) return 'Not given / Hindi ibinigay';
+    if (known.any((name) => name.toLowerCase() == from)) {
+      return 'A known sender name, which can be faked';
+    }
     return result.claimed == null ? 'No claim found' : 'No problem found';
   }
 
@@ -92,7 +98,10 @@ class ResultScreen extends StatelessWidget {
               const SizedBox(height: 10),
               CheckedRow(name: 'Links', outcome: _links),
               const SizedBox(height: 10),
-              CheckedRow(name: 'Sender', outcome: _sender),
+              CheckedRow(
+                name: 'Sender',
+                outcome: _sender(scope.store.knownSenderIds()),
+              ),
               const SizedBox(height: 10),
               CheckedRow(
                 name: 'Phrasing',

@@ -6,6 +6,7 @@
     "fetch": "bun src/fetch.ts",
     "build": "bun src/build.ts",
     "map": "bun src/map.ts",
-    "test": "bun test"
+    "test": "bun test",
+    "inbox": "bun src/inbox.ts"
   }
 }

@@ -18,6 +18,7 @@ void main() {
     checker = MessageChecker(
       senders: store.officialSenders(),
       shorteners: store.linkShorteners(),
+      neutralHosts: store.neutralHosts(),
       gambling: store.gamblingRules(),
       phrases: () => phrases,
     );
@@ -333,6 +334,78 @@ void main() {
     final result = await checker.check('Na-lock ang wallet, i-verify na');
     expect(result.phrasing, PhrasingState.notReady);
     expect(result.verdict, Verdict.clear);
+  });
+
+  group('a link broken up to get past filters', () {
+    // The two wordings found 32 times in a real inbox, from mobile numbers.
+    const fakeSupport =
+        'Hello, Ka-Smart Communications! Kung may concern po kayo sa internet '
+        'o billing, visit our website:  csraftersales. com  Pakitanggal ang '
+        'space bago ang com kapag ita-type.';
+
+    test('is read as a link and is Mukhang scam on its own', () async {
+      final result = await checker.check(fakeSupport, sender: '09170000000');
+      expect(result.verdict, Verdict.scam);
+      expect(ids(result), contains(ReasonId.linkHidden));
+      expect(
+        result.reasons.firstWhere((r) => r.id == ReasonId.linkHidden).facts,
+        {'domain': 'csraftersales.com'},
+      );
+      // Not a claim, but the organisation it names is the contact to show.
+      expect(result.claimed?.short, 'Smart');
+    });
+
+    test('reads the other ways of hiding the dot', () {
+      expect(brokenLinkHosts('punta sa aftersalescsr. com po'), [
+        'aftersalescsr.com',
+      ]);
+      expect(brokenLinkHosts('visit claimnow(dot)xyz today'), ['claimnow.xyz']);
+      expect(brokenLinkHosts('open claimnow dot com now'), ['claimnow.com']);
+      expect(brokenLinkHosts('type promo-site .com, remove the space'), [
+        'promo-site.com',
+      ]);
+    });
+
+    test('a typo or a new sentence is not a hidden link', () {
+      // A real bank promo wrote its link this way.
+      expect(brokenLinkHosts('Book via agoda .com/bdotraveldeals'), isEmpty);
+      expect(brokenLinkHosts('Buksan ang app. Net pay mo ay P500.'), isEmpty);
+      expect(
+        brokenLinkHosts('More fun and entertainment.\nTop up now'),
+        isEmpty,
+      );
+      expect(brokenLinkHosts('Salamat po. Com lab tayo bukas.'), isEmpty);
+    });
+
+    test('an official domain written that way is left alone', () async {
+      final result = await checker.check('Details at gcash. com/help');
+      expect(result.verdict, Verdict.clear);
+    });
+  });
+
+  group('real company texts stay clear', () {
+    test(
+      'a link to the company\'s Facebook page is not "not theirs"',
+      () async {
+        final result = await checker.check(
+          'GCash: For concerns, message us at facebook.com/gcashofficial.',
+          sender: 'GCash',
+        );
+        expect(result.verdict, Verdict.clear);
+      },
+    );
+
+    test('promo and notice wording from sender names', () async {
+      for (final (sender, text) in [
+        ('GCash', 'You have received PHP 500.00 of GCash from JU** D.'),
+        ('BDO Alert', 'BDO: Your OTP is ######. Never share it with anyone.'),
+        ('SSS OTP', 'Your My.SSS one-time PIN is ######.'),
+        ('Smart', 'Smart: You have 2GB left on your promo until tomorrow.'),
+      ]) {
+        final result = await checker.check(text, sender: sender);
+        expect(result.verdict, Verdict.clear, reason: text);
+      }
+    });
   });
 
   test('verdictFor follows the table', () {

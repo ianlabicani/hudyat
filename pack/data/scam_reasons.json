@@ -34,5 +34,11 @@
     "tl": "Promo ito ng online na sugal.",
     "en": "This is an online gambling promo.",
     "fact": "Mula sa: {source}"
+  },
+  {
+    "id": "link_hidden",
+    "tl": "Sinadyang putulin ang link para hindi mahuli ng filter ng network.",
+    "en": "The link is deliberately broken up to get past the network's filters.",
+    "fact": "Link: {domain}"
   }
 ]

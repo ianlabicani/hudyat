@@ -112,7 +112,7 @@ describe("the shipped data files", () => {
 
   test("scam examples cover eight types and reasons have both languages", () => {
     const examples = data("scam_examples.json");
-    expect(new Set(examples.map((e: any) => e.type)).size).toBe(8);
+    expect(new Set(examples.map((e: any) => e.type)).size).toBe(9);
     for (const reason of data("scam_reasons.json")) {
       expect(reason.tl.length).toBeGreaterThan(10);
       expect(reason.en.length).toBeGreaterThan(10);
@@ -140,6 +140,8 @@ describe("writePack with scam data", () => {
     examples: [{ text: "Na-lock ang account mo", type: "account_lock", type_label: "Na-lock na account" }],
     reasons: [{ id: "phrasing", tl: "Kahawig ng scam.", en: "Close to a scam.", fact: "Uri: {type}" }],
     shorteners: ["bit.ly"],
+    neutralHosts: ["facebook.com"],
+    senderIds: ["GCash"],
   };
   const meta = { name: "T", area: "T", buildDate: "2026-10-09", bbox: [0, 0, 1, 1] as [number, number, number, number], sources: [] };
 

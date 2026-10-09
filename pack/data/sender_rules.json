@@ -103,5 +103,24 @@
     "t.ly",
     "lnk.bio",
     "linktr.ee"
+  ],
+  "neutral_hosts": [
+    "facebook.com",
+    "fb.com",
+    "fb.me",
+    "m.me",
+    "messenger.com",
+    "instagram.com",
+    "youtube.com",
+    "youtu.be",
+    "tiktok.com",
+    "play.google.com",
+    "apps.apple.com",
+    "viber.com"
+  ],
+  "agency_sender_ids": [
+    "SSS OTP",
+    "PAGIBIGFUND",
+    "NDRRMC"
   ]
 }

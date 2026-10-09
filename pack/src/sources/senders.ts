@@ -15,6 +15,8 @@ export interface Company {
   domains: string[];
   phones: OfficialSender["phones"];
   source_url: string;
+  /** Sender names this company really texts from, seen in a real inbox. */
+  sender_ids?: string[];
 }
 
 const SMALL_WORDS = new Set(["OF", "THE", "AND", "NG", "FOR", "ON", "IN", "SA"]);

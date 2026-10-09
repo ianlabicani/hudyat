@@ -82,5 +82,9 @@ export interface ScamData {
   examples: ScamExample[];
   reasons: ScamReason[];
   shorteners: string[];
+  /** Hosts anyone links to, such as facebook.com: never "not their website". */
+  neutralHosts: string[];
+  /** Sender names real organisations text from. Shown, never trusted. */
+  senderIds: string[];
   gambling?: GamblingRules;
 }

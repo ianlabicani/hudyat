@@ -7,7 +7,7 @@ emergency, and warn you when a message looks like a scam.
 > Hudyat is the official information you can trust when you can't get
 > online: who to call, where to go, and whether a message is real.
 
-- **Event:** AppBuildersPH Hackathon 2026, theme "Local AI"
+- **Event:** [AppBuildersPH Hackathon 2026](https://appbuildersph.com/hackathon/), theme "Local AI"
 - **Team:** Ian Labicani (solo)
 - **Test phone:** Infinix X6876 (Dimensity 7400, 8 GB RAM), Android 16
 - **Demo video:** to be linked here before submission

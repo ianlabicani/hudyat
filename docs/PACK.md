@@ -101,19 +101,12 @@ Every record keeps the name of the source it came from.
 Some data has no public source, so it is kept as reviewed JSON files in
 `pack/data/` and added during the build.
 
-| File | Goes into the pack as |
-|---|---|
-| `intents.json` | The fixed needs and their example phrases |
-| `first_aid.json` | The first-aid cards |
-| `companies.json` | Company senders, each with the page it was taken from |
-| `sender_rules.json` | Aliases, blocked acronyms, link shorteners, neutral sites |
-| `gambling.json` | Gambling brands, link words and promo terms |
-| `scam_examples.json` | Scam wording for the wording check |
-| `scam_reasons.json` | The fixed reason sentences |
+They cover the fixed needs, first-aid cards, company senders, sender
+rules, the gambling list, scam wording and the reason sentences. Each
+file and how it was made is listed in [DATA.md](DATA.md).
 
-Files in `pack/data/` that are **not** in the pack: `ask_examples.json`
-and `collected_scams.json` (classifier training and test material), and
-`check_messages.json` and `test_messages.json` (tests).
+Four files in `pack/data/` are **not** in the pack: classifier training
+and test material, and test messages.
 
 ## 4. Validate and write
 

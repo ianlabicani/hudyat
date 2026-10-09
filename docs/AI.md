@@ -164,29 +164,14 @@ more than 12 seconds.
 | Runs in the background | The guard uses rules, to stay light and reliable |
 | Sends anything off the phone | Both models run locally and the app has no server |
 
-## Where everything runs
-
-- **On the phone.** Both models, every comparison and every note.
-- **No cloud AI.** The app calls no AI service.
-- **Vectors match the model.** Example vectors are computed on the same
-  phone and model that scores the message, never shipped from a laptop.
-
 ## The classifier that is switched off
 
-The repository also contains tooling for a trained five-label classifier
-that would say what a message asks for (credentials, money, an action,
-pressure, bait). It is **not active** in the app:
-
-- no trained classifier file is in the pack, so the app uses the wording
-  check described above;
-- it has not been measured on independent real messages;
-- the rule for switching it on is that it must beat the wording check on
-  held-out messages with no extra false alarms.
-
-Its training examples (`pack/data/ask_examples.json`) are synthetic. Its
-test material (`pack/data/collected_scams.json`) is 29 scam texts quoted
-on public pages, mostly blogs, each with its source link. Details
-are in [pack/classifier/README.md](../pack/classifier/README.md).
+The repository also contains tooling for a five-label classifier that
+would say what a message asks for. It is **not active**: no trained
+classifier is in the pack, and it has not been measured on independent
+real messages. Its data and release rules are in
+[pack/classifier/README.md](../pack/classifier/README.md) and
+[DATA.md](DATA.md).
 
 ## Known weaknesses
 

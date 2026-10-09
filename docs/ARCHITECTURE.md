@@ -171,28 +171,17 @@ fails the tests.
 
 ## Where the AI sits
 
-| Step | Model | What it decides | What it cannot do |
-|---|---|---|---|
-| Understand a typed request | EmbeddingGemma | Which need, from a fixed list | Write an answer |
-| Pick a first-aid card | EmbeddingGemma | Which card, if any | Write or change a step |
-| Judge a message's wording | EmbeddingGemma | Whether it resembles scam wording | Mark a message "Mukhang scam" alone |
-| Write the short note | Gemma 3 1B | The wording of one or two sentences | Add a number, or change a card or verdict |
-
-Both models run through `flutter_edge_ai` on the phone. Vectors for the
-example phrases are computed once on the phone and cached.
+EmbeddingGemma makes three choices from fixed lists (the need, the
+first-aid card, and whether a message reads like a scam), and Gemma 3 1B
+writes one short labelled note. Each step, its threshold and its limits
+are in [How the AI works](AI.md).
 
 ## When something is missing
 
-Each part fails on its own without taking the rest down.
-
-| Missing | What still works |
-|---|---|
-| EmbeddingGemma | Quick buttons, keyword search, and the three rule checks |
-| Gemma 3 1B | Everything except the short AI notes |
-| GPS fix | Cards, after the user picks a city. Distances are hidden |
-| Map file | Cards and place lists |
-| Message permissions | Checking a message by paste, share or selection |
-| Internet | Everything except opening a website or another maps app |
+Each part fails on its own without taking the rest down. Without the
+models, the quick buttons, keyword search and rule checks still work.
+Without a GPS fix, the user picks a city. Without message permissions,
+a message can still be checked by paste, share or selection.
 
 ## What is stored on the phone
 

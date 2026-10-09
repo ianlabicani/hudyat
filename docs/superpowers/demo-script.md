@@ -56,7 +56,7 @@ The scam text to send from the second phone:
 | 5 | The notification arriving | None | "Nobody opened the app. The warning names the sender and gives the reason." |
 | 6 | Flagged list, then the result | Tap "Tingnan", then the message | "Mukhang scam. The link is broken up to get past filters, and it is not GCash's website." |
 | 7 | The contact section with the Call button | Scroll to it | "This is GCash's real contact, from data on the phone. Not from the AI." |
-| 8 | Home screen widget, count gone up | Press Home | "The widget shows counts only. Never a message, never a sender." |
+| 8 | Home screen widget, count gone up, then Hudyat's Home with the "Bantay sa text" panel | Press Home, then open Hudyat | "The widget and the app show counts only. Never a message, never a sender." |
 
 **If the alert does not come within about four minutes:** open Hudyat.
 It checks recent texts on opening and the alert appears then. Change
@@ -71,7 +71,7 @@ Airplane mode stays on and the icon stays in frame.
 | # | Screen | Action | Narration |
 |---|---|---|---|
 | 1 | Hudyat Home | Show the airplane icon | "Typhoon night in Pasig. No data. Still in airplane mode." |
-| 2 | Home, text box | Type "Binabaha na dito, hanggang tuhod na, may matanda kami", tap "Find help" | "Liza types what is happening, in Taglish." |
+| 2 | Home, text box | Type "Binabaha na dito, hanggang tuhod na, may matanda kami" and stop. Wait for the strip "Naintindihan: Flood rescue", then tap it | "Liza types what is happening, in Taglish. Before she presses anything, the phone has understood: flood rescue. That time is measured on this phone, offline." |
 | 3 | City list | Pick Pasig | "No GPS indoors, so Hudyat asks for her city." |
 | 4 | Card: Pasig City DRRMO Emergency Hotline with Call | Hold on the card | "The AI on the phone picked what she needs. The number is Pasig's disaster office, copied from the data, with the date it was built." |
 | 5 | Home, text box | Type "nasugatan si tatay, ang daming dugo, ayaw tumigil", tap "Find help" | "Her father is bleeding." |
@@ -80,6 +80,11 @@ Airplane mode stays on and the icon stays in frame.
 | 8 | Call button on a hotline | Tap Call, show the dialler, hang up | "One tap to call. Voice calls can still go through when data is down." |
 
 **Cut first if short on time:** step 8, then step 7.
+
+**If the strip takes more than about two seconds to appear:** tap "Find
+help" instead and drop the sentence about the phone understanding before
+she presses anything. The strip's speed has not been measured on the
+Infinix.
 
 **If the AI-written sentences appear on the flood card:** point at the
 dashed box once and say "This part is AI-written and labelled. The card

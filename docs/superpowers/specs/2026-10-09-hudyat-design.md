@@ -517,7 +517,8 @@ Message check flow:
 ### 5.2 Screens
 
 - **Setup:** first run. Downloads models and the pack while online.
-- **Home:** text box, quick buttons for the main emergencies, pack status.
+- **Home:** emergency call, text box, four quick buttons, the message
+  guard panel, pack status.
 - **Card:** hotlines with tap-to-call, places list, first-aid card, AI
   sentences, source credits.
 - **Map:** offline map, user position, place markers, line and distance.
@@ -537,8 +538,9 @@ Message check flow:
 These screens are on the wireframe canvas in the "Message check" row:
 `Check`, `CheckResultScam`, `CheckResultCaution`, `CheckResultClear`,
 `ScamAlert`, `Flagged` and `WatcherSetup` (the Automatic checking
-screen). Home has a "Check a message"
-button beside "Look up". The share sheet and the text selection menu are
+screen). Home's "Bantay sa text" panel holds the "Check a message"
+button. Home has no "Look up" button: looking something up is typing it
+into the box. The share sheet and the text selection menu are
 Android's own UI and have no board.
 
 ### 5.3 Error handling
@@ -614,9 +616,9 @@ submission disclosures.
 |---|---|---|---|
 | Setup | Pack not ready | Continue is locked | `Setup` (rule) |
 | Setup | Pack ready, models still downloading | Continue is enabled | `Setup` |
-| Home | Ready | Text box and quick buttons | `Main` |
+| Home | Ready | Two blocks. Help: the emergency call, the text box and four quick buttons (flood, medical, fire, police). Guard: the "Bantay sa text" panel, which always ends with "Check a message". The other four cards are reached by typing | `Main` |
 | Home | Matching | "Find help" disabled, reads "Finding help…"; message stays visible | `HomeMatching` |
-| Home | Embedding model missing | Notice; text box runs keyword search | `HomeNoModel` |
+| Home | Embedding model missing | Notice; text box runs keyword search; all eight quick buttons show, since typing cannot open a card | `HomeNoModel` |
 | Home | Understood while typing | After a pause in typing, with three words or more, a strip under the box reads "Naintindihan: [intent label]", the first-aid card's title when one matched, and "AI on this phone" with the measured time. Tapping it opens the card. "Find help" reuses the answer | `Main` |
 | Home | Typed message is not an emergency | The strip reads "Hahanapin sa listahan" and opens keyword search | Rule only |
 | Home | Guard off | "Bantay sa text" panel tagged OFF, one sentence and "Turn on", which opens Automatic checking | `Main` |

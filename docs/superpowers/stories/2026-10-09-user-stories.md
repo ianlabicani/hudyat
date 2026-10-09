@@ -159,8 +159,8 @@ installed Hudyat because his daughter in Manila told him to.
 1. During a flood he taps the flood button.
 2. The pack has no hotlines listed for Tuguegarao, so the card shows
    the national numbers, with a filled badge and a notice saying so.
-3. He needs the DSWD regional office. He taps "Look up", types "DSWD",
-   and gets the agency's contacts with a Call button.
+3. He needs the DSWD regional office. He types "DSWD" into the box on
+   Home and gets the agency's contacts with a Call button.
 4. The message check works for him exactly as it does in Manila.
 
 **Where it falls short.**
@@ -222,7 +222,8 @@ has no data and needs to ask about a calamity loan.
 
 **Flow.**
 
-1. On Home she taps "Look up" and types "SSS".
+1. On Home she types "SSS" into the box and taps "Find help". Hudyat
+   says this did not look like an emergency and shows search results.
 2. The results list the agency with its contact numbers. Each row with
    a number has a Call button.
 3. She also searches for her barangay captain's office and finds the
@@ -251,7 +252,8 @@ on the phone.
 **Flow.**
 
 1. Home shows a notice that the language model is not on this phone and
-   that typing uses keyword search until it is.
+   that typing uses keyword search until it is. All eight quick buttons
+   show, not the usual four.
 2. He taps the fire button. The card appears with the fire hotline and
    the nearest fire stations, the same as on any other phone.
 3. He types "ospital". Keyword search lists hospitals with Call
@@ -269,8 +271,9 @@ on the phone.
   only, so a long message can miss. The buttons do not have this
   problem.
 - The wording check does not run, so the message check is weaker.
-- Automatic checking is off until someone turns it on. He is unlikely
-  to find it alone.
+- Automatic checking is off until someone turns it on. Home's guard
+  panel says so and offers "Turn on", but he still has to allow SMS
+  access himself.
 
 **Relies on.** Spec 5.3 (embedding model missing, chat model missing);
 states Home "Embedding model missing", Result "Scam phrases not ready",

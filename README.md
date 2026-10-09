@@ -114,6 +114,9 @@ Built on 2026-10-09.
 
 ## Disclosures
 
+Where every piece of data comes from, what we wrote ourselves and what is
+incomplete is set out in full in [docs/DATA.md](docs/DATA.md).
+
 **Models**
 
 - EmbeddingGemma: `embeddinggemma-300M_seq256_mixed-precision.tflite`

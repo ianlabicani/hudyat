@@ -218,6 +218,76 @@ Backup model runner: `llamadart`.
 | Map file missing | Places list with distances still works |
 | Message outside all cards | Show the emergency hotline and "call this number" |
 
+### 5.4 UI contract
+
+The wireframes are the canvas "Hudyat Mobile Wireframes":
+https://claude.ai/artifact/NqzVQkMr7zuMxSSJaLq26L. Build every screen
+from the tokens, components and states below. If a screen needs something
+that is not here, add it to the canvas and this section first.
+
+**Tokens**
+
+| Token | Value |
+|---|---|
+| Ground / surface / ink | `#F2F1EC` / `#FFFFFF` / `#1B1B19` |
+| Muted text / rule | `#55534D` / `#CFCCC2` |
+| Disabled fill / disabled text | `#CFCCC2` / `#3F3D39` |
+| Call accent | `#B93A0B`, used only on Call buttons and the emergency link |
+| Text face | Atkinson Hyperlegible, 400 and 700 |
+| Data face | IBM Plex Mono, 400 and 500, for numbers, addresses, badges and footers |
+| Text sizes | 28 screen title, 20 section heading, 16 body, 13 minimum |
+| Shape | Radius 6; badges 3; pills fully round |
+| Borders | 2px solid for primary surfaces, 1.5px solid for secondary |
+| Dashed border | Optional, AI-written or locked content only |
+| Touch targets | 44 minimum; Call 48; primary actions 52 to 60 |
+
+Both fonts ship as asset files in the app, so nothing is fetched at run
+time. Both are under the SIL Open Font License and belong in the
+submission disclosures.
+
+**Shared components**
+
+| Component | Contents |
+|---|---|
+| `TopBar` | Back button with a semantic label, screen title |
+| `HotlineRow` | Name, number, Call button |
+| `PlaceRow` | Name, address, distance, chevron; opens the Map |
+| `LevelBadge` | Outlined for the user's city; filled for a province or national fallback |
+| `Notice` | The "!" box: a bold line and one sentence |
+| `AiNote` | Dashed box labelled "AI-WRITTEN · MAY BE WRONG" |
+| `PackFooter` | Hotline source, OpenStreetMap attribution, pack build date |
+| Buttons | Primary (ink fill), secondary (outlined), call (accent fill) |
+
+**States**
+
+| Screen | State | Behaviour | Board |
+|---|---|---|---|
+| Setup | Pack not ready | Continue is locked | `Setup` (rule) |
+| Setup | Pack ready, models still downloading | Continue is enabled | `Setup` |
+| Home | Ready | Text box and quick buttons | `Main` |
+| Home | Matching | "Find help" disabled, reads "Finding help…"; message stays visible | `HomeMatching` |
+| Home | Embedding model missing | Notice; text box runs keyword search | `HomeNoModel` |
+| Card | GPS fix | Hotlines, nearest places with distances | `Card`, `CardFirstAid` |
+| Card | No GPS fix | "chosen manually"; distances hidden; "Try GPS again" | `CardNoGps`, `PickCity` |
+| Card | No city hotline | Province or national numbers with a Notice and a filled badge | `HotlineProvince`, `HotlineFallback` |
+| Card | Chat model missing or slow | No `AiNote`; nothing else changes | Rule only |
+| Card | Map file missing | `PlaceRow` has no chevron and does not open the Map | Rule only |
+| Map | Place has no phone number | No Call button; show "No phone number listed" | Rule only |
+| Search | Results | Each row with a phone number has a Call button | `Results` |
+| Search | No results | Emergency hotline and "Tap what you need instead" | `ResultsEmpty` |
+| Search | Message outside all cards | Emergency hotline and "Call this number" | `NoMatch` |
+
+**Copy rules**
+
+- Labels are in English, with a short Filipino gloss on screen titles,
+  section headings and main actions.
+- Every number, address and first-aid step is pack data.
+- Every card shows the pack build date and "Numbers may be out of date".
+- The hotline level is always labelled.
+- `AiNote` is always labelled, and never appears on a card that has a
+  first-aid section.
+- Distances always say "straight line".
+
 ## 6. Tools
 
 | Purpose | Choice |

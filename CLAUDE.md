@@ -54,6 +54,7 @@ Code layout.
 
 UI.
 
+- Build screens from the UI contract in spec section 5.4 (tokens, shared components, state table) and the wireframe canvas it links to. Add to both before inventing a new colour, component or state.
 - Show loading, empty, error and disabled states explicitly.
 - Keep earlier content visible while something refreshes or fails, rather than blanking the screen.
 - Label primary actions in words. Icon-only controls get a tooltip and a semantic label.

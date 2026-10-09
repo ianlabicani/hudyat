@@ -31,7 +31,8 @@ affiliation.
 
 > A typhoon takes the signal at the exact moment people need help. Hudyat
 > keeps the data and the AI on a budget phone, so it still works, and
-> nothing you type about your emergency leaves the device.
+> nothing you type or receive, from your emergency to your private
+> messages, leaves the device.
 
 ### Success criteria
 
@@ -316,8 +317,11 @@ Message check flow:
 - **Watcher setup:** what is read, what is kept, and the switch that
   opens Android's notification access setting.
 
-These four screens are not in the wireframe canvas yet. Under the rule in
-5.4, add them to the canvas and the states table before building them.
+These screens are on the wireframe canvas in the "Message check" row:
+`Check`, `CheckResultScam`, `CheckResultCaution`, `CheckResultClear`,
+`ScamAlert`, `Flagged` and `WatcherSetup`. Home has a "Check a message"
+button beside "Look up". The share sheet and the text selection menu are
+Android's own UI and have no board.
 
 ### 5.3 Error handling
 
@@ -374,6 +378,9 @@ submission disclosures.
 | `Notice` | The "!" box: a bold line and one sentence |
 | `AiNote` | Dashed box labelled "AI-WRITTEN · MAY BE WRONG" |
 | `PackFooter` | Hotline source, OpenStreetMap attribution, pack build date |
+| `VerdictBadge` | Ink fill for "Mukhang scam"; outlined for "Mag-ingat"; dashed and muted for "Walang nakitang problema". No new colour |
+| `ReasonRow` | One fixed-text reason and the pack fact behind it |
+| `MessageQuote` | The checked message in the data face, with sender and source app; says so when it may be cut short |
 | Buttons | Primary (ink fill), secondary (outlined), call (accent fill) |
 
 **States**
@@ -393,6 +400,21 @@ submission disclosures.
 | Map | Place has no phone number | No Call button; show "No phone number listed" | Rule only |
 | Search | Results | Each row with a phone number has a Call button | `Results` |
 | Search | No results | Emergency hotline and "Tap what you need instead" | `ResultsEmpty` |
+| Check | Empty | Paste box, optional sender, Check button; links to Flagged and Watcher setup | `Check` |
+| Check | Checking | Check is disabled and reads "Checking…"; the message stays visible | Rule only |
+| Check | Opened from share or selection | Paste box is prefilled; the check runs at once | Rule only |
+| Check | Shared content has no text | Empty paste box with a Notice | Rule only |
+| Result | Mukhang scam | Filled verdict, reasons, real contact with Call, `AiNote` | `CheckResultScam` |
+| Result | Mag-ingat | Outlined verdict, reasons, real contact with Call, `AiNote` | `CheckResultCaution` |
+| Result | Walang nakitang problema | Dashed verdict, "Hindi ito garantiya" Notice, list of checks run | `CheckResultClear` |
+| Result | No official sender matched | No contact section; one line says why | `CheckResultClear` |
+| Result | Message read from a notification | `MessageQuote` says it may be cut short | `CheckResultCaution` |
+| Result | Chat model missing or slow | No `AiNote`; nothing else changes | Rule only |
+| Alert | Mukhang scam on an incoming message | Hudyat notification with the first reason; "Tingnan" opens the result | `ScamAlert` |
+| Flagged | Has messages | Grouped by verdict; each row opens its result; Clear all | `Flagged` |
+| Flagged | Empty | "No flagged messages" and a link to Watcher setup | Rule only |
+| Watcher setup | Off, access not granted | What is read, kept and sent; Notice about Android settings; Turn on | `WatcherSetup` |
+| Watcher setup | On | Badge reads ON; the button reads "Turn off"; no Notice | Rule only |
 | Search | Message outside all cards | Emergency hotline and "Call this number" | `NoMatch` |
 
 **Copy rules**
@@ -405,6 +427,13 @@ submission disclosures.
 - `AiNote` is always labelled, and never appears on a card that has a
   first-aid section.
 - Distances always say "straight line".
+- Verdict words are fixed Tagalog: "Mukhang scam", "Mag-ingat", "Walang
+  nakitang problema". The app never says "safe" or "legit".
+- A "Walang nakitang problema" result always carries the "Hindi ito
+  garantiya" Notice.
+- Reasons and the advice under a verdict are fixed text filled with pack
+  data. Only the `AiNote` is generated.
+- The call accent is not used for verdicts.
 
 ## 6. Tools
 

@@ -4,6 +4,7 @@ import '../../../core/app_scope.dart';
 import '../../../core/theme/tokens.dart';
 import '../../../core/widgets/buttons.dart';
 import '../../../core/widgets/panels.dart';
+import '../services/message_watcher.dart';
 
 /// Explains automatic checking and turns it on or off. It is off until the
 /// user turns it on here, and it needs Android's notification access.
@@ -14,9 +15,30 @@ class WatcherSetupScreen extends StatefulWidget {
   State<WatcherSetupScreen> createState() => _WatcherSetupScreenState();
 }
 
-class _WatcherSetupScreenState extends State<WatcherSetupScreen> {
+class _WatcherSetupScreenState extends State<WatcherSetupScreen>
+    with WidgetsBindingObserver {
   bool _asking = false;
   bool _refused = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  /// The user may have just come back from Android's battery setting.
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      AppScope.of(context).watcher.refreshBackground();
+    }
+  }
 
   Future<void> _turnOn() async {
     final watcher = AppScope.of(context).watcher;
@@ -111,6 +133,25 @@ class _WatcherSetupScreenState extends State<WatcherSetupScreen> {
                   onPressed: () => Navigator.of(context).pop(),
                 ),
               ] else ...[
+                _Activity(watcher: watcher),
+                const SizedBox(height: 14),
+                if (!watcher.runsInBackground) ...[
+                  Notice(
+                    title: 'This phone will pause Hudyat in the background',
+                    body:
+                        'Messages are then checked only when you open '
+                        'Hudyat again. To be alerted as they arrive, let '
+                        'Hudyat run in the background: allow it when '
+                        'Android asks, or set its battery use to '
+                        '"Unrestricted" in App info.',
+                    action: SecondaryButton(
+                      label: 'Allow',
+                      expand: false,
+                      onPressed: watcher.allowBackground,
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                ],
                 const Text(
                   'Hudyat alerts you only for "Mukhang scam". It works while '
                   'the app is open or in the background. A long message may '
@@ -149,6 +190,61 @@ class _Fact extends StatelessWidget {
         children: [
           Text(title, style: HudyatText.bodyBold),
           Text(body, style: HudyatText.secondary),
+        ],
+      ),
+    );
+  }
+}
+
+/// What automatic checking has done since the app was opened: proof that
+/// messages are arriving, including the ones with nothing wrong.
+class _Activity extends StatelessWidget {
+  const _Activity({required this.watcher});
+
+  final MessageWatcher watcher;
+
+  static String _two(int value) => value.toString().padLeft(2, '0');
+
+  @override
+  Widget build(BuildContext context) {
+    final at = watcher.lastCheckedAt;
+    final delay = watcher.lastDelay;
+    final late = delay != null && delay.inSeconds >= 5;
+    return Panel(
+      primary: false,
+      padding: const EdgeInsets.all(12),
+      child: Column(
+        crossAxisAlignment: .start,
+        spacing: 4,
+        children: [
+          Text(
+            watcher.checkedCount == 1
+                ? '1 message checked since you opened Hudyat'
+                : '${watcher.checkedCount} messages checked since you opened '
+                      'Hudyat',
+            style: HudyatText.bodyBold,
+          ),
+          if (at == null)
+            const Text(
+              'Waiting for the first message.',
+              style: HudyatText.secondary,
+            )
+          else
+            Text(
+              [
+                'Last: ${_two(at.hour)}:${_two(at.minute)}:${_two(at.second)}',
+                watcher.lastVerdict?.label ?? '',
+                if (delay != null)
+                  'checked ${delay.inSeconds}s after it arrived',
+              ].join(' · '),
+              style: HudyatText.data,
+            ),
+          if (late)
+            const Text(
+              'The phone had Hudyat paused when this one arrived, so it was '
+              'checked when Hudyat was opened.',
+              style: HudyatText.gloss,
+            ),
         ],
       ),
     );

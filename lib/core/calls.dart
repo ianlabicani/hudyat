@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'pack/pack_record.dart';
@@ -74,5 +75,16 @@ Future<void> callNumbers(
     messenger.showSnackBar(
       SnackBar(content: Text('Could not open the dialer. Dial $number.')),
     );
+  }
+}
+
+/// Leaves the app running behind the launcher, as the Home button does.
+/// Closes it as usual where that is not available.
+Future<void> sendAppToBackground() async {
+  try {
+    await const MethodChannel('hudyat/power')
+        .invokeMethod<bool>('toBackground');
+  } on Object {
+    await SystemNavigator.pop();
   }
 }

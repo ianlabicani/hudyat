@@ -100,8 +100,18 @@ class _HomeScreenState extends State<HomeScreen> {
     await _openCard(intent, message: text);
   }
 
+  // Back here would close the app and stop automatic checking, so it sends
+  // the app to the background instead.
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) => PopScope(
+    canPop: false,
+    onPopInvokedWithResult: (didPop, _) {
+      if (!didPop) unawaited(sendAppToBackground());
+    },
+    child: _content(context),
+  );
+
+  Widget _content(BuildContext context) {
     final scope = AppScope.of(context);
     final store = scope.store;
     final emergency = store.nationalEmergency();

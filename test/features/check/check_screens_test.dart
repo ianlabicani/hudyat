@@ -331,6 +331,37 @@ void main() {
       expect(watcher.isOn, isFalse);
     });
 
+    test(
+      'asks to run in the background on a phone that would freeze it',
+      () async {
+        final runner = FakeBackgroundRunner();
+        final guarded = MessageWatcher(
+          source: notifications,
+          alerter: alerter,
+          checker: checker,
+          flagged: flagged,
+          wording: store.scamReasons(),
+          background: runner,
+        );
+        addTearDown(guarded.dispose);
+        expect(await guarded.turnOn(), isTrue);
+        expect(guarded.runsInBackground, isFalse);
+        expect(runner.requests, 1);
+        expect(runner.awake, isTrue);
+        runner.allowed = true;
+        await guarded.refreshBackground();
+        expect(guarded.runsInBackground, isTrue);
+        guarded.turnOff();
+        await Future<void>.delayed(Duration.zero);
+        expect(runner.awake, isFalse);
+      },
+    );
+
+    test('checks with the rules only, without waiting on the model', () async {
+      final result = await watcher.handle(sms('Ma, pauwi na ako.'));
+      expect(result?.phrasing, PhrasingState.skipped);
+    });
+
     test('stays off when access is refused', () async {
       notifications.grantsOnRequest = false;
       expect(await watcher.turnOn(), isFalse);
@@ -346,6 +377,52 @@ void main() {
       expect(alert.body, 'Ginagaya ng link na gcash-verify.com ang GCash.');
       expect(flagged.byId(alert.id)?.result.sender, '09171234567');
     });
+    test('a replay after a restart is not alerted again', () async {
+      await watcher.handle(sms(scamText));
+      final restarted = MessageWatcher(
+        source: notifications,
+        alerter: alerter,
+        checker: checker,
+        flagged: flagged,
+        wording: store.scamReasons(),
+      );
+      addTearDown(restarted.dispose);
+      await restarted.handle(
+        IncomingNotification(
+          package: 'com.transsion.smartmessage',
+          title: '09171234567',
+          content: scamText,
+          postedAt: DateTime.now().subtract(const Duration(minutes: 5)),
+        ),
+      );
+      expect(alerter.alerts, hasLength(1));
+      expect(flagged.count, 1);
+    });
+
+    test(
+      'the same text sent again later is alerted again, kept once',
+      () async {
+        await watcher.handle(sms(scamText));
+        final later = MessageWatcher(
+          source: notifications,
+          alerter: alerter,
+          checker: checker,
+          flagged: flagged,
+          wording: store.scamReasons(),
+        );
+        addTearDown(later.dispose);
+        await later.handle(
+          IncomingNotification(
+            package: 'com.transsion.smartmessage',
+            title: '09171234567',
+            content: scamText,
+            postedAt: DateTime.now().add(const Duration(seconds: 1)),
+          ),
+        );
+        expect(alerter.alerts, hasLength(2));
+        expect(flagged.count, 1);
+      },
+    );
 
     test('keeps Mag-ingat quietly and discards the rest', () async {
       await watcher.handle(sms('GCash: Na-hold ang iyong wallet.'));

@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:notification_listener_service/notification_listener_service.dart';
 
@@ -23,8 +24,28 @@ class AndroidNotificationSource implements NotificationSource {
           package: event.packageName,
           title: event.title,
           content: event.content,
+          postedAt: event.timestamp > 0 ? event.humanTime : null,
         ),
       );
+}
+
+/// Battery-optimisation exemption, through `MainActivity`.
+class AndroidBackgroundRunner implements BackgroundRunner {
+  const AndroidBackgroundRunner();
+
+  static const _channel = MethodChannel('hudyat/power');
+
+  @override
+  Future<bool> isAllowed() async =>
+      await _channel.invokeMethod<bool>('isExempt') ?? true;
+
+  @override
+  Future<void> requestAllowed() =>
+      _channel.invokeMethod<bool>('requestExemption');
+
+  @override
+  Future<void> keepAwake({required bool on}) =>
+      _channel.invokeMethod<bool>(on ? 'startWatching' : 'stopWatching');
 }
 
 /// Hudyat's own alert: a standard Android notification with one action.

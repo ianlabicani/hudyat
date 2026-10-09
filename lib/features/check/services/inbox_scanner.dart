@@ -229,6 +229,19 @@ class InboxScanner extends ChangeNotifier {
     return result;
   }
 
+  /// Quietly checks recent texts the app has not seen, when SMS access is
+  /// already given. Run when the app opens or returns to the screen, so a
+  /// message that arrived while the phone had the app frozen is still
+  /// flagged. Never asks for access.
+  Future<void> catchUp() async {
+    if (_running || !await _inbox.hasPermission()) return;
+    final before = last;
+    await scan(ScanRange.week);
+    // Not a scan the user asked for, so it leaves no summary behind.
+    last = before;
+    notifyListeners();
+  }
+
   /// Ends the running scan after the text it is on.
   void stop() => _stop = true;
 

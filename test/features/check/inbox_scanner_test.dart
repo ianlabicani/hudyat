@@ -163,6 +163,19 @@ void main() {
       expect(flagged.count, 2);
       expect(await s.pending(ScanRange.all), 4);
     });
+    test('catch-up flags recent texts quietly, and never asks', () async {
+      final s = scanner();
+      await s.catchUp();
+      expect(flagged.count, 1);
+      expect(s.last, isNull);
+      expect(s.remembered, 2);
+
+      inbox.granted = false;
+      inbox.messages.add(sms(9, 0, hiddenLink, from: '09191234567'));
+      await s.catchUp();
+      expect(flagged.count, 1);
+      expect(s.refused, isFalse);
+    });
 
     test('refused SMS access scans nothing and says so', () async {
       inbox

@@ -26,6 +26,17 @@ class _NotificationTestPageState extends State<NotificationTestPage>
   bool get wantKeepAlive => true;
 
   @override
+  void initState() {
+    super.initState();
+    // Start listening straight away when access is already given.
+    NotificationListenerService.isPermissionGranted().then((granted) {
+      if (!mounted) return;
+      setState(() => _granted = granted);
+      if (granted) _listen();
+    });
+  }
+
+  @override
   void dispose() {
     _subscription?.cancel();
     super.dispose();
@@ -60,13 +71,17 @@ class _NotificationTestPageState extends State<NotificationTestPage>
     ) {
       if (event.hasRemoved) return;
       _count++;
-      final now = DateTime.now();
-      final time =
-          '${now.hour.toString().padLeft(2, '0')}:'
-          '${now.minute.toString().padLeft(2, '0')}:'
-          '${now.second.toString().padLeft(2, '0')}';
+      String clock(DateTime t) =>
+          '${t.hour.toString().padLeft(2, '0')}:'
+          '${t.minute.toString().padLeft(2, '0')}:'
+          '${t.second.toString().padLeft(2, '0')}';
+      // "posted" is when the other app showed it; "seen" is when this app
+      // got to run. A gap means the phone had this app paused.
+      final seen = DateTime.now();
+      final posted = event.humanTime;
       _say(
-        '#$_count $time ${event.packageName}\n'
+        '#$_count posted ${clock(posted)} seen ${clock(seen)} '
+        '(${seen.difference(posted).inSeconds}s late) ${event.packageName}\n'
         '  title: ${event.title}\n'
         '  content (${event.content.length} chars): ${event.content}',
       );

@@ -53,6 +53,12 @@ CREATE TABLE IF NOT EXISTS flagged (
   int get count =>
       _db.select('SELECT count(*) AS n FROM flagged').first['n'] as int;
 
+  /// Whether this text from this sender is already kept.
+  bool has(CheckResult result) => _db.select(
+    'SELECT 1 FROM flagged WHERE text = ? AND sender IS ? LIMIT 1',
+    [result.text, result.sender],
+  ).isNotEmpty;
+
   /// Keeps [result] if it is flagged and returns its id; anything else is
   /// ignored and gives null. The same text from the same sender is kept
   /// once, with the latest time.

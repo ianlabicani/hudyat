@@ -578,3 +578,22 @@ class FakeSmsInbox implements SmsInbox {
     ]..sort((a, b) => a.id.compareTo(b.id));
   }
 }
+
+/// A phone that does or does not let the app run in the background.
+class FakeBackgroundRunner implements BackgroundRunner {
+  FakeBackgroundRunner({this.allowed = false});
+
+  bool allowed;
+  int requests = 0;
+
+  @override
+  Future<bool> isAllowed() async => allowed;
+
+  @override
+  Future<void> requestAllowed() async => requests++;
+
+  bool awake = false;
+
+  @override
+  Future<void> keepAwake({required bool on}) async => awake = on;
+}

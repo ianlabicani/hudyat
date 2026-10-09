@@ -356,7 +356,28 @@ restricted settings" step for sideloaded apps. The test passed on
 (`com.transsion.smartmessage`) gives the sender as the title, text is cut
 at about 500 characters, and the same notification is posted more than
 once, so repeats are dropped. Notifications are read only while the app
-is open or in the background. If the test fails, the
+is open or in the background.
+
+The Infinix freezes a backgrounded app within about ten seconds, and a
+frozen app gets the notification only when it is opened again. The
+battery-optimisation exemption alone did not stop this: the phone's log
+on 2026-10-09 shows the app frozen again with the exemption in place.
+The app therefore does four things:
+
+- While automatic checking is on it runs a foreground service with an
+  ongoing "Hudyat is checking incoming messages" notification, and asks
+  for the battery exemption. Whether this keeps the Infinix from
+  freezing it is not yet confirmed on the phone.
+- Back on the Home screen sends the app to the background instead of
+  closing it, since closing it ends checking.
+- Each time the app opens or returns to the screen, and SMS access has
+  been given, it quietly checks the last 7 days of texts through the
+  scan index, so a message that arrived while it was frozen is still
+  flagged.
+- A message already in the flagged list is not alerted a second time.
+
+Background checks use the rules only, so an alert never waits on a
+model. If the test fails, the
 automatic path is dropped: Watcher setup and the alert are hidden, and
 the Flagged list holds manually checked messages only.
 
@@ -494,6 +515,7 @@ Android's own UI and have no board.
 | Map file missing | Places list with distances still works |
 | Message outside all cards | Show the emergency hotline and "call this number" |
 | Notification access not granted | Manual check still works; Watcher setup shows how to grant it |
+| Phone pauses the app in the background | A foreground service and the battery exemption are used to stay awake; anything missed is flagged by a quiet catch-up check when the app is next opened |
 | SMS access not granted | Nothing is scanned; the Scan screen says how to allow it; paste, share and automatic checking still work |
 | Embedding model unavailable in the background | Link and sender checks only; phrasing check on open |
 | Message cut short in the notification | Check what is visible; the result says the message may be incomplete |

@@ -3,6 +3,9 @@ package com.example.hudyat
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
+import android.os.PowerManager
+import android.provider.Settings
 import android.os.Bundle
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
@@ -29,6 +32,26 @@ class MainActivity : FlutterActivity() {
                 }
             }
         }
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, POWER_CHANNEL)
+            .setMethodCallHandler { call, result ->
+                when (call.method) {
+                    "isExempt" -> result.success(isBatteryExempt())
+                    "requestExemption" -> result.success(requestBatteryExemption())
+                    "startWatching" -> result.success(
+                        try {
+                            startForegroundService(Intent(this, WatchService::class.java))
+                            true
+                        } catch (error: Exception) {
+                            false
+                        },
+                    )
+                    "stopWatching" -> result.success(stopService(Intent(this, WatchService::class.java)))
+                    // Back on the first screen: leave the app running instead of
+                    // closing it, so it can go on checking messages.
+                    "toBackground" -> result.success(moveTaskToBack(true))
+                    else -> result.notImplemented()
+                }
+            }
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, SMS_CHANNEL)
             .setMethodCallHandler { call, result ->
                 when (call.method) {
@@ -55,6 +78,20 @@ class MainActivity : FlutterActivity() {
                     else -> result.notImplemented()
                 }
             }
+    }
+
+    // The phone freezes a backgrounded app within seconds unless it is exempt
+    // from battery optimisation, and a frozen app cannot check a message.
+    private fun isBatteryExempt(): Boolean =
+        (getSystemService(POWER_SERVICE) as PowerManager).isIgnoringBatteryOptimizations(packageName)
+
+    private fun requestBatteryExemption(): Boolean = try {
+        startActivity(
+            Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS, Uri.parse("package:$packageName")),
+        )
+        true
+    } catch (error: Exception) {
+        false
     }
 
     private fun canReadSms(): Boolean =
@@ -105,6 +142,7 @@ class MainActivity : FlutterActivity() {
     companion object {
         const val CHANNEL = "hudyat/incoming"
         const val SMS_CHANNEL = "hudyat/sms"
+        const val POWER_CHANNEL = "hudyat/power"
         const val SMS_REQUEST = 4201
         const val ACTION_CHECK = "com.example.hudyat.CHECK_MESSAGE"
         const val EXTRA_TEXT = "com.example.hudyat.TEXT"

@@ -40,7 +40,7 @@ class HudyatApp extends StatefulWidget {
   State<HudyatApp> createState() => _HudyatAppState();
 }
 
-class _HudyatAppState extends State<HudyatApp> {
+class _HudyatAppState extends State<HudyatApp> with WidgetsBindingObserver {
   PackStore? _store;
   LocationController? _location;
   ModelManager? _models;
@@ -56,7 +56,17 @@ class _HudyatAppState extends State<HudyatApp> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _start();
+  }
+
+  /// Back on screen: pick up texts that arrived while the phone had the app
+  /// frozen, and re-check whether it may run in the background.
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state != AppLifecycleState.resumed) return;
+    unawaited(_scanner?.catchUp());
+    unawaited(_watcher?.refreshBackground());
   }
 
   Future<void> _start() async {
@@ -95,12 +105,14 @@ class _HudyatAppState extends State<HudyatApp> {
       final watcher = MessageWatcher(
         source: const AndroidNotificationSource(),
         alerter: LocalAlerter(),
+        background: const AndroidBackgroundRunner(),
         checker: checker,
         flagged: flagged,
         wording: store.scamReasons(),
         settingsFile: File(p.join(support.path, 'automatic-checking')),
       );
       unawaited(watcher.start(_openFlagged));
+      unawaited(scanner.catchUp());
       // Models load in the background; the app is usable before they do.
       unawaited(models.load());
       setState(() {
@@ -154,6 +166,7 @@ class _HudyatAppState extends State<HudyatApp> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _watcher?.dispose();
     _scanner?.dispose();
     _share.dispose();

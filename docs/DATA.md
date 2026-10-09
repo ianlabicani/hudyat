@@ -125,7 +125,7 @@ The rewording has not been reviewed by a medical professional.
 
 ## Data we wrote
 
-None of this was collected from real people.
+None of the files in this table was collected from real people.
 
 | File in `pack/data/` | Contents | How it was made |
 |---|---|---|
@@ -139,6 +139,29 @@ None of this was collected from real people.
 
 The example phrases and messages are synthetic. They may not match real
 scams, and they are never used to measure accuracy.
+
+The first-aid cards are in `pack/data/first_aid.json`, reworded from the
+sources listed above.
+
+## Scam texts quoted from public reports
+
+`pack/data/collected_scams.json` holds 29 scam texts copied word for word
+from public pages, collected on 2026-10-09. Each one records the page it
+came from.
+
+| Kind of source | Texts |
+|---|---|
+| Personal blogs and comment threads | 22 |
+| News organisations | 4 |
+| A government agency or the named company | 3 |
+
+- **Used for:** testing the classifier that is switched off. They are
+  never used for training.
+- **Not in the app.** The file is not part of the pack.
+- **Weaker provenance for most.** A text reproduced on a blog cannot be
+  confirmed as received, and the file says so.
+
+How these files become the pack is described in [PACK.md](PACK.md).
 
 ## The builder's own inbox
 

@@ -352,7 +352,9 @@ fonts keep their own licences, listed under Disclosures.
 ## More detail
 
 - [How the components work](docs/ARCHITECTURE.md)
+- [How the AI works](docs/AI.md)
 - [Where the data comes from](docs/DATA.md)
+- [From sources to the pack](docs/PACK.md)
 - [Design spec](docs/superpowers/specs/2026-10-09-hudyat-design.md)
 - [User stories](docs/superpowers/stories/2026-10-09-user-stories.md)
 - [Classifier tooling](pack/classifier/README.md)

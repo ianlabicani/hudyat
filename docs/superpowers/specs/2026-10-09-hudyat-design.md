@@ -594,6 +594,9 @@ submission disclosures.
 |---|---|
 | `TopBar` | Back button with a semantic label, screen title |
 | `HotlineRow` | Name, number, Call button |
+| `LeadCall` | The first hotline on a card as one full-width call-accent button: "Tawagan · Call", name, number |
+| `GuardPanel` | Home's "Bantay sa text" panel: ON or OFF tag, the widget's three counts, when texts were checked |
+| `UnderstoodStrip` | Under Home's box: what the on-device model made of the message, and how long it took |
 | `PlaceRow` | Name, address, distance, chevron; opens the Map |
 | `LevelBadge` | Outlined for the user's city; filled for a province or national fallback |
 | `Notice` | The "!" box: a bold line and one sentence |
@@ -614,6 +617,11 @@ submission disclosures.
 | Home | Ready | Text box and quick buttons | `Main` |
 | Home | Matching | "Find help" disabled, reads "Finding help…"; message stays visible | `HomeMatching` |
 | Home | Embedding model missing | Notice; text box runs keyword search | `HomeNoModel` |
+| Home | Understood while typing | After a pause in typing, with three words or more, a strip under the box reads "Naintindihan: [intent label]", the first-aid card's title when one matched, and "AI on this phone" with the measured time. Tapping it opens the card. "Find help" reuses the answer | `Main` |
+| Home | Typed message is not an emergency | The strip reads "Hahanapin sa listahan" and opens keyword search | Rule only |
+| Home | Guard off | "Bantay sa text" panel tagged OFF, one sentence and "Turn on", which opens Automatic checking | `Main` |
+| Home | Guard on | The panel is tagged ON with the widget's three counts, "Last 7 days · n texts checked · time" and "See flagged messages". Counts only, never a message or a sender | `Main` |
+| Home | Guard on, SMS access not given | The panel says Hudyat cannot read texts and offers "Open automatic checking" | Rule only |
 | Card | GPS fix | Hotlines, nearest places with distances | `Card`, `CardFirstAid` |
 | Card | No GPS fix | "chosen manually"; distances hidden; "Try GPS again" | `CardNoGps`, `PickCity` |
 | Card | No city hotline | Province or national numbers with a Notice and a filled badge | `HotlineProvince`, `HotlineFallback` |
@@ -621,6 +629,7 @@ submission disclosures.
 | Card | Opened from a quick button, or no first-aid match | No `FirstAidSection`; nothing else changes | Rule only |
 | Card | Chat model missing or slow | No `AiNote`; nothing else changes | Rule only |
 | Card | Map file missing | `PlaceRow` has no chevron and does not open the Map | Rule only |
+| Card | First hotline has a dialable number | It is a `LeadCall`: one full-width call button with the name and number. The rest stay `HotlineRow`s | `Card` |
 | Map | Place has no phone number | No Call button; show "No phone number listed" | Rule only |
 | Search | Results | Each row with a phone number has a Call button | `Results` |
 | Search | No results | Emergency hotline and "Tap what you need instead" | `ResultsEmpty` |

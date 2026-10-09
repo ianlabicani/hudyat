@@ -59,7 +59,8 @@ calls. Her apo set the phone up.
    link.
 
 The widget is the quiet version: three counts for the last 7 days,
-never a message or a sender.
+never a message or a sender. Home shows the same counts in its
+"Bantay sa text" panel, with a button to the Flagged list.
 
 **Typhoon night.**
 

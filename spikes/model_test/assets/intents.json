@@ -1,0 +1,164 @@
+[
+  {
+    "id": "medical_emergency",
+    "label": "Medical emergency",
+    "hotline_categories": ["emergency", "medical"],
+    "place_kinds": ["hospital"],
+    "examples": [
+      "inatake sa puso ang tatay ko",
+      "hindi makahinga si lola, kailangan ng ambulansya",
+      "nawalan ng malay ang kasama ko",
+      "may nag-collapse dito, tulong",
+      "nanganganak na ang asawa ko, walang masakyan",
+      "nagkukumbulsyon ang anak ko",
+      "need ambulance now, someone is unconscious",
+      "chest pain at nahihilo, saan ang pinakamalapit na ospital",
+      "na-stroke yata ang nanay ko, hindi maigalaw ang kalahati ng katawan",
+      "emergency, kailangan ng doktor agad"
+    ]
+  },
+  {
+    "id": "injury",
+    "label": "Injury",
+    "hotline_categories": ["emergency", "medical"],
+    "place_kinds": ["hospital"],
+    "examples": [
+      "nasugatan ang kamay ko, ang daming dugo",
+      "nabalian ng buto ang kapatid ko",
+      "napaso ng kumukulong tubig ang bata",
+      "nakagat ng aso ang anak ko",
+      "nahulog sa hagdan, hindi makatayo",
+      "natusok ng pako ang paa ko habang baha",
+      "nakuryente ang kapitbahay namin",
+      "malalim ang sugat, ayaw tumigil ng dugo",
+      "may tumama sa ulo niya, nagdudugo",
+      "bleeding badly from a cut, what do I do"
+    ]
+  },
+  {
+    "id": "fire",
+    "label": "Fire",
+    "hotline_categories": ["fire", "emergency"],
+    "place_kinds": ["fire_station"],
+    "examples": [
+      "may sunog sa kapitbahay namin",
+      "nasusunog ang bahay, tulong",
+      "umuusok ang poste ng kuryente, baka magliyab",
+      "sumabog ang LPG sa kusina",
+      "may apoy sa ikalawang palapag",
+      "tawagan ang bumbero, may sunog dito",
+      "fire in our building, need firefighters",
+      "kumakalat na ang apoy sa mga bahay",
+      "amoy sunog at may makapal na usok",
+      "nagliliyab ang sasakyan sa kalsada"
+    ]
+  },
+  {
+    "id": "flood_rescue",
+    "label": "Flood rescue",
+    "hotline_categories": ["disaster", "rescue", "emergency"],
+    "place_kinds": ["shelter"],
+    "examples": [
+      "binabaha na dito sa amin, may matanda na hindi makalabas",
+      "hanggang dibdib na ang tubig, nasa bubong na kami",
+      "kailangan namin ng rescue, tumataas ang baha",
+      "na-trap kami sa second floor dahil sa baha",
+      "umapaw ang ilog, pasok na ang tubig sa bahay",
+      "kailangan ng bangka, may mga bata dito",
+      "stranded kami sa baha, walang makadaan",
+      "malakas ang bagyo, nilipad ang bubong namin",
+      "flood is rising fast, we need rescue",
+      "gumuho ang lupa sa likod ng bahay namin"
+    ]
+  },
+  {
+    "id": "crime_police",
+    "label": "Police",
+    "hotline_categories": ["police", "emergency"],
+    "place_kinds": ["police"],
+    "examples": [
+      "may magnanakaw sa bahay namin ngayon",
+      "na-holdap ako sa kanto",
+      "may nag-aaway sa labas, may dalang patalim",
+      "ninakaw ang cellphone ko",
+      "may sumusunod sa akin, natatakot ako",
+      "sinasaktan ng asawa ang kapitbahay ko",
+      "nawawala ang anak ko, hindi pa umuuwi",
+      "may narinig kaming putok ng baril",
+      "kailangan ko ng pulis",
+      "someone broke into our house, send police"
+    ]
+  },
+  {
+    "id": "need_medicine",
+    "label": "Medicine",
+    "hotline_categories": [],
+    "place_kinds": ["pharmacy"],
+    "examples": [
+      "saan ako makakabili ng gamot ngayon",
+      "saan may bukas na botika malapit dito",
+      "naubusan ng maintenance na gamot si lolo",
+      "kailangan ko ng paracetamol para sa lagnat",
+      "may malapit bang Mercury Drug o Generika",
+      "nearest pharmacy please",
+      "saan pwedeng bumili ng insulin",
+      "kailangan ng gamot sa hika",
+      "may drugstore ba malapit sa amin",
+      "bibili ako ng gamot sa ubo at sipon"
+    ]
+  },
+  {
+    "id": "need_clinic",
+    "label": "Clinic",
+    "hotline_categories": [],
+    "place_kinds": ["clinic"],
+    "examples": [
+      "saan ang pinakamalapit na health center",
+      "magpapa-check up ako, saan may clinic",
+      "may lagnat ang anak ko tatlong araw na, saan pwede magpatingin",
+      "kailangan ko ng doktor pero hindi naman emergency",
+      "saan pwedeng magpabakuna ang baby",
+      "may libreng konsulta ba sa barangay health center",
+      "nearest clinic for a check up",
+      "magpapatingin ng ngipin, saan may dentista",
+      "saan pwede magpa-prenatal check up",
+      "masakit ang tiyan ko mula kahapon, saan may clinic"
+    ]
+  },
+  {
+    "id": "shelter",
+    "label": "Shelter",
+    "hotline_categories": ["disaster"],
+    "place_kinds": ["shelter"],
+    "examples": [
+      "saan ang evacuation center dito",
+      "kailangan naming lumikas, saan pwede pumunta",
+      "wala na kaming matutuluyan dahil sa bagyo",
+      "saan pwedeng tumuloy ang mga binaha",
+      "nasaan ang pinakamalapit na evacuation area",
+      "nasira ang bahay namin, saan kami pwede matulog",
+      "where is the nearest evacuation center",
+      "saan dadalhin ang pamilya ko habang may bagyo",
+      "may covered court ba na ginagamit na evacuation",
+      "lilikas na kami, saan ligtas"
+    ]
+  },
+  {
+    "id": "general_lookup",
+    "label": "Look up",
+    "hotline_categories": [],
+    "place_kinds": [],
+    "examples": [
+      "paano kumuha ng barangay clearance",
+      "ano ang number ng city hall",
+      "sino ang mayor ng Pasig",
+      "paano mag-renew ng passport",
+      "saan kukuha ng NBI clearance",
+      "contact number ng DSWD",
+      "paano mag-apply ng PhilHealth",
+      "ano ang hotline ng Meralco",
+      "requirements para sa driver's license",
+      "how do I get a birth certificate from PSA"
+    ]
+  }
+]

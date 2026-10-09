@@ -1,0 +1,12 @@
+[
+  { "text": "Tulong, biglang natumba si papa at hindi na sumasagot", "intent": "medical_emergency" },
+  { "text": "Nadulas ako sa baha tapos nahiwa ng yero ang binti ko, dumudugo", "intent": "injury" },
+  { "text": "May usok at apoy na galing sa bahay sa tapat namin", "intent": "fire" },
+  { "text": "Lampas tao na ang tubig dito sa street namin, kailangan ng rescue boat", "intent": "flood_rescue" },
+  { "text": "May pumasok na lalaki sa bakuran namin, parang magnanakaw", "intent": "crime_police" },
+  { "text": "Ubos na ang gamot sa high blood ni mama, saan may botika", "intent": "need_medicine" },
+  { "text": "Inuubo at nilalagnat ang baby ko, saan pwede magpa-check up", "intent": "need_clinic" },
+  { "text": "Pinapalikas na kami ng barangay, saan ang evacuation center", "intent": "shelter" },
+  { "text": "Paano mag-renew ng senior citizen ID", "intent": "general_lookup" },
+  { "text": "Sobrang sakit ng dibdib ko at pinagpapawisan ng malamig", "intent": "medical_emergency" }
+]

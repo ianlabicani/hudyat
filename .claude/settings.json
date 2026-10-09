@@ -1,0 +1,42 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(flutter analyze *)",
+      "Bash(flutter test *)",
+      "Bash(flutter pub get *)",
+      "Bash(flutter build apk *)",
+      "Bash(dart format *)",
+      "Bash(dart analyze *)",
+      "Bash(bun test *)",
+      "Bash(bun run *)",
+      "mcp__dart"
+    ],
+    "deny": [
+      "Bash(flutter install *)",
+      "Bash(flutter run *--uninstall-first*)",
+      "Bash(adb uninstall *)",
+      "Bash(adb * uninstall *)",
+      "Bash(adb shell pm clear *)",
+      "Bash(adb * shell pm clear *)",
+      "Bash(adb shell pm uninstall *)",
+      "Bash(adb * shell pm uninstall *)",
+      "Bash(git reset --hard*)",
+      "Bash(git clean *)"
+    ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -r '.tool_response.filePath // .tool_input.file_path' | { read -r f; case \"$f\" in *.dart) dart format \"$f\";; esac; } >/dev/null 2>&1 || true",
+            "timeout": 30,
+            "statusMessage": "Formatting Dart file"
+          }
+        ]
+      }
+    ]
+  }
+}

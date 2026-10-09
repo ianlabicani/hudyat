@@ -645,6 +645,9 @@ class FakeSmsInbox implements SmsInbox {
   final messages = <SmsMessage>[];
   int reads = 0;
 
+  /// Makes [read] fail, as when Android cannot hand the inbox over.
+  bool fails = false;
+
   @override
   Future<bool> hasPermission() async => granted;
 
@@ -654,6 +657,7 @@ class FakeSmsInbox implements SmsInbox {
   @override
   Future<List<SmsMessage>> read({DateTime? since}) async {
     reads++;
+    if (fails) throw PlatformException(code: 'read_failed');
     return [
       for (final message in messages)
         if (since == null || !message.sentAt.isBefore(since)) message,

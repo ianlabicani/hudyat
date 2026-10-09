@@ -184,9 +184,12 @@ class _TimedCheckScreenState extends State<TimedCheckScreen> {
                 Row(
                   children: [
                     Expanded(
-                      child: Text(
-                        'Live scam protection',
-                        style: HudyatText.title.copyWith(fontSize: 24),
+                      child: Semantics(
+                        header: true,
+                        child: Text(
+                          'Live scam protection',
+                          style: HudyatText.title.copyWith(fontSize: 24),
+                        ),
                       ),
                     ),
                     Tag(active ? 'ON' : 'OFF'),
@@ -326,12 +329,10 @@ class _TimedCheckScreenState extends State<TimedCheckScreen> {
                   ),
                 ],
                 const SizedBox(height: 16),
-                Text(
-                  live.lastProcessed == null
-                      ? 'No live message processed yet.'
-                      : 'Last processed: ${live.lastProcessed}',
-                  style: HudyatText.data,
-                ),
+                Text(switch (live.lastProcessed) {
+                  null => 'No live message processed yet.',
+                  final at => 'Last processed: ${_when(at)}',
+                }, style: HudyatText.data),
                 if (live.failure case final failure?) ...[
                   const SizedBox(height: 8),
                   Notice(
@@ -385,6 +386,13 @@ class _TimedCheckScreenState extends State<TimedCheckScreen> {
   }
 }
 
+String _two(int value) => value.toString().padLeft(2, '0');
+
+/// A time as "2026-10-10 06:12".
+String _when(DateTime at) =>
+    '${at.year}-${_two(at.month)}-${_two(at.day)} '
+    '${_two(at.hour)}:${_two(at.minute)}';
+
 class _Fact extends StatelessWidget {
   const _Fact({required this.title, required this.body});
 
@@ -413,8 +421,6 @@ class _Counts extends StatelessWidget {
   const _Counts({required this.status});
 
   final TimedStatus status;
-
-  static String _two(int value) => value.toString().padLeft(2, '0');
 
   @override
   Widget build(BuildContext context) {

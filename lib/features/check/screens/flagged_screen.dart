@@ -13,6 +13,33 @@ import 'flagged_sender_screen.dart';
 class FlaggedScreen extends StatelessWidget {
   const FlaggedScreen({super.key});
 
+  /// Asks first: a scan does not find cleared texts again, since it
+  /// remembers having checked them.
+  Future<void> _clearAll(BuildContext context) async {
+    final flagged = AppScope.of(context).flagged;
+    final sure = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Clear all flagged messages?'),
+        content: const Text(
+          'A new scan will not find them again unless you also choose '
+          '"Forget what was checked". Nothing is deleted from your SMS app.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Clear all'),
+          ),
+        ],
+      ),
+    );
+    if (sure == true) flagged.clear();
+  }
+
   @override
   Widget build(BuildContext context) {
     final flagged = AppScope.of(context).flagged;
@@ -68,7 +95,7 @@ class FlaggedScreen extends StatelessWidget {
                       SecondaryButton(
                         label: 'Clear all',
                         expand: false,
-                        onPressed: flagged.clear,
+                        onPressed: () => _clearAll(context),
                       ),
                     ],
                   ),

@@ -188,6 +188,26 @@ void main() {
       expect(flagged.count, 1);
     });
 
+    testWidgets('a check that fails says so and keeps the text', (
+      tester,
+    ) async {
+      checker = _FailingChecker();
+      await pump(tester, const CheckScreen());
+      await tester.enterText(find.byType(TextField).first, scamText);
+      await tester.pump();
+      await tester.tap(find.byType(PrimaryButton));
+      await tester.pumpAndSettle();
+      expect(
+        find.text('Could not check this message. Try again.'),
+        findsOneWidget,
+      );
+      expect(find.text(scamText), findsOneWidget);
+      expect(
+        tester.widget<PrimaryButton>(find.byType(PrimaryButton)).onPressed,
+        isNotNull,
+      );
+    });
+
     testWidgets('shared text is filled in and checked at once', (tester) async {
       await pump(tester, const CheckScreen(initialText: scamText));
       await tester.pumpAndSettle();
@@ -223,7 +243,7 @@ void main() {
         await pump(tester, ResultScreen(result: flagged.all().single.result));
         final expected = switch (state) {
           PhrasingState.skipped =>
-            'The wording check was not run in this scan.',
+            'The wording check has not run on this message yet.',
           PhrasingState.notReady => 'The wording check is not ready yet',
           _ => 'Whether the wording was checked was not recorded.',
         };
@@ -591,8 +611,22 @@ void main() {
       await pump(tester, const FlaggedScreen());
       expect(find.text('2 messages kept · 2 senders'), findsOneWidget);
       await tester.tap(find.text('Clear all'));
-      await tester.pump();
+      await tester.pumpAndSettle();
+      expect(find.text('Clear all flagged messages?'), findsOneWidget);
+      await tester.tap(find.widgetWithText(TextButton, 'Clear all'));
+      await tester.pumpAndSettle();
       expect(find.text('No flagged messages'), findsOneWidget);
+    });
+
+    testWidgets('Clear all keeps the list when cancelled', (tester) async {
+      flagged.keep(await checker.check(scamText, sender: 'GCASH'));
+      await pump(tester, const FlaggedScreen());
+      await tester.tap(find.text('Clear all'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Cancel'));
+      await tester.pumpAndSettle();
+      expect(find.text('1 message kept · 1 sender'), findsOneWidget);
+      expect(flagged.count, 1);
     });
 
     testWidgets('a message is removed on its sender screen, which closes '
@@ -638,4 +672,17 @@ void main() {
       expect(find.text('3 messages kept'), findsOneWidget);
     });
   });
+}
+
+class _FailingChecker extends MessageChecker {
+  _FailingChecker() : super(senders: const []);
+
+  @override
+  Future<CheckResult> check(
+    String text, {
+    String? sender,
+    String? app,
+    bool truncated = false,
+    bool phrasing = true,
+  }) async => throw StateError('check failed');
 }

@@ -131,6 +131,9 @@ CREATE TABLE IF NOT EXISTS flagged (
     }
     _db.execute('PRAGMA busy_timeout = 3000');
     _db.execute('PRAGMA journal_mode = WAL');
+    // With the write-ahead log this is safe, and a commit no longer waits
+    // for the disk: an inbox scan commits once per text.
+    _db.execute('PRAGMA synchronous = NORMAL');
     // What has been copied in from the Android side, by its source key. The
     // tag says which version of a finding was copied, so one the user removed
     // here is not brought back unless Android judged it anew.
@@ -152,6 +155,10 @@ CREATE TABLE IF NOT EXISTS native_findings (
   /// The contact is looked up again on reading, so it is always the pack's
   /// current one.
   final Map<String, OfficialSender> _senders;
+
+  /// Whether the last [_keepInTransaction] changed a row. A clear text that
+  /// was never kept changes nothing, and nobody needs telling.
+  bool _wrote = false;
 
   int get count =>
       _db.select('SELECT count(*) AS n FROM flagged').first['n'] as int;
@@ -197,7 +204,7 @@ CREATE TABLE IF NOT EXISTS native_findings (
         aiVersion: aiVersion,
       );
       _db.execute('COMMIT');
-      notifyListeners();
+      if (_wrote) notifyListeners();
       return id;
     } on Object {
       _db.execute('ROLLBACK');
@@ -215,6 +222,7 @@ CREATE TABLE IF NOT EXISTS native_findings (
     String? rulesVersion,
     String? aiVersion,
   }) {
+    _wrote = false;
     final bySource = sourceKey == null
         ? const <Row>[]
         : _db.select('SELECT id FROM flagged WHERE source_key = ?', [
@@ -235,9 +243,13 @@ CREATE TABLE IF NOT EXISTS native_findings (
                 : null)
             as int?;
     if (!result.isFlagged) {
-      if (id != null) _db.execute('DELETE FROM flagged WHERE id = ?', [id]);
+      if (id != null) {
+        _db.execute('DELETE FROM flagged WHERE id = ?', [id]);
+        _wrote = true;
+      }
       return null;
     }
+    _wrote = true;
     final values = [
       result.text,
       result.sender,

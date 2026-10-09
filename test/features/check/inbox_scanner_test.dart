@@ -332,6 +332,27 @@ void main() {
       expect(find.text('SMS access was not given'), findsOneWidget);
     });
 
+    testWidgets('a failed inbox read says so and keeps the screen', (
+      tester,
+    ) async {
+      await pump(tester);
+      inbox.fails = true;
+      await tester.tap(find.byType(PrimaryButton));
+      await tester.pumpAndSettle();
+      expect(find.text('Could not read your texts'), findsOneWidget);
+      expect(find.byType(PrimaryButton), findsOneWidget);
+      expect(
+        find.textContaining('3 not yet checked in this range'),
+        findsOneWidget,
+      );
+
+      inbox.fails = false;
+      await tester.tap(find.byType(PrimaryButton));
+      await tester.pumpAndSettle();
+      expect(find.text('Could not read your texts'), findsNothing);
+      expect(find.text('Scan finished'), findsOneWidget);
+    });
+
     testWidgets('the wording switch is off without the model', (tester) async {
       await pump(tester);
       expect(find.textContaining('Needs the language model'), findsOneWidget);

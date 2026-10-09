@@ -25,6 +25,9 @@ class _ScanScreenState extends State<ScanScreen> {
   int? _pending;
   bool _started = false;
 
+  /// The inbox could not be read. What was on screen stays.
+  bool _failed = false;
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -35,12 +38,24 @@ class _ScanScreenState extends State<ScanScreen> {
   }
 
   Future<void> _count() async {
-    final pending = await AppScope.of(context).scanner.pending(_range);
-    if (mounted) setState(() => _pending = pending);
+    final range = _range;
+    try {
+      final pending = await AppScope.of(context).scanner.pending(range);
+      // A count for a range the user has since left is out of date.
+      if (mounted && range == _range) setState(() => _pending = pending);
+    } on Object {
+      if (mounted && range == _range) setState(() => _failed = true);
+    }
   }
 
   Future<void> _scan() async {
-    await AppScope.of(context).scanner.scan(_range, wording: _wording);
+    setState(() => _failed = false);
+    try {
+      await AppScope.of(context).scanner.scan(_range, wording: _wording);
+    } on Object {
+      if (mounted) setState(() => _failed = true);
+      return;
+    }
     if (mounted) await _count();
   }
 
@@ -48,6 +63,7 @@ class _ScanScreenState extends State<ScanScreen> {
     setState(() {
       _range = range;
       _pending = null;
+      _failed = false;
     });
     _count();
   }
@@ -158,6 +174,13 @@ class _ScanScreenState extends State<ScanScreen> {
                         'choose "Allow restricted settings", then allow SMS '
                         'under Permissions. Pasting and sharing a message '
                         'still work without it.',
+                  ),
+                  const SizedBox(height: 14),
+                ],
+                if (_failed) ...[
+                  const Notice(
+                    title: 'Could not read your texts',
+                    body: 'Nothing was changed. Try again.',
                   ),
                   const SizedBox(height: 14),
                 ],

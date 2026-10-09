@@ -56,6 +56,34 @@ truncated INTEGER NOT NULL, checked_at INTEGER NOT NULL)''');
     expect(updated.aiVersion, 'ai-2');
   });
 
+  test('tells listeners only when a kept row changed', () {
+    final store = FlaggedStore(sqlite3.openInMemory());
+    addTearDown(store.close);
+    var told = 0;
+    store.addListener(() => told++);
+    const clear = CheckResult(
+      text: 'Pauwi na ako.',
+      verdict: Verdict.clear,
+      reasons: [],
+      phrasing: PhrasingState.skipped,
+    );
+    const flaggedText = CheckResult(
+      text: 'Pauwi na ako.',
+      verdict: Verdict.caution,
+      reasons: [CheckReason(ReasonId.linkShortener)],
+      phrasing: PhrasingState.skipped,
+    );
+    // A clear text that was never kept: an inbox scan does this per text.
+    store.keep(clear, sourceKey: 'sms:1');
+    expect(told, 0);
+    store.keep(flaggedText, sourceKey: 'sms:1');
+    expect(told, 1);
+    // Now clear on a recheck: the kept row goes, and the list must redraw.
+    store.keep(clear, sourceKey: 'sms:1');
+    expect(told, 2);
+    expect(store.count, 0);
+  });
+
   test('source identity, arrival time and versions round trip', () {
     final db = sqlite3.openInMemory();
     final store = FlaggedStore(db);

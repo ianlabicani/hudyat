@@ -90,7 +90,9 @@ class _ResultScreenState extends State<ResultScreen> {
     final wordingNotice = switch (result.phrasing) {
       PhrasingState.notReady =>
         'The wording check is not ready yet, so only the rules were checked.',
-      PhrasingState.skipped => 'The wording check was not run in this scan. Only the rules were checked.',
+      PhrasingState.skipped =>
+        'The wording check has not run on this message yet. Only the rules '
+            'were checked.',
       PhrasingState.unknown =>
         'Whether the wording was checked was not recorded.',
       PhrasingState.checked => null,
@@ -146,7 +148,7 @@ class _ResultScreenState extends State<ResultScreen> {
                   PhrasingState.unknown =>
                     'Whether the wording was checked was not recorded.',
                   PhrasingState.notReady => 'Not ready yet',
-                  PhrasingState.skipped => 'Not run in this scan',
+                  PhrasingState.skipped => 'Not run yet',
                   PhrasingState.checked => 'No scam match',
                 },
               ),

@@ -53,6 +53,7 @@ class _CheckScreenState extends State<CheckScreen> {
     if (text.isEmpty || _checking) return;
     final scope = AppScope.of(context);
     final navigator = Navigator.of(context);
+    final messenger = ScaffoldMessenger.of(context);
     FocusScope.of(context).unfocus();
     setState(() => _checking = true);
     try {
@@ -62,6 +63,13 @@ class _CheckScreenState extends State<CheckScreen> {
       if (!mounted) return;
       await navigator.push(
         MaterialPageRoute<void>(builder: (_) => ResultScreen(result: result)),
+      );
+    } on Object {
+      // The pasted text stays in the field, to try again.
+      messenger.showSnackBar(
+        const SnackBar(
+          content: Text('Could not check this message. Try again.'),
+        ),
       );
     } finally {
       if (mounted) setState(() => _checking = false);

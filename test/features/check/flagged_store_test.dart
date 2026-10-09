@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hudyat/features/check/models/check_result.dart';
 import 'package:hudyat/features/check/services/flagged_store.dart';
@@ -179,4 +181,116 @@ truncated INTEGER NOT NULL, checked_at INTEGER NOT NULL)''');
       expect(reopened.linkCount, 2);
     });
   }
+
+  group('findings from the Android side', () {
+    Map<Object?, Object?> finding({
+      int id = 10,
+      String key = 'sms:819',
+      String verdict = 'scam',
+      String rules = 'r1',
+    }) => {
+      'id': id,
+      'text': 'Verify at tbpluswin. com',
+      'sender': '+639171234567',
+      'app': 'Messages',
+      'verdict': verdict,
+      'reasons': '[{"id":"link_hidden","facts":{"domain":"tbpluswin.com"}}]',
+      'truncated': false,
+      'checkedAt': 1000,
+      'linkCount': 1,
+      'sourceKey': key,
+      'sourceType': 'sms',
+      'sourcePackage': null,
+      'arrivedAt': 1000,
+      'rulesVersion': rules,
+    };
+
+    test('are copied in once, and found by the id an alert carries', () {
+      final store = FlaggedStore(sqlite3.openInMemory());
+      addTearDown(store.close);
+      expect(store.importNative([finding()]), 1);
+      expect(store.importNative([finding()]), 0);
+      expect(store.count, 1);
+
+      final kept = store.byNativeId(10)!;
+      expect(kept.result.verdict, Verdict.scam);
+      expect(kept.result.reasons.single.facts['domain'], 'tbpluswin.com');
+      expect(kept.result.phrasing, PhrasingState.skipped);
+      expect(kept.sourceKey, 'sms:819');
+      expect(store.byNativeId(99), isNull);
+    });
+
+    test('one the user removed is not brought back', () {
+      final store = FlaggedStore(sqlite3.openInMemory());
+      addTearDown(store.close);
+      store.importNative([finding()]);
+      store.remove(store.byNativeId(10)!.id);
+      expect(store.importNative([finding()]), 0);
+      expect(store.count, 0);
+    });
+
+    test('a finding Android judged anew replaces the old copy', () {
+      final store = FlaggedStore(sqlite3.openInMemory());
+      addTearDown(store.close);
+      store.importNative([finding()]);
+      final id = store.byNativeId(10)!.id;
+      expect(store.importNative([finding(verdict: 'caution', rules: 'r2')]), 1);
+      expect(store.count, 1);
+      expect(store.byId(id)!.result.verdict, Verdict.caution);
+    });
+
+    test('a row that cannot be read is skipped, not fatal', () {
+      final store = FlaggedStore(sqlite3.openInMemory());
+      addTearDown(store.close);
+      expect(
+        store.importNative([
+          {'id': 1, 'verdict': 'scam'},
+          finding(),
+        ]),
+        1,
+      );
+    });
+  });
+
+  group('openFlaggedDatabase', () {
+    test('moves a damaged file aside and starts a new one', () {
+      final dir = Directory.systemTemp.createTempSync('hudyat-flagged');
+      addTearDown(() => dir.deleteSync(recursive: true));
+      final path = '${dir.path}/flagged.sqlite';
+      // Long enough to look like a database, and not one.
+      File(path).writeAsBytesSync(List.filled(8192, 0x41));
+
+      final store = FlaggedStore(openFlaggedDatabase(path));
+      addTearDown(store.close);
+      expect(store.count, 0);
+      // The damaged file is kept beside it, not deleted.
+      expect(
+        dir.listSync().where((f) => f.path.contains('.damaged-')),
+        hasLength(1),
+      );
+    });
+
+    test('opens a good file as it is', () {
+      final dir = Directory.systemTemp.createTempSync('hudyat-flagged');
+      addTearDown(() => dir.deleteSync(recursive: true));
+      final path = '${dir.path}/flagged.sqlite';
+      FlaggedStore(openFlaggedDatabase(path))
+        ..keep(
+          const CheckResult(
+            text: 'bit.ly/x',
+            verdict: Verdict.caution,
+            reasons: [CheckReason(ReasonId.linkShortener)],
+            phrasing: PhrasingState.skipped,
+          ),
+        )
+        ..close();
+      final again = FlaggedStore(openFlaggedDatabase(path));
+      addTearDown(again.close);
+      expect(again.count, 1);
+      expect(
+        dir.listSync().where((f) => f.path.contains('.damaged-')),
+        isEmpty,
+      );
+    });
+  });
 }

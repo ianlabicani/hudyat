@@ -68,6 +68,23 @@ class MainActivity : FlutterActivity() {
             .setMethodCallHandler { call, result ->
                 when (call.method) {
                     "status" -> result.success(ProtectionEngine.status(this))
+                    // Dart copies these into its own store; it never opens
+                    // the Android side's database file.
+                    "findings" -> ProtectionEngine.execute(this) {
+                        try {
+                            val found = ProtectionStore.findings(applicationContext)
+                            runOnUiThread { result.success(found) }
+                        } catch (error: Exception) {
+                            runOnUiThread {
+                                result.error(
+                                    "findings_failed",
+                                    error.javaClass.simpleName,
+                                    error.message,
+                                )
+                            }
+                            throw error
+                        }
+                    }
                     "requestSmsCapture" -> requestReceiveSms(result)
                     "setAppsOn" -> {
                         val enabled = call.argument<Boolean>("enabled") == true

@@ -78,6 +78,10 @@ class ProtectionStatus {
 /// capture and fast rules without a Flutter engine or a loaded model.
 abstract class ProtectionPlatform {
   Future<ProtectionStatus> status();
+
+  /// Every finding the Android side has kept, as plain maps. Dart copies
+  /// them into its own store and never opens the Android side's file.
+  Future<List<Map<Object?, Object?>>> findings();
   Future<bool> requestSmsCapture();
   Future<ProtectionStatus> setAppsOn(bool enabled);
   Future<ProtectionStatus> setSourceEnabled(String package, bool enabled);
@@ -103,6 +107,13 @@ class AndroidProtectionPlatform implements ProtectionPlatform {
 
   @override
   Future<ProtectionStatus> status() => _call('status');
+
+  @override
+  Future<List<Map<Object?, Object?>>> findings() async => [
+    for (final row
+        in await _channel.invokeListMethod<Object?>('findings') ?? const [])
+      if (row is Map<Object?, Object?>) row,
+  ];
 
   @override
   Future<bool> requestSmsCapture() async =>
@@ -156,6 +167,18 @@ class ProtectionController extends ChangeNotifier {
       // The screen retains its previous status during an Android failure.
     } on MissingPluginException {
       // Other platforms have no live protection.
+    }
+  }
+
+  /// The Android side's findings, or none when it cannot be asked.
+  Future<List<Map<Object?, Object?>>> findings() async {
+    try {
+      return await _platform.findings();
+    } on PlatformException catch (error) {
+      debugPrint('Protection: $error');
+      return const [];
+    } on MissingPluginException {
+      return const [];
     }
   }
 

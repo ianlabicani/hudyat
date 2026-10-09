@@ -7,7 +7,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
-import 'package:sqlite3/sqlite3.dart' show sqlite3;
 
 import 'core/app_scope.dart';
 import 'core/models/edge_ai_runtime.dart';
@@ -53,10 +52,6 @@ class _HudyatAppState extends State<HudyatApp> with WidgetsBindingObserver {
   ModelManager? _models;
   MessageChecker? _checker;
   FlaggedStore? _flagged;
-
-  /// Where the flagged messages are kept, to read them through a second
-  /// connection when the first cannot see what the phone just wrote.
-  String? _flaggedPath;
   TimedCheck? _timed;
   InboxScanner? _scanner;
   ProtectionController? _protection;
@@ -105,6 +100,7 @@ class _HudyatAppState extends State<HudyatApp> with WidgetsBindingObserver {
       await _timed?.checkNow();
       await _scanner?.catchUp();
     }
+    await _importNative();
   }
 
   Future<void> _resumeNotificationAI() async {
@@ -188,9 +184,7 @@ class _HudyatAppState extends State<HudyatApp> with WidgetsBindingObserver {
         classifier: () => models.suspiciousClassifier,
       );
       // Flagged messages live in their own file, apart from the pack.
-      final flaggedPath = p.join(support.path, 'flagged.sqlite');
-      _flaggedPath = flaggedPath;
-      final kept = sqlite3.open(flaggedPath);
+      final kept = openFlaggedDatabase(p.join(support.path, 'flagged.sqlite'));
       final flagged = FlaggedStore(kept, senders: senders);
       final scanner = InboxScanner(
         inbox: const AndroidSmsInbox(),
@@ -208,8 +202,7 @@ class _HudyatAppState extends State<HudyatApp> with WidgetsBindingObserver {
       final protection = ProtectionController(
         const AndroidProtectionPlatform(),
         onResultsChanged: () {
-          flagged.nativeResultsChanged();
-          unawaited(_resumeNotificationAI());
+          unawaited(_importNative().then((_) => _resumeNotificationAI()));
         },
       );
       _scanner = scanner;
@@ -247,9 +240,13 @@ class _HudyatAppState extends State<HudyatApp> with WidgetsBindingObserver {
   Future<void> _openShared() async {
     final shared = await _share.take();
     if (shared == null || !mounted) return;
+    // An alert carries Android's id for its finding: copy the finding in
+    // first, then look it up.
+    if (shared.resultId != null) await _importNative();
+    if (!mounted) return;
     final saved = shared.resultId == null
         ? null
-        : _savedResult(shared.resultId!);
+        : _flagged?.byNativeId(shared.resultId!);
     unawaited(
       _navigator.currentState?.push(
         MaterialPageRoute<void>(
@@ -268,30 +265,13 @@ class _HudyatAppState extends State<HudyatApp> with WidgetsBindingObserver {
     );
   }
 
-  /// The kept message an alert points to. The alert's row is written by the
-  /// Android side through its own connection, and on the phone the app's
-  /// connection has been seen to miss it, so a miss is retried on a fresh
-  /// connection before the result is called unavailable.
-  FlaggedMessage? _savedResult(int id) {
-    final flagged = _flagged;
-    final found = flagged?.byId(id);
-    final path = _flaggedPath;
-    if (found != null || flagged == null || path == null) return found;
-    final fresh = FlaggedStore.open(
-      path,
-      senders: _store?.officialSenders() ?? const [],
-    );
-    try {
-      final again = fresh.byId(id);
-      debugPrint(
-        'Hudyat: result $id is not on the app connection '
-        '(${flagged.count} kept); a fresh connection '
-        '${again == null ? 'lacks it too' : 'has it'} (${fresh.count} kept)',
-      );
-      return again;
-    } finally {
-      fresh.close();
-    }
+  /// Copies what the Android side has flagged into the app's own store.
+  /// Android keeps its findings in a separate file: the two sides use
+  /// different SQLite libraries and must never open the same one.
+  Future<void> _importNative() async {
+    final found = await _protection?.findings();
+    if (found == null || !mounted) return;
+    _flagged?.importNative(found);
   }
 
   @override

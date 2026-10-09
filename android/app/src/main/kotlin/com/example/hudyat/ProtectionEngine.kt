@@ -199,7 +199,10 @@ internal object ProtectionEngine {
         if (!InboxCheck.canReadSms(context)) return
         val pack = rules(context) ?: return
         val saved = prefs(context)
-        val mayAlert = alert && saved.getBoolean("sms_recovery_initialized", false)
+        // The first scan into an empty store only takes stock: every text
+        // already in the inbox would otherwise raise an alert at once.
+        val mayAlert = alert && saved.getBoolean("sms_recovery_initialized", false) &&
+            !ProtectionStore.smsStateEmpty(context)
         val scanAt = System.nanoTime()
         val started = System.currentTimeMillis()
         var afterId = 0L

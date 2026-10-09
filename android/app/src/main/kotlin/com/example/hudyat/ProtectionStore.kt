@@ -9,7 +9,13 @@ import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
 
-/** The same flagged.sqlite file Dart opens. Only flagged bodies enter this file. */
+/**
+ * The Android side's own file, protection.sqlite. Only flagged bodies enter
+ * it. Dart never opens this file and this code never opens Dart's
+ * flagged.sqlite: the two sides use different SQLite libraries, which cannot
+ * lock a file against each other inside one process, and sharing one file
+ * corrupted it on the phone. Dart reads these findings through [findings].
+ */
 internal object ProtectionStore {
     data class Incoming(
         val key: String,
@@ -29,7 +35,7 @@ internal object ProtectionStore {
 
     private fun database(context: Context): SQLiteDatabase {
         opened?.let { if (it.isOpen) return it }
-        val file = File(context.filesDir, "flagged.sqlite")
+        val file = File(context.filesDir, "protection.sqlite")
         val db = SQLiteDatabase.openDatabase(
             file.path,
             null,
@@ -92,6 +98,45 @@ internal object ProtectionStore {
         )
         opened = db
         return db
+    }
+
+    /** Before the first inbox scan into this file: nothing in it is "new". */
+    fun smsStateEmpty(context: Context): Boolean {
+        database(context).rawQuery("SELECT 1 FROM protection_sms LIMIT 1", null)
+            .use { return !it.moveToFirst() }
+    }
+
+    /** Every kept finding, for Dart to copy into its own store. */
+    fun findings(context: Context): List<Map<String, Any?>> {
+        val found = mutableListOf<Map<String, Any?>>()
+        database(context).rawQuery(
+            "SELECT id, text, sender, app, verdict, reasons, truncated, checked_at, " +
+                "link_count, source_key, source_type, source_package, arrived_at, " +
+                "rules_version FROM flagged WHERE source_key IS NOT NULL ORDER BY id",
+            null,
+        ).use { rows ->
+            while (rows.moveToNext()) {
+                found.add(
+                    mapOf(
+                        "id" to rows.getLong(0),
+                        "text" to rows.getString(1),
+                        "sender" to rows.getString(2),
+                        "app" to rows.getString(3),
+                        "verdict" to rows.getString(4),
+                        "reasons" to rows.getString(5),
+                        "truncated" to (rows.getInt(6) == 1),
+                        "checkedAt" to rows.getLong(7),
+                        "linkCount" to rows.getInt(8),
+                        "sourceKey" to rows.getString(9),
+                        "sourceType" to rows.getString(10),
+                        "sourcePackage" to rows.getString(11),
+                        "arrivedAt" to if (rows.isNull(12)) null else rows.getLong(12),
+                        "rulesVersion" to rows.getString(13),
+                    ),
+                )
+            }
+        }
+        return found
     }
 
     fun smsUnchanged(context: Context, id: Long, fingerprint: String, rules: String): Boolean {

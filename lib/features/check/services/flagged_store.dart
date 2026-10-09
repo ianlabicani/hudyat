@@ -1,10 +1,35 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:sqlite3/sqlite3.dart';
 
 import '../../../core/pack/scam_records.dart';
 import '../models/check_result.dart';
+
+/// Opens the flagged-messages file at [path]. A file that cannot be read is
+/// moved aside, not deleted, and a new one started: the list can be rebuilt
+/// by a scan, and the app must still open.
+Database openFlaggedDatabase(String path) {
+  Database? db;
+  try {
+    db = sqlite3.open(path);
+    final check = db.select('PRAGMA quick_check');
+    if (check.isEmpty || check.first.values.first != 'ok') {
+      throw const FormatException('flagged file failed its check');
+    }
+    return db;
+  } on Object catch (error) {
+    debugPrint('Flagged file unreadable, starting a new one: $error');
+    db?.close();
+    final stamp = DateTime.now().millisecondsSinceEpoch;
+    for (final suffix in const ['', '-wal', '-shm']) {
+      final file = File('$path$suffix');
+      if (file.existsSync()) file.renameSync('$path.damaged-$stamp$suffix');
+    }
+    return sqlite3.open(path);
+  }
+}
 
 /// A kept message with the result it was given.
 class FlaggedMessage {
@@ -98,6 +123,15 @@ CREATE TABLE IF NOT EXISTS flagged (
     }
     _db.execute('PRAGMA busy_timeout = 3000');
     _db.execute('PRAGMA journal_mode = WAL');
+    // What has been copied in from the Android side, by its source key. The
+    // tag says which version of a finding was copied, so one the user removed
+    // here is not brought back unless Android judged it anew.
+    _db.execute('''
+CREATE TABLE IF NOT EXISTS native_findings (
+  source_key TEXT PRIMARY KEY,
+  native_id INTEGER NOT NULL,
+  tag TEXT NOT NULL
+)''');
   }
 
   factory FlaggedStore.open(
@@ -290,6 +324,92 @@ CREATE TABLE IF NOT EXISTS flagged (
   /// Native writes use another SQLite connection; refresh the visible list
   /// when the platform reports a completed transaction.
   void nativeResultsChanged() => notifyListeners();
+
+  /// Copies the Android side's findings in. Android keeps them in a file of
+  /// its own, which this store never opens; they arrive as plain maps. Each
+  /// version of a finding is copied once. Returns how many were copied.
+  int importNative(List<Map<Object?, Object?>> findings) {
+    var copied = 0;
+    _db.execute('BEGIN IMMEDIATE');
+    try {
+      for (final row in findings) {
+        final key = row['sourceKey'];
+        final verdict = Verdict.values.asNameMap()[row['verdict']];
+        final reasons = row['reasons'];
+        if (key is! String || verdict == null || reasons is! String) continue;
+        final nativeId = (row['id'] as num?)?.toInt() ?? 0;
+        final rules = row['rulesVersion'] as String?;
+        final tag = '$rules|${verdict.name}|$reasons';
+        final seen = _db.select(
+          'SELECT tag FROM native_findings WHERE source_key = ?',
+          [key],
+        );
+        if (seen.isNotEmpty && seen.first['tag'] == tag) {
+          // The alert that points here carries Android's id for it.
+          _db.execute(
+            'UPDATE native_findings SET native_id = ? WHERE source_key = ?',
+            [nativeId, key],
+          );
+          continue;
+        }
+        final arrived = (row['arrivedAt'] as num?)?.toInt();
+        final checked = (row['checkedAt'] as num?)?.toInt();
+        _keepInTransaction(
+          CheckResult(
+            text: row['text'] as String? ?? '',
+            verdict: verdict,
+            reasons: [
+              for (final item in jsonDecode(reasons) as List)
+                CheckReason(
+                  (item as Map)['id'] as String,
+                  (item['facts'] as Map).cast<String, String>(),
+                ),
+            ],
+            // Android runs the rules only; the wording check comes later.
+            phrasing: PhrasingState.skipped,
+            linkCount: (row['linkCount'] as num?)?.toInt() ?? 0,
+            sender: row['sender'] as String?,
+            app: row['app'] as String?,
+            truncated: row['truncated'] == true,
+          ),
+          at: checked == null
+              ? null
+              : DateTime.fromMillisecondsSinceEpoch(checked),
+          sourceKey: key,
+          sourceType: row['sourceType'] as String?,
+          sourcePackage: row['sourcePackage'] as String?,
+          arrivedAt: arrived == null
+              ? null
+              : DateTime.fromMillisecondsSinceEpoch(arrived),
+          rulesVersion: rules,
+        );
+        _db.execute(
+          'INSERT OR REPLACE INTO native_findings (source_key, native_id, tag) '
+          'VALUES (?, ?, ?)',
+          [key, nativeId, tag],
+        );
+        copied++;
+      }
+      _db.execute('COMMIT');
+    } on Object {
+      _db.execute('ROLLBACK');
+      rethrow;
+    }
+    if (copied > 0) notifyListeners();
+    return copied;
+  }
+
+  /// The kept message for Android's finding [nativeId], which is what a scam
+  /// alert carries. Null if it was never copied in, or was removed here.
+  FlaggedMessage? byNativeId(int nativeId) {
+    final rows = _db.select(
+      'SELECT flagged.* FROM flagged JOIN native_findings '
+      'ON native_findings.source_key = flagged.source_key '
+      'WHERE native_findings.native_id = ?',
+      [nativeId],
+    );
+    return rows.isEmpty ? null : _message(rows.first);
+  }
 
   /// Drops one kept message. The text in the SMS app is untouched.
   void remove(int id) {

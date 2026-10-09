@@ -43,8 +43,6 @@ dependencies:
   flutter_edge_ai_litertlm: ^1.10.1
   flutter_edge_ai_embeddings: ^2.2.2
   maplibre_gl: ^0.27.1
-  notification_listener_service: ^1.0.0
-  flutter_local_notifications: ^22.3.1
 
 dev_dependencies:
   flutter_test:

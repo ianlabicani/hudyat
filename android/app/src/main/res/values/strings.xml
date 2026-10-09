@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_title">Hudyat · huling 7 araw</string>
+    <string name="widget_scam">Mukhang scam</string>
+    <string name="widget_caution">Mag-ingat</string>
+    <string name="widget_gambling">Sugal promo</string>
+    <string name="widget_description">Scam at sugal na text sa huling 7 araw</string>
+</resources>

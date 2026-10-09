@@ -11,12 +11,12 @@ import 'package:hudyat/features/check/models/check_result.dart';
 import 'package:hudyat/features/check/screens/check_screen.dart';
 import 'package:hudyat/features/check/screens/flagged_screen.dart';
 import 'package:hudyat/features/check/screens/result_screen.dart';
-import 'package:hudyat/features/check/screens/watcher_setup_screen.dart';
+import 'package:hudyat/features/check/screens/timed_check_screen.dart';
 import 'package:hudyat/features/check/services/flagged_store.dart';
 import 'package:hudyat/features/check/services/inbox_scanner.dart';
 import 'package:hudyat/features/check/services/scan_index.dart';
 import 'package:hudyat/features/check/services/message_checker.dart';
-import 'package:hudyat/features/check/services/message_watcher.dart';
+import 'package:hudyat/features/check/services/timed_check.dart';
 import 'package:hudyat/features/home/screens/home_screen.dart';
 import 'package:hudyat/features/location/state/location_controller.dart';
 import 'package:sqlite3/sqlite3.dart' show sqlite3;
@@ -29,11 +29,10 @@ void main() {
   late ModelManager models;
   late MessageChecker checker;
   late FlaggedStore flagged;
-  late MessageWatcher watcher;
+  late TimedCheck timed;
   late InboxScanner scanner;
   late FakeSmsInbox inbox;
-  late FakeNotificationSource notifications;
-  late FakeAlerter alerter;
+  late FakeTimedCheck phone;
 
   ModelManager manager(FakeRuntime runtime) => ModelManager(
     runtime: runtime,
@@ -64,18 +63,11 @@ void main() {
       phrases: () => models.scamPhrases,
       now: () => DateTime(2026, 10, 9, 20),
     );
-    notifications = FakeNotificationSource();
-    alerter = FakeAlerter();
-    watcher = MessageWatcher(
-      source: notifications,
-      alerter: alerter,
-      checker: checker,
-      flagged: flagged,
-      wording: store.scamReasons(),
-    );
+    phone = FakeTimedCheck();
+    timed = TimedCheck(platform: phone, inbox: inbox);
   });
   tearDown(() {
-    watcher.dispose();
+    timed.dispose();
     scanner.dispose();
     location.dispose();
     models.dispose();
@@ -95,7 +87,7 @@ void main() {
         models: models,
         checker: checker,
         flagged: flagged,
-        watcher: watcher,
+        timed: timed,
         scanner: scanner,
         child: MaterialApp(theme: hudyatTheme(), home: home),
       ),
@@ -313,159 +305,78 @@ void main() {
     });
   });
 
-  group('MessageWatcher', () {
-    IncomingNotification sms(String content, {String from = '09171234567'}) =>
-        IncomingNotification(
-          package: 'com.transsion.smartmessage',
-          title: from,
-          content: content,
-        );
-
-    test('is off until turned on, and asks for access', () async {
-      await watcher.start((_) {});
-      expect(watcher.isOn, isFalse);
-      expect(await watcher.turnOn(), isTrue);
-      expect(notifications.requests, 1);
-      expect(watcher.isOn, isTrue);
-      watcher.turnOff();
-      expect(watcher.isOn, isFalse);
+  group('TimedCheck', () {
+    test('is off until turned on, and asks for SMS access first', () async {
+      inbox.granted = false;
+      await timed.refresh();
+      expect(timed.status.on, isFalse);
+      expect(await timed.turnOn(), isTrue);
+      expect(inbox.granted, isTrue);
+      expect(phone.notificationRequests, 1);
+      expect(timed.status.on, isTrue);
+      expect(timed.status.checkedAt, isNotNull);
+      await timed.turnOff();
+      expect(timed.status.on, isFalse);
     });
 
-    test(
-      'asks to run in the background on a phone that would freeze it',
-      () async {
-        final runner = FakeBackgroundRunner();
-        final guarded = MessageWatcher(
-          source: notifications,
-          alerter: alerter,
-          checker: checker,
-          flagged: flagged,
-          wording: store.scamReasons(),
-          background: runner,
-        );
-        addTearDown(guarded.dispose);
-        expect(await guarded.turnOn(), isTrue);
-        expect(guarded.runsInBackground, isFalse);
-        expect(runner.requests, 1);
-        expect(runner.awake, isTrue);
-        runner.allowed = true;
-        await guarded.refreshBackground();
-        expect(guarded.runsInBackground, isTrue);
-        guarded.turnOff();
-        await Future<void>.delayed(Duration.zero);
-        expect(runner.awake, isFalse);
-      },
-    );
-
-    test('checks with the rules only, without waiting on the model', () async {
-      final result = await watcher.handle(sms('Ma, pauwi na ako.'));
-      expect(result?.phrasing, PhrasingState.skipped);
+    test('stays off when SMS access is refused', () async {
+      inbox
+        ..granted = false
+        ..grantsOnRequest = false;
+      expect(await timed.turnOn(), isFalse);
+      expect(phone.on, isFalse);
+      expect(phone.notificationRequests, 0);
     });
 
-    test('stays off when access is refused', () async {
-      notifications.grantsOnRequest = false;
-      expect(await watcher.turnOn(), isFalse);
-      expect(watcher.isOn, isFalse);
+    test('turns on without alerts when notifications are refused', () async {
+      expect(await timed.turnOn(), isTrue);
+      expect(timed.status.canNotify, isFalse);
     });
 
-    test('alerts for Mukhang scam with the sender and first reason', () async {
-      final result = await watcher.handle(sms(scamText));
-      expect(result?.verdict, Verdict.scam);
-      expect(result?.app, 'Messages');
-      final alert = alerter.alerts.single;
-      expect(alert.title, 'Mukhang scam ang mensahe mula kay 09171234567');
-      expect(alert.body, 'Ginagaya ng link na gcash-verify.com ang GCash.');
-      expect(flagged.byId(alert.id)?.result.sender, '09171234567');
-    });
-    test('a replay after a restart is not alerted again', () async {
-      await watcher.handle(sms(scamText));
-      final restarted = MessageWatcher(
-        source: notifications,
-        alerter: alerter,
-        checker: checker,
-        flagged: flagged,
-        wording: store.scamReasons(),
-      );
-      addTearDown(restarted.dispose);
-      await restarted.handle(
-        IncomingNotification(
-          package: 'com.transsion.smartmessage',
-          title: '09171234567',
-          content: scamText,
-          postedAt: DateTime.now().subtract(const Duration(minutes: 5)),
-        ),
-      );
-      expect(alerter.alerts, hasLength(1));
-      expect(flagged.count, 1);
+    test('says the interval in words', () {
+      expect(const TimedStatus().intervalLabel, '12 hours');
+      expect(const TimedStatus(intervalMinutes: 2).intervalLabel, '2 minutes');
+      expect(const TimedStatus(intervalMinutes: 60).intervalLabel, 'hour');
     });
 
-    test(
-      'the same text sent again later is alerted again, kept once',
-      () async {
-        await watcher.handle(sms(scamText));
-        final later = MessageWatcher(
-          source: notifications,
-          alerter: alerter,
-          checker: checker,
-          flagged: flagged,
-          wording: store.scamReasons(),
-        );
-        addTearDown(later.dispose);
-        await later.handle(
-          IncomingNotification(
-            package: 'com.transsion.smartmessage',
-            title: '09171234567',
-            content: scamText,
-            postedAt: DateTime.now().add(const Duration(seconds: 1)),
-          ),
-        );
-        expect(alerter.alerts, hasLength(2));
-        expect(flagged.count, 1);
-      },
-    );
-
-    test('keeps Mag-ingat quietly and discards the rest', () async {
-      await watcher.handle(sms('GCash: Na-hold ang iyong wallet.'));
-      await watcher.handle(sms('Ma, pauwi na ako.'));
-      expect(alerter.alerts, isEmpty);
-      expect(flagged.count, 1);
-      expect(flagged.all().single.result.verdict, Verdict.caution);
-    });
-
-    test('ignores other apps, empty text and repeats', () async {
+    test('reads the counts the phone reports', () {
+      final status = TimedStatus.fromMap(const {
+        'on': true,
+        'state': 'checked',
+        'scam': 3,
+        'caution': 1,
+        'gambling': 2,
+        'total': 124,
+        'checkedAt': 1791549600000,
+        'canNotify': true,
+        'intervalMinutes': 720,
+      });
+      expect(status.on, isTrue);
+      expect(status.hasAccess, isTrue);
+      expect((status.scam, status.caution, status.gambling), (3, 1, 2));
+      expect(status.total, 124);
+      expect(status.checkedAt, isNotNull);
       expect(
-        await watcher.handle(
-          const IncomingNotification(
-            package: 'com.facebook.katana',
-            title: 'GCash',
-            content: scamText,
-          ),
-        ),
-        isNull,
+        TimedStatus.fromMap(const {'state': 'no_access'}).hasAccess,
+        isFalse,
       );
-      expect(await watcher.handle(sms('  ')), isNull);
-      expect(await watcher.handle(sms(scamText)), isNotNull);
-      expect(await watcher.handle(sms(scamText)), isNull);
-      expect(alerter.alerts, hasLength(1));
-    });
-
-    test('marks a message the notification cut short', () async {
-      final result = await watcher.handle(sms('$scamText and then some...'));
-      expect(result?.truncated, isTrue);
-    });
-
-    test('reads the stream once on', () async {
-      await watcher.turnOn();
-      notifications.controller.add(sms(scamText));
-      await Future<void>.delayed(Duration.zero);
-      await Future<void>.delayed(Duration.zero);
-      expect(alerter.alerts, hasLength(1));
     });
   });
 
-  group('Watcher setup', () {
-    testWidgets('explains, turns on, then offers Turn off', (tester) async {
-      await pump(tester, const WatcherSetupScreen());
+  group('Automatic checking', () {
+    testWidgets('explains, turns on, shows counts, offers Turn off', (
+      tester,
+    ) async {
+      phone.found = const TimedStatus(
+        hasAccess: true,
+        scam: 3,
+        caution: 1,
+        gambling: 2,
+        total: 124,
+        canNotify: true,
+      );
+      await pump(tester, const TimedCheckScreen());
+      await tester.pumpAndSettle();
       expect(find.text('OFF'), findsOneWidget);
       expect(find.text('What Hudyat reads'), findsOneWidget);
       expect(find.text('What it keeps'), findsOneWidget);
@@ -474,21 +385,36 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('ON'), findsOneWidget);
       expect(
+        find.text('3 Mukhang scam · 1 Mag-ingat · 2 sugal promo'),
+        findsOneWidget,
+      );
+      expect(find.textContaining('124 texts checked'), findsOneWidget);
+      expect(find.text('Alerts are turned off for Hudyat'), findsNothing);
+      expect(
         find.textContaining('Turn off', findRichText: true),
         findsOneWidget,
       );
     });
 
-    testWidgets('says so when access was not granted', (tester) async {
-      notifications.grantsOnRequest = false;
-      await pump(tester, const WatcherSetupScreen());
+    testWidgets('says so when SMS access was not given', (tester) async {
+      inbox
+        ..granted = false
+        ..grantsOnRequest = false;
+      await pump(tester, const TimedCheckScreen());
+      await tester.pumpAndSettle();
       await tester.tap(find.byType(PrimaryButton));
       await tester.pumpAndSettle();
-      expect(
-        find.text('Notification access was not turned on'),
-        findsOneWidget,
-      );
+      expect(find.text('SMS access was not given'), findsOneWidget);
       expect(find.text('OFF'), findsOneWidget);
+    });
+
+    testWidgets('says so when alerts are turned off', (tester) async {
+      await pump(tester, const TimedCheckScreen());
+      await tester.pumpAndSettle();
+      await tester.tap(find.byType(PrimaryButton));
+      await tester.pumpAndSettle();
+      expect(find.text('ON'), findsOneWidget);
+      expect(find.text('Alerts are turned off for Hudyat'), findsOneWidget);
     });
   });
 

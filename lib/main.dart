@@ -19,9 +19,8 @@ import 'features/check/services/inbox_scanner.dart';
 import 'features/check/services/scan_index.dart';
 import 'features/check/services/sms_inbox.dart';
 import 'features/check/screens/check_screen.dart';
-import 'features/check/screens/result_screen.dart';
-import 'features/check/services/android_watcher.dart';
-import 'features/check/services/message_watcher.dart';
+import 'features/check/screens/flagged_screen.dart';
+import 'features/check/services/timed_check.dart';
 import 'features/check/services/message_checker.dart';
 import 'features/check/services/share_entry.dart';
 import 'features/home/screens/home_screen.dart';
@@ -46,7 +45,7 @@ class _HudyatAppState extends State<HudyatApp> with WidgetsBindingObserver {
   ModelManager? _models;
   MessageChecker? _checker;
   FlaggedStore? _flagged;
-  MessageWatcher? _watcher;
+  TimedCheck? _timed;
   InboxScanner? _scanner;
   Object? _error;
 
@@ -60,13 +59,16 @@ class _HudyatAppState extends State<HudyatApp> with WidgetsBindingObserver {
     _start();
   }
 
-  /// Back on screen: pick up texts that arrived while the phone had the app
-  /// frozen, and re-check whether it may run in the background.
+  /// Back on screen: pick up texts that arrived while the app was away.
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state != AppLifecycleState.resumed) return;
-    unawaited(_scanner?.catchUp());
-    unawaited(_watcher?.refreshBackground());
+    if (state == AppLifecycleState.resumed) unawaited(_catchUp());
+  }
+
+  /// Flags new texts, then has the widget recount.
+  Future<void> _catchUp() async {
+    await _scanner?.catchUp();
+    await _timed?.checkNow();
   }
 
   Future<void> _start() async {
@@ -102,17 +104,13 @@ class _HudyatAppState extends State<HudyatApp> with WidgetsBindingObserver {
         rules: '${store.rulesVersion()}-$checkerVersion',
         phrases: () => models.scamPhrases,
       );
-      final watcher = MessageWatcher(
-        source: const AndroidNotificationSource(),
-        alerter: LocalAlerter(),
-        background: const AndroidBackgroundRunner(),
-        checker: checker,
-        flagged: flagged,
-        wording: store.scamReasons(),
-        settingsFile: File(p.join(support.path, 'automatic-checking')),
+      final timed = TimedCheck(
+        platform: const AndroidTimedCheck(),
+        inbox: const AndroidSmsInbox(),
       );
-      unawaited(watcher.start(_openFlagged));
-      unawaited(scanner.catchUp());
+      _scanner = scanner;
+      _timed = timed;
+      unawaited(_catchUp());
       // Models load in the background; the app is usable before they do.
       unawaited(models.load());
       setState(() {
@@ -124,8 +122,6 @@ class _HudyatAppState extends State<HudyatApp> with WidgetsBindingObserver {
         _models = models;
         _checker = checker;
         _flagged = flagged;
-        _watcher = watcher;
-        _scanner = scanner;
       });
       // Text shared while the app was closed, then anything shared later.
       _share.listen(_openShared);
@@ -135,39 +131,34 @@ class _HudyatAppState extends State<HudyatApp> with WidgetsBindingObserver {
     }
   }
 
-  /// Opens the Check screen with whatever another app handed over.
+  /// Opens the Check screen with whatever another app handed over, or the
+  /// Flagged list for a tap on a scam alert or the widget.
   Future<void> _openShared() async {
     final shared = await _share.take();
     if (shared == null || !mounted) return;
+    if (shared.openFlagged) {
+      // The alert came from the timed check; this puts its text in the list.
+      await _scanner?.catchUp();
+      if (!mounted) return;
+    }
     unawaited(
       _navigator.currentState?.push(
         MaterialPageRoute<void>(
-          builder: (_) => CheckScreen(
-            initialText: shared.text,
-            sharedWithoutText: shared.text == null,
-          ),
+          builder: (_) => shared.openFlagged
+              ? const FlaggedScreen()
+              : CheckScreen(
+                  initialText: shared.text,
+                  sharedWithoutText: shared.text == null,
+                ),
         ),
       ),
     );
   }
 
-  /// Opens the result behind a tapped scam alert.
-  void _openFlagged(int id) {
-    final message = _flagged?.byId(id);
-    if (message == null) return;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _navigator.currentState?.push(
-        MaterialPageRoute<void>(
-          builder: (_) => ResultScreen(result: message.result),
-        ),
-      );
-    });
-  }
-
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    _watcher?.dispose();
+    _timed?.dispose();
     _scanner?.dispose();
     _share.dispose();
     _location?.dispose();
@@ -184,14 +175,14 @@ class _HudyatAppState extends State<HudyatApp> with WidgetsBindingObserver {
     final models = _models;
     final checker = _checker;
     final flagged = _flagged;
-    final watcher = _watcher;
+    final timed = _timed;
     final scanner = _scanner;
     if (store == null ||
         location == null ||
         models == null ||
         checker == null ||
         flagged == null ||
-        watcher == null ||
+        timed == null ||
         scanner == null) {
       return MaterialApp(
         title: 'Hudyat',
@@ -206,7 +197,7 @@ class _HudyatAppState extends State<HudyatApp> with WidgetsBindingObserver {
       models: models,
       checker: checker,
       flagged: flagged,
-      watcher: watcher,
+      timed: timed,
       scanner: scanner,
       child: MaterialApp(
         title: 'Hudyat',

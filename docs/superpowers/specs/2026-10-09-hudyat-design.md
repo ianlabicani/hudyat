@@ -301,29 +301,70 @@ when the user opens the message.
 2. The Android share sheet.
 3. "Check with Hudyat" in the text selection menu.
 
-**Automatic path.**
+**Automatic path.** A timed check of the SMS inbox, with a home screen
+widget. It does not read notifications.
 
-- **Mechanism:** Android notification access.
-- **Apps watched:** SMS apps, Messenger, Viber, WhatsApp and Telegram.
-  Every other notification is ignored.
+- **Mechanism:** an Android alarm (`setAndAllowWhileIdle`) wakes the app
+  every 12 hours, and after a restart the alarm is set again. Each
+  wake-up reads the last 7 days of texts, checks them with the rules, and
+  sets the next alarm. This is how the builder's other app, Barya,
+  delivers its reminders on the same phone. Android gives the alarm a
+  window and may stretch it while the phone is idle. A debug build uses
+  2 minutes so a wake-up can be watched; on the Infinix that alarm fires
+  at the end of its window, about 3½ minutes after it is set.
+- **Measured on the Infinix, 2026-10-09:** with Hudyat swiped away from
+  recent apps, the alarm started it and the alert arrived with nobody
+  opening the app. With Hudyat still alive but frozen in the background,
+  the phone held the alarm until the app was opened, twice, for six and
+  seven minutes. So the schedule works once the app has been closed,
+  which after 12 hours it normally has been, and not while it sits
+  frozen in recent apps. The 12-hour interval itself was not observed;
+  only the 2-minute debug cycle was.
+- **Also on open:** opening Hudyat runs the same check at once, so the
+  alert and the widget are current whenever the app is used.
+- **Runs in Kotlin:** the wake-up may find the app killed, so the job
+  does not start Flutter. `InboxCheck.kt` uses a Kotlin copy of the rules
+  (`check/Links.kt`, `check/MessageRules.kt`) and reads the lists from
+  the pack file in app storage. The Dart checker stays the source of
+  truth. A Dart test writes the Dart checker's verdict, reasons and facts
+  for 745 messages to `test/fixtures/checker_cases.json`, and a Kotlin
+  unit test must reproduce every one; the same pair runs over the private
+  inbox when it is present. The Dart test fails when the case file is out
+  of date, so a rule changed in Dart cannot be forgotten in Kotlin.
+- **What is read:** SMS only, with `READ_SMS`. A Messenger, Viber or
+  WhatsApp message is checked by sharing or pasting it.
+- **Rules only:** links, hidden links, sender and gambling. The wording
+  check needs the model and is left to the scan in the app.
 - **Opt-in:** off by default. A setup screen explains what is read and
   that nothing leaves the phone before the user turns it on.
-- **Alerts:** Hudyat posts its own notification only for "Mukhang scam".
-  It is a standard Android notification: the title names the sender, the
-  body is the first reason, and one action, "Tingnan", opens the result.
-  "Mag-ingat" results are listed quietly in the app.
-- **Storage:** only "Mukhang scam" and "Mag-ingat" messages are kept, on
-  the phone, in a list the user can clear. This holds for the manual
-  path too, with no Save button. Everything else is discarded after the
-  check.
-- **Limit:** long messages can be cut short in a notification, so the
-  check sees only what the notification shows.
+- **Alerts:** one Android notification for each new "Mukhang scam" text:
+  the title names the sender, the body is the first reason, and
+  "Tingnan" opens the Flagged list. Texts already in the inbox when the
+  check is turned on are counted but not alerted. An alert comes at
+  the next check, so up to 12 hours after the text, or at once when
+  Hudyat is opened.
+- **Widget:** three counts for the last 7 days (Mukhang scam, Mag-ingat,
+  sugal promo), how many texts were checked and when. Counts only, never
+  a message or a sender, since a home screen is visible to anyone holding
+  the phone. Tapping it opens the Flagged list. It is redrawn after every
+  scheduled check and whenever the app is opened; it does not refresh
+  by itself.
+- **Storage:** the timed check keeps the counts and the ids of texts it
+  has alerted for, nothing else. The Flagged list is filled by the
+  catch-up check that runs when the app opens, as before: only "Mukhang
+  scam" and "Mag-ingat" messages are kept, on the phone, in a list the
+  user can clear. This holds for the manual path too, with no Save
+  button. Everything else is discarded after the check.
+- **Difference from the Flagged list:** the widget counts come from the
+  rules alone, over SMS. The Flagged list can also hold texts the wording
+  check flagged and messages pasted or shared by hand.
 
 **Scan path.** "Scan my messages" checks the texts already in the SMS
 inbox.
 
 - **Permission:** `READ_SMS`, asked for only when the user starts a scan.
-  Paste, share, selection and the automatic path never need it. SMS only:
+  Paste, share and selection never need it; automatic checking asks for
+  it when turned on. SMS only:
   Android gives no access to Messenger, Viber or WhatsApp history.
 - **Range:** last 7 days, last 30 days, last 3 months, or all messages.
   The screen shows how many texts in the range are not yet checked.
@@ -349,37 +390,30 @@ inbox.
 details of whoever the message claims to be with a Call button, and the
 explanation in an `AiNote`.
 
-**Before building the automatic path:** a 20-minute throwaway test of
-notification access on the Infinix, since Android adds an "Allow
-restricted settings" step for sideloaded apps. The test passed on
-2026-10-09: access was granted, the Infinix SMS app
-(`com.transsion.smartmessage`) gives the sender as the title, text is cut
-at about 500 characters, and the same notification is posted more than
-once, so repeats are dropped. Notifications are read only while the app
-is open or in the background.
+**How the automatic path got here.** It first read message
+notifications (`notification_listener_service`) and alerted at once.
+That worked on the Infinix only while Hudyat was on screen: the phone
+freezes a backgrounded app within about ten seconds, and a frozen app is
+handed its notifications only when it is opened again. Three ways round
+this were tried on the phone on 2026-10-09 and none worked:
 
-The Infinix freezes a backgrounded app within about ten seconds, and a
-frozen app gets the notification only when it is opened again. The
-battery-optimisation exemption alone did not stop this: the phone's log
-on 2026-10-09 shows the app frozen again with the exemption in place.
-The app therefore does four things:
+- A battery-optimisation exemption. The log shows the app frozen again
+  with the exemption in place.
+- A foreground service with an ongoing notification. The service was
+  running in the foreground and the app was frozen all the same.
+- A manifest receiver for the incoming-SMS broadcast, with `RECEIVE_SMS`
+  granted. The receiver never ran, in the background or after reopening.
 
-- While automatic checking is on it runs a foreground service with an
-  ongoing "Hudyat is checking incoming messages" notification, and asks
-  for the battery exemption. Whether this keeps the Infinix from
-  freezing it is not yet confirmed on the phone.
-- Back on the Home screen sends the app to the background instead of
-  closing it, since closing it ends checking.
-- Each time the app opens or returns to the screen, and SMS access has
-  been given, it quietly checks the last 7 days of texts through the
-  scan index, so a message that arrived while it was frozen is still
-  flagged.
-- A message already in the flagged list is not alerted a second time.
+The builder's other app on the same phone delivers reminders without
+being opened, by alarm. A timed wake-up gets through where one caused by
+another app's message does not, so the automatic path was rebuilt on an
+alarm and the notification reading, its two packages and their
+permissions were removed.
 
-Background checks use the rules only, so an alert never waits on a
-model. If the test fails, the
-automatic path is dropped: Watcher setup and the alert are hidden, and
-the Flagged list holds manually checked messages only.
+Kept from the earlier attempts: Back on the Home screen sends the app to
+the background instead of closing it, and each time the app opens or
+returns to the screen it quietly checks the last 7 days of texts through
+the scan index.
 
 ## 4. Data
 
@@ -451,9 +485,9 @@ Flutter, Android first.
 | `MapView` | Offline map, markers, line and distance | `maplibre_gl` |
 | `MessageChecker` | Text and optional sender to a verdict and reason ids | `PackStore`, `IntentMatcher`'s embedder |
 | `ShareEntry` | Receive text from the share sheet and the selection menu | Android intents |
-| `MessageWatcher` | Read notifications from watched apps, run the checker, post alerts | Notification access |
+| `TimedCheck` | Turn the timed SMS check on and off, report its counts | `InboxCheck.kt`, `InboxAlarm.kt`, `ScamWidget.kt` through a method channel |
 | `FlaggedStore` | Keep and clear flagged messages | `sqlite3` |
-| UI screens | Home, Card, Map, Setup, Check, Result, Flagged list, Watcher setup | All above |
+| UI screens | Home, Card, Map, Setup, Check, Result, Flagged list, Automatic checking | All above |
 
 Backup model runner: `llamadart`.
 
@@ -472,11 +506,12 @@ Backup model runner: `llamadart`.
 
 Message check flow:
 
-1. Text arrives from paste, `ShareEntry`, or `MessageWatcher`.
+1. Text arrives from paste, `ShareEntry`, or an inbox scan.
 2. `MessageChecker` returns a verdict and reason ids.
 3. Manual path: the Result screen shows at once.
-4. Automatic path: "Mukhang scam" posts an alert and is saved;
-   "Mag-ingat" is saved quietly; anything else is discarded.
+4. Automatic path: on each alarm the Kotlin rules check the last 7 days
+   of texts, alert for a new "Mukhang scam" one and update the widget.
+   The text reaches the Flagged list when the app next opens.
 5. Opening a result runs `Explainer` for the Tagalog explanation.
 
 ### 5.2 Screens
@@ -491,15 +526,18 @@ Message check flow:
   explanation.
 - **Flagged list:** saved "Mukhang scam" and "Mag-ingat" messages, with
   Clear all.
-- **Watcher setup:** what is read, what is kept, and the switch that
-  opens Android's notification access setting.
+- **Automatic checking:** what is read, what is kept, the switch that
+  asks for SMS access, and the counts from the last check.
+- **Home screen widget:** the same counts, outside the app. Its board is
+  `Widget`.
 - **Scan:** range choice, how many texts are not yet checked, the
   optional wording pass, and a summary of the last scan. Its board is
   `Scan` in the same canvas row.
 
 These screens are on the wireframe canvas in the "Message check" row:
 `Check`, `CheckResultScam`, `CheckResultCaution`, `CheckResultClear`,
-`ScamAlert`, `Flagged` and `WatcherSetup`. Home has a "Check a message"
+`ScamAlert`, `Flagged` and `WatcherSetup` (the Automatic checking
+screen). Home has a "Check a message"
 button beside "Look up". The share sheet and the text selection menu are
 Android's own UI and have no board.
 
@@ -514,11 +552,12 @@ Android's own UI and have no board.
 | Embedding model missing | Quick buttons and keyword search still work |
 | Map file missing | Places list with distances still works |
 | Message outside all cards | Show the emergency hotline and "call this number" |
-| Notification access not granted | Manual check still works; Watcher setup shows how to grant it |
-| Phone pauses the app in the background | A foreground service and the battery exemption are used to stay awake; anything missed is flagged by a quiet catch-up check when the app is next opened |
-| SMS access not granted | Nothing is scanned; the Scan screen says how to allow it; paste, share and automatic checking still work |
-| Embedding model unavailable in the background | Link and sender checks only; phrasing check on open |
-| Message cut short in the notification | Check what is visible; the result says the message may be incomplete |
+| SMS access not given for automatic checking | It stays off and the screen says how to allow it; the widget reads "Open Hudyat to check your texts"; manual check still works |
+| Phone pauses the app in the background | While the app sits frozen in recent apps the phone holds the alarm, and the check runs when Hudyat is opened. Once the app has been closed the alarm starts it and the alert arrives unprompted |
+| Notifications not allowed for Hudyat | Texts are still checked and counted on the widget; the Automatic checking screen says alerts are off |
+| Pack not readable when the alarm fires | That run is skipped; the next alarm tries again |
+| SMS access not granted | Nothing is scanned; the Scan screen says how to allow it; paste and share still work |
+| Embedding model unavailable in the background | The timed check uses link, sender and gambling rules only; the wording check runs from a scan in the app |
 | No official sender matched | Verdict from links and phrasing only; no contact shown |
 | Shared content has no text | Check screen opens empty with a short notice |
 
@@ -582,7 +621,7 @@ submission disclosures.
 | Map | Place has no phone number | No Call button; show "No phone number listed" | Rule only |
 | Search | Results | Each row with a phone number has a Call button | `Results` |
 | Search | No results | Emergency hotline and "Tap what you need instead" | `ResultsEmpty` |
-| Check | Empty | Paste box, optional sender, Check button; links to Flagged and Watcher setup | `Check` |
+| Check | Empty | Paste box, optional sender, Check button; links to Flagged and Automatic checking | `Check` |
 | Check | Checking | Check is disabled and reads "Checking…"; the message stays visible | Rule only |
 | Check | Opened from share or selection | Paste box is prefilled; the check runs at once | Rule only |
 | Check | Shared content has no text | Empty paste box with a Notice | Rule only |
@@ -594,13 +633,18 @@ submission disclosures.
 | Result | Flagged, sender given | "Open in Messages / Buksan sa Messages" opens that sender's conversation in the SMS app, with one line saying Hudyat cannot delete texts. A snackbar if it cannot open | Rule only |
 | Result | No sender given | The Sender row reads "Not given / Hindi ibinigay" | Rule only |
 | Result | Scam phrases not ready | The Phrasing row reads "Not ready yet"; the verdict comes from links and sender | Rule only |
-| Result | Message read from a notification | `MessageQuote` says it may be cut short | `CheckResultCaution` |
 | Result | Chat model missing or slow | No `AiNote`; nothing else changes | Rule only |
-| Alert | Mukhang scam on an incoming message | Standard Android notification: sender in the title, first reason in the body, one "Tingnan" action that opens the result | `ScamAlert` |
+| Alert | A new Mukhang scam text found by the timed check | Standard Android notification: sender in the title, first reason in the body, one "Tingnan" action that opens the Flagged list | `ScamAlert` |
 | Flagged | Has messages | Grouped by verdict; each row opens its result and has a "Remove from this list" icon button; Clear all. One line says removing does not delete the text from the SMS app | `Flagged` |
-| Flagged | Empty | "No flagged messages" and a link to Watcher setup | Rule only |
-| Watcher setup | Off, access not granted | What is read, kept and sent; Notice about Android settings; Turn on | `WatcherSetup` |
-| Watcher setup | On | Badge reads ON; the button reads "Turn off"; no Notice | Rule only |
+| Flagged | Empty | "No flagged messages" and a link to Automatic checking | Rule only |
+| Automatic checking | Off | What is read, kept and sent; Notice that Android will ask for SMS access (or that it was not given); Turn on | `WatcherSetup` |
+| Automatic checking | On | Badge reads ON; a panel with the three counts, texts checked and the time; "Turn off" | `WatcherSetup` |
+| Automatic checking | On, alerts not allowed | As On, with a Notice that alerts are off and texts are still counted | Rule only |
+| Automatic checking | On, SMS access taken away | As On, with a Notice to turn it off and on again | Rule only |
+| Widget | Counts | Title "Hudyat · huling 7 araw"; three numbers with labels; "n texts checked · time" | `Widget` |
+| Widget | All zero | "Walang nakitang scam sa huling 7 araw" and the checked line | `Widget` |
+| Widget | SMS access not given | "Open Hudyat to check your texts" | `Widget` |
+| Widget | Not checked yet | "Not checked yet. Open Hudyat." | `Widget` |
 | Scan | Ready | What is read and kept; range chips; "n not yet checked in this range · Already checked: n"; wording switch; Scan | `Scan` |
 | Scan | SMS access not yet given | No pending count, since counting needs the inbox; Scan asks for access | Rule only |
 | Scan | SMS access refused | Notice with the restricted-settings hint; Scan stays available | Rule only |
@@ -639,13 +683,9 @@ submission disclosures.
 | Map | `maplibre_gl` with PMTiles |
 | Pack builder | Script on the laptop (Bun and TypeScript) |
 | Models | Gemma 3 1B, EmbeddingGemma |
-| Reading notifications | `notification_listener_service` |
+| Timed check, alert and widget | Android `AlarmManager`, `Notification` and `AppWidgetProvider` in Kotlin (`InboxAlarm.kt`, `InboxCheck.kt`, `ScamWidget.kt`). No package |
 | Reading the SMS inbox | Android's SMS content provider through a method channel (`SmsReader.kt`). No package |
-| Posting alerts | `flutter_local_notifications` |
 | Share sheet and selection menu | A small Android activity (`ShareActivity`) with `SEND` and `PROCESS_TEXT` intent filters, passing the text to the app over a method channel. No package |
-
-The three message-check packages are untested on the Infinix and on
-Android 16.
 
 Models are about 0.5–1 GB, downloaded on first run. For the demo they
 are copied to the phone over USB beforehand. The builder accepts the
@@ -668,9 +708,12 @@ Gemma terms on Hugging Face personally.
   come out as "Mukhang scam". Gambling cases cover each of the four
   rules with real promo texts, and telco, e-wallet and bank promos that
   must stay clear.
-- **Automatic path on device:** send test messages to the Infinix by SMS
-  and Messenger with airplane mode off for delivery, then confirm the
-  check itself makes no network request.
+- **Kotlin rules:** `cd android && ./gradlew :app:testDebugUnitTest`
+  replays the Dart checker's answers against the Kotlin copy.
+- **Automatic path on device:** turn it on, add the widget, press Home,
+  send a test scam text to the Infinix and leave Hudyat closed for five
+  minutes (debug build, 2-minute alarm). An alert appears and the
+  widget's count goes up; the next alarm brings no repeat alert.
 
 ## 8. Night plan
 
@@ -682,7 +725,7 @@ Build order from here:
 1. Finish the emergency card flow (`PackStore`, `Resolver`, Card screen,
    `IntentMatcher`, `Explainer`).
 2. Scam checker with paste, share and select.
-3. Automatic reading with alerts, after the notification access test.
+3. Automatic checking with alerts and the widget.
 4. Map screen.
 5. First-aid cards.
 6. Google Maps handoff.
@@ -710,8 +753,7 @@ checkpoint.
 
 - **Models:** Gemma 3 1B, EmbeddingGemma.
 - **Frameworks and libraries:** Flutter, `flutter_edge_ai`, `sqlite3`,
-  `maplibre_gl`, `notification_listener_service`,
-  `flutter_local_notifications`.
+  `maplibre_gl`.
 - **Data:** BetterGov open data, OpenStreetMap, own lists of company
   websites and scam examples.
 - **Cloud use:** first-run download of models and packs only.
@@ -730,7 +772,7 @@ checkpoint.
 | Hotline numbers may be outdated | Show the pack build date on every card |
 | First-aid text accuracy | Builder reviews each card against its cited source |
 | GPS indoors at the venue | Manual city choice |
-| Notification access blocked or awkward on Android 16 | 20-minute test first; if it fails the automatic path is dropped and the manual check stands alone |
+| The alarm is held while the app is frozen in recent apps | Measured on the Infinix: it fires once the app has been closed. The screen says an alert can come up to 12 hours after the text, or at once on opening Hudyat |
 | Embedding model killed in the background | Link and sender checks need no model |
 | A real message flagged as a scam | Tests include real agency messages; verdict wording stays cautious |
 | A scam not flagged | The app never says "safe"; say so in the pitch |

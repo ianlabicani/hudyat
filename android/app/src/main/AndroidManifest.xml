@@ -3,14 +3,10 @@
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-    <!-- Hudyat's own alert for a message checked as "Mukhang scam". -->
+    <!-- Hudyat's own alert for a text checked as "Mukhang scam". -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
-    <!-- Automatic checking: a foreground service keeps the app from being
-         frozen while it waits for messages. -->
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE"/>
-    <!-- Automatic checking: lets the app ask to stay awake in the background. -->
-    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"/>
+    <!-- The timed SMS check: set its alarm again after the phone restarts. -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
     <!-- "Scan my messages": asked for only when the user starts a scan. -->
     <uses-permission android:name="android.permission.READ_SMS"/>
     <application
@@ -59,28 +55,26 @@
                 <data android:mimeType="text/plain"/>
             </intent-filter>
         </activity>
-        <!-- Automatic checking: reads notifications from message apps once
-             the user grants notification access. Off by default. -->
-        <service
-            android:label="Hudyat message check"
-            android:name="notification.listener.service.NotificationListener"
-            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.service.notification.NotificationListenerService"/>
-            </intent-filter>
-        </service>
+        <!-- The timed SMS check. Also set again after a restart or an update. -->
         <receiver
+            android:name=".InboxAlarmReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name=".ScamWidget"
             android:exported="false"
-            android:name="com.dexterous.flutterlocalnotifications.ActionBroadcastReceiver"/>
-        <service
-            android:name=".WatchService"
-            android:exported="false"
-            android:foregroundServiceType="specialUse">
-            <property
-                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
-                android:value="Checks incoming message notifications for scams on the device, at the user's request"/>
-        </service>
+            android:label="Hudyat">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/scam_widget_info"/>
+        </receiver>
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
         <meta-data

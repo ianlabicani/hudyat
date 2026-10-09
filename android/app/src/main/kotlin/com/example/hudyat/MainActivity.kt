@@ -3,9 +3,6 @@ package com.example.hudyat
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
-import android.os.PowerManager
-import android.provider.Settings
 import android.os.Bundle
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
@@ -19,6 +16,7 @@ class MainActivity : FlutterActivity() {
 
     // The Dart call waiting on Android's SMS permission prompt.
     private var smsPermissionResult: MethodChannel.Result? = null
+    private var notificationPermissionResult: MethodChannel.Result? = null
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
@@ -35,20 +33,31 @@ class MainActivity : FlutterActivity() {
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, POWER_CHANNEL)
             .setMethodCallHandler { call, result ->
                 when (call.method) {
-                    "isExempt" -> result.success(isBatteryExempt())
-                    "requestExemption" -> result.success(requestBatteryExemption())
-                    "startWatching" -> result.success(
-                        try {
-                            startForegroundService(Intent(this, WatchService::class.java))
-                            true
-                        } catch (error: Exception) {
-                            false
-                        },
-                    )
-                    "stopWatching" -> result.success(stopService(Intent(this, WatchService::class.java)))
                     // Back on the first screen: leave the app running instead of
                     // closing it, so it can go on checking messages.
                     "toBackground" -> result.success(moveTaskToBack(true))
+                    else -> result.notImplemented()
+                }
+            }
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, TIMED_CHANNEL)
+            .setMethodCallHandler { call, result ->
+                when (call.method) {
+                    "status" -> result.success(timedStatus())
+                    "requestNotifications" -> requestNotifications(result)
+                    "turnOn" -> inBackground(result) {
+                        InboxCheck.setOn(this, true)
+                        // Texts already in the inbox are counted, not alerted.
+                        InboxCheck.run(applicationContext, alert = false)
+                        InboxAlarm.sync(this)
+                    }
+                    "turnOff" -> {
+                        InboxCheck.setOn(this, false)
+                        InboxAlarm.sync(this)
+                        result.success(timedStatus())
+                    }
+                    "checkNow" -> inBackground(result) {
+                        InboxCheck.run(applicationContext, alert = InboxCheck.isOn(this))
+                    }
                     else -> result.notImplemented()
                 }
             }
@@ -80,18 +89,37 @@ class MainActivity : FlutterActivity() {
             }
     }
 
-    // The phone freezes a backgrounded app within seconds unless it is exempt
-    // from battery optimisation, and a frozen app cannot check a message.
-    private fun isBatteryExempt(): Boolean =
-        (getSystemService(POWER_SERVICE) as PowerManager).isIgnoringBatteryOptimizations(packageName)
-
-    private fun requestBatteryExemption(): Boolean = try {
-        startActivity(
-            Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS, Uri.parse("package:$packageName")),
+    private fun timedStatus(): Map<String, Any> {
+        val counts = InboxCheck.counts(this)
+        return mapOf(
+            "on" to InboxCheck.isOn(this),
+            "state" to counts.state,
+            "scam" to counts.scam,
+            "caution" to counts.caution,
+            "gambling" to counts.gambling,
+            "total" to counts.total,
+            "checkedAt" to counts.checkedAt,
+            "canNotify" to InboxCheck.canNotify(this),
+            "intervalMinutes" to InboxAlarm.intervalMinutes(this),
         )
-        true
-    } catch (error: Exception) {
-        false
+    }
+
+    /** Runs [work] off the main thread, then answers with the new status. */
+    private fun inBackground(result: MethodChannel.Result, work: () -> Unit) {
+        Thread {
+            work()
+            runOnUiThread { result.success(timedStatus()) }
+        }.start()
+    }
+
+    private fun requestNotifications(result: MethodChannel.Result) {
+        if (InboxCheck.canNotify(this)) {
+            result.success(true)
+            return
+        }
+        notificationPermissionResult?.success(false)
+        notificationPermissionResult = result
+        requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), NOTIFY_REQUEST)
     }
 
     private fun canReadSms(): Boolean =
@@ -114,16 +142,20 @@ class MainActivity : FlutterActivity() {
         grantResults: IntArray,
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        val granted = grantResults.firstOrNull() == PackageManager.PERMISSION_GRANTED
+        if (requestCode == NOTIFY_REQUEST) {
+            notificationPermissionResult?.success(granted)
+            notificationPermissionResult = null
+        }
         if (requestCode != SMS_REQUEST) return
-        smsPermissionResult?.success(
-            grantResults.firstOrNull() == PackageManager.PERMISSION_GRANTED,
-        )
+        smsPermissionResult?.success(granted)
         smsPermissionResult = null
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         capture(intent, notify = false)
+        InboxAlarm.sync(this)
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -132,8 +164,12 @@ class MainActivity : FlutterActivity() {
     }
 
     private fun capture(intent: Intent?, notify: Boolean) {
-        if (intent?.action != ACTION_CHECK) return
-        pending = mapOf("text" to (intent.getStringExtra(EXTRA_TEXT) ?: ""))
+        pending = when (intent?.action) {
+            ACTION_CHECK -> mapOf("text" to (intent.getStringExtra(EXTRA_TEXT) ?: ""))
+            // A tap on a scam alert or on the widget.
+            ACTION_FLAGGED -> mapOf("open" to "flagged")
+            else -> return
+        }
         // So the same text is not checked again if the activity is restored.
         intent.action = Intent.ACTION_MAIN
         if (notify) channel?.invokeMethod("incoming", null)
@@ -144,6 +180,9 @@ class MainActivity : FlutterActivity() {
         const val SMS_CHANNEL = "hudyat/sms"
         const val POWER_CHANNEL = "hudyat/power"
         const val SMS_REQUEST = 4201
+        const val NOTIFY_REQUEST = 4202
+        const val TIMED_CHANNEL = "hudyat/timed"
+        const val ACTION_FLAGGED = "com.example.hudyat.OPEN_FLAGGED"
         const val ACTION_CHECK = "com.example.hudyat.CHECK_MESSAGE"
         const val EXTRA_TEXT = "com.example.hudyat.TEXT"
     }

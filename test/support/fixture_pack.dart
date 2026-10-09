@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'package:hudyat/core/geo.dart';
 import 'package:hudyat/core/models/model_runtime.dart';
 import 'package:hudyat/core/pack/pack_store.dart';
-import 'package:hudyat/features/check/services/message_watcher.dart';
+import 'package:hudyat/features/check/services/timed_check.dart';
 import 'package:hudyat/features/check/services/sms_inbox.dart';
 import 'package:hudyat/features/location/services/location_service.dart';
 import 'package:sqlite3/sqlite3.dart';
@@ -511,47 +511,55 @@ CREATE TABLE scam_reasons (
   return PackStore(db);
 }
 
-/// Notification access that is granted or refused as the test says, with a
-/// stream the test feeds.
-class FakeNotificationSource implements NotificationSource {
-  FakeNotificationSource({this.granted = false, this.grantsOnRequest = true});
+/// The Android timed check, as a phone would answer.
+class FakeTimedCheck implements TimedCheckPlatform {
+  FakeTimedCheck({this.found = const TimedStatus(hasAccess: true)});
 
-  bool granted;
-  bool grantsOnRequest;
-  int requests = 0;
-  final controller = StreamController<IncomingNotification>.broadcast();
+  /// What a run of the check reports, apart from whether it is on.
+  TimedStatus found;
+  bool on = false;
+  int notificationRequests = 0;
+  int runs = 0;
+
+  TimedStatus get _status => TimedStatus(
+    on: on,
+    hasAccess: found.hasAccess,
+    scam: found.scam,
+    caution: found.caution,
+    gambling: found.gambling,
+    total: found.total,
+    checkedAt: runs == 0 ? null : DateTime(2026, 10, 9, 20, 40),
+    canNotify: found.canNotify,
+    intervalMinutes: found.intervalMinutes,
+  );
 
   @override
-  Future<bool> isGranted() async => granted;
+  Future<TimedStatus> status() async => _status;
 
   @override
-  Future<bool> requestAccess() async {
-    requests++;
-    return granted = grantsOnRequest;
+  Future<bool> requestNotifications() async {
+    notificationRequests++;
+    return found.canNotify;
   }
 
   @override
-  Stream<IncomingNotification> get notifications => controller.stream;
-}
-
-/// Records the alerts that would have been posted.
-class FakeAlerter implements Alerter {
-  final alerts = <({int id, String title, String body})>[];
-  void Function(int flaggedId)? onOpen;
+  Future<TimedStatus> turnOn() async {
+    on = true;
+    runs++;
+    return _status;
+  }
 
   @override
-  Future<void> start(void Function(int flaggedId) onOpen) async =>
-      this.onOpen = onOpen;
+  Future<TimedStatus> turnOff() async {
+    on = false;
+    return _status;
+  }
 
   @override
-  Future<void> requestPermission() async {}
-
-  @override
-  Future<void> alert({
-    required int flaggedId,
-    required String title,
-    required String body,
-  }) async => alerts.add((id: flaggedId, title: title, body: body));
+  Future<TimedStatus> checkNow() async {
+    runs++;
+    return _status;
+  }
 }
 
 /// An SMS inbox the test fills, with access granted or refused as it says.
@@ -577,23 +585,4 @@ class FakeSmsInbox implements SmsInbox {
         if (since == null || !message.sentAt.isBefore(since)) message,
     ]..sort((a, b) => a.id.compareTo(b.id));
   }
-}
-
-/// A phone that does or does not let the app run in the background.
-class FakeBackgroundRunner implements BackgroundRunner {
-  FakeBackgroundRunner({this.allowed = false});
-
-  bool allowed;
-  int requests = 0;
-
-  @override
-  Future<bool> isAllowed() async => allowed;
-
-  @override
-  Future<void> requestAllowed() async => requests++;
-
-  bool awake = false;
-
-  @override
-  Future<void> keepAwake({required bool on}) async => awake = on;
 }

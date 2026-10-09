@@ -12,7 +12,7 @@ import 'package:hudyat/features/check/services/flagged_store.dart';
 import 'package:hudyat/features/check/services/inbox_scanner.dart';
 import 'package:hudyat/features/check/services/scan_index.dart';
 import 'package:hudyat/features/check/services/message_checker.dart';
-import 'package:hudyat/features/check/services/message_watcher.dart';
+import 'package:hudyat/features/check/services/timed_check.dart';
 import 'package:sqlite3/sqlite3.dart' show sqlite3;
 import 'package:hudyat/features/home/screens/home_screen.dart';
 import 'package:hudyat/features/location/state/location_controller.dart';
@@ -28,11 +28,10 @@ void main() {
   late ModelManager models;
   late MessageChecker checker;
   late FlaggedStore flagged;
-  late MessageWatcher watcher;
+  late TimedCheck timed;
   late InboxScanner scanner;
   late FakeSmsInbox inbox;
-  late FakeNotificationSource notifications;
-  late FakeAlerter alerter;
+  late FakeTimedCheck phone;
 
   setUp(() {
     store = fixtureStore();
@@ -59,18 +58,11 @@ void main() {
       phrases: () => models.scamPhrases,
       now: () => DateTime(2026, 10, 9, 20),
     );
-    notifications = FakeNotificationSource();
-    alerter = FakeAlerter();
-    watcher = MessageWatcher(
-      source: notifications,
-      alerter: alerter,
-      checker: checker,
-      flagged: flagged,
-      wording: store.scamReasons(),
-    );
+    phone = FakeTimedCheck();
+    timed = TimedCheck(platform: phone, inbox: inbox);
   });
   tearDown(() {
-    watcher.dispose();
+    timed.dispose();
     scanner.dispose();
     location.dispose();
     models.dispose();
@@ -91,7 +83,7 @@ void main() {
         models: models,
         checker: checker,
         flagged: flagged,
-        watcher: watcher,
+        timed: timed,
         scanner: scanner,
         child: MaterialApp(theme: hudyatTheme(), home: home),
       ),

@@ -32,6 +32,13 @@ void main() {
     expect(shared!.text, isNull);
   });
 
+  test('a tap on an alert or the widget asks for the Flagged list', () async {
+    pending = {'open': 'flagged'};
+    final shared = await ShareEntry().take();
+    expect(shared!.openFlagged, isTrue);
+    expect(shared.text, isNull);
+  });
+
   test('is null where the platform has no share channel', () async {
     messenger.setMockMethodCallHandler(channel, null);
     expect(await ShareEntry().take(), isNull);

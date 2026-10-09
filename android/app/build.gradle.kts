@@ -10,8 +10,6 @@ android {
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
-        // flutter_local_notifications needs library desugaring.
-        isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
@@ -51,5 +49,16 @@ flutter {
 }
 
 dependencies {
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
+    // MessageRulesTest runs on the laptop, where Android's own org.json is a stub.
+    testImplementation("junit:junit:4.13.2")
+    testImplementation("org.json:json:20240303")
+}
+
+// MessageRulesTest replays case files written by the Dart tests, so it must
+// run again when they change.
+tasks.withType<Test>().configureEach {
+    inputs.files(
+        rootProject.file("../test/fixtures/checker_cases.json"),
+        rootProject.file("../pack/raw/checker_cases_inbox.json"),
+    ).optional()
 }

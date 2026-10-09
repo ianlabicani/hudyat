@@ -4,7 +4,7 @@ import '../features/card/services/resolver.dart';
 import '../features/check/services/flagged_store.dart';
 import '../features/check/services/inbox_scanner.dart';
 import '../features/check/services/message_checker.dart';
-import '../features/check/services/message_watcher.dart';
+import '../features/check/services/timed_check.dart';
 import '../features/location/state/location_controller.dart';
 import 'models/model_manager.dart';
 import 'pack/pack_store.dart';
@@ -18,7 +18,7 @@ class AppScope extends InheritedWidget {
     required this.models,
     required this.checker,
     required this.flagged,
-    required this.watcher,
+    required this.timed,
     required this.scanner,
     required super.child,
     super.key,
@@ -30,7 +30,7 @@ class AppScope extends InheritedWidget {
   final ModelManager models;
   final MessageChecker checker;
   final FlaggedStore flagged;
-  final MessageWatcher watcher;
+  final TimedCheck timed;
   final InboxScanner scanner;
 
   static AppScope of(BuildContext context) =>
@@ -44,6 +44,6 @@ class AppScope extends InheritedWidget {
       models != oldWidget.models ||
       checker != oldWidget.checker ||
       flagged != oldWidget.flagged ||
-      watcher != oldWidget.watcher ||
+      timed != oldWidget.timed ||
       scanner != oldWidget.scanner;
 }

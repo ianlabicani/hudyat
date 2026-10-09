@@ -10,7 +10,7 @@ The design spec is `docs/superpowers/specs/2026-10-09-hudyat-design.md`. Read it
 
 ## Current state
 
-Built on branch `feat/mvp`, with Dart tests: the pack builder (`pack/`), `PackStore`, `Resolver`, `LocationService`, keyword search, the model layer (`ModelManager`, `IntentMatcher`, `Explainer`) and the Home, Card, city picker, Search, No match, Setup and Map screens. The message check (spec 3.4) is built: pack tables, `MessageChecker`, `ScamPhrases` (threshold 0.56, measured on the phone), `FlaggedStore`, `ShareEntry` (Android side in `ShareActivity.kt`), `MessageWatcher` with its Android bindings in `android_watcher.dart`, `InboxScanner` with `ScanIndex` and `SmsReader.kt` for scanning the SMS inbox by range, and the Check, Result, Flagged, Scan and Automatic checking screens. Raise `checkerVersion` in `message_checker.dart` when the rules change, so scanned texts are rechecked. Not built yet: the AI note on results, and first-aid cards.
+Built on branch `feat/mvp`, with Dart tests: the pack builder (`pack/`), `PackStore`, `Resolver`, `LocationService`, keyword search, the model layer (`ModelManager`, `IntentMatcher`, `Explainer`) and the Home, Card, city picker, Search, No match, Setup and Map screens. The message check (spec 3.4) is built: pack tables, `MessageChecker`, `ScamPhrases` (threshold 0.56, measured on the phone), `FlaggedStore`, `ShareEntry` (Android side in `ShareActivity.kt`), `TimedCheck` for automatic checking (an alarm-driven SMS check, alert and home screen widget, all in Kotlin: `InboxAlarm.kt`, `InboxCheck.kt`, `ScamWidget.kt`), `InboxScanner` with `ScanIndex` and `SmsReader.kt` for scanning the SMS inbox by range, and the Check, Result, Flagged, Scan and Automatic checking screens. Raise `checkerVersion` in `message_checker.dart` when the rules change, so scanned texts are rechecked. The message rules exist twice: in Dart (`message_checker.dart`, `links.dart`, `gambling.dart`, the source of truth) and as a Kotlin copy for the timed check (`android/app/src/main/kotlin/com/example/hudyat/check/`). After changing a rule or the pack's scam lists, rewrite the shared cases and bring the Kotlin copy in line (commands below). Not built yet: the AI note on results, and first-aid cards.
 
 The pack and map ship as assets (`assets/pack/`). The 53 MB map file is git-ignored; rebuild it with `bun run map` in `pack/`. The throwaway model and map test app is in `spikes/model_test/` and is excluded from analysis.
 
@@ -24,6 +24,9 @@ flutter test                                  # all tests
 flutter test test/features/screens_test.dart  # one file
 flutter test --plain-name "falls back to national"          # one test by name
 flutter build apk
+
+UPDATE_CASES=1 flutter test test/features/check/checker_cases_test.dart   # rewrite the cases the Kotlin rules must match
+cd android && ./gradlew :app:testDebugUnitTest                            # Kotlin rules against those cases
 
 cd pack && bun test                           # pack builder tests
 bun run inbox                                 # senders and links in a saved SMS inbox, if one is in pack/raw/inbox/
@@ -71,7 +74,7 @@ UI.
 
 Tests and checks.
 
-- Database tests use an in-memory SQLite database or a small fixture pack, never the real pack on a device. The one exception is `test/features/check/inbox_replay_test.dart`, which opens the built pack on the laptop and skips itself unless a private inbox file is in `pack/raw/inbox/`.
+- Database tests use an in-memory SQLite database or a small fixture pack, never the real pack on a device. The exceptions are `test/features/check/inbox_replay_test.dart`, which opens the built pack on the laptop and skips itself unless a private inbox file is in `pack/raw/inbox/`, and `checker_cases_test.dart`, which opens the built pack to write the cases for the Kotlin rules.
 - The saved SMS inbox is private. It stays in `pack/raw/` (git-ignored) and is never committed, bundled in an APK, or quoted in the repo. Only sender names, link domains and counts taken from it may be.
 - Do not weaken or delete a test to make a change pass.
 - Treat analyzer warnings and infos as failures. Format only the Dart files you touched.

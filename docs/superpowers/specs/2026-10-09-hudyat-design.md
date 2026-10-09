@@ -155,19 +155,73 @@ model.
 
 | Check | Method | Needs a model |
 |---|---|---|
-| Links | Each link's domain is compared with official websites in the pack | No |
-| Claimed sender | Agency or company names in the text are matched to the pack; the sending number is compared with the official one | No |
+| Links | Each link's domain is compared with the official domains in the pack | No |
+| Claimed sender | Agency or company names in the text are matched to the pack; the sender is checked for being an ordinary mobile number | No |
 | Phrasing | The text is embedded and compared with scam example phrases | EmbeddingGemma |
 
 - **Output:** a verdict and a list of reason ids. No free text.
 - **Verdicts:** "Mukhang scam", "Mag-ingat", "Walang nakitang problema".
   The app never says a message is safe or legitimate.
 - **Reasons:** fixed text per reason id, filled with pack data, e.g.
-  "Ang link ay hindi opisyal na website ng gobyerno" or "Hindi ito ang
-  opisyal na numero ng DSWD".
-- **If the embedding model cannot run in the background:** the automatic
-  path uses the link and sender checks only, and the phrasing check runs
-  when the user opens the message.
+  "Ang link ay hindi opisyal na website ng GCash" or "Nagpapakilalang
+  DSWD pero galing sa ordinaryong mobile number".
+
+**Link rules.**
+
+- A `.gov.ph` domain is always treated as official.
+- **Look-alike:** the domain contains an organisation's name or acronym
+  (`gcash-verify.com`, `dswd-ayuda.net`) but is not that organisation's
+  listed domain or a subdomain of it.
+- **Not theirs:** the text names an organisation and has a link that is
+  not on that organisation's domain.
+- **Shortener:** the link goes through `bit.ly` or a similar service, so
+  the destination cannot be seen.
+- A link to an ordinary site that is not in the pack gives no reason
+  when the text names no organisation.
+
+**Sender rules.**
+
+- Real messages from agencies, banks and e-wallets arrive under a sender
+  name, not the landline in the pack, so the sending number is never
+  compared with the official number.
+- The one sender reason: the text names a listed organisation and the
+  sender is an ordinary mobile number (`09…` or `+639…`).
+- A sender name such as "GCash" gives no reason either way, because
+  sender names can be faked.
+- With no sender given (paste without the optional field, share, text
+  selection) the sender check is skipped and the result says so.
+
+**Name matching.** Full name or a listed alias, as a whole word,
+ignoring case. Acronyms need three or more letters. Acronyms that are
+also ordinary words are left out. Smart, Globe, Maya and DITO count only
+when capitalised or next to a word such as "account", "load" or "SIM".
+
+**From reasons to a verdict.**
+
+| Finding | Verdict |
+|---|---|
+| A look-alike link | Mukhang scam |
+| An organisation is named and a link is not theirs | Mukhang scam |
+| Any two different reasons | Mukhang scam |
+| Exactly one of: organisation named from a mobile number, phrasing match, shortener link | Mag-ingat |
+| Nothing found | Walang nakitang problema |
+
+The phrasing check alone never gives "Mukhang scam".
+
+**Phrasing threshold.** Set from vectors exported on the Infinix for
+about 40 scam phrases and 25 ordinary messages (real one-time codes,
+delivery notices, family texts, promos). It is the lowest score at which
+no ordinary message is flagged. The check stays in as a second signal
+even if it then catches under half of the scam phrases.
+
+**Preparation.** Scam phrases are embedded after the intent phrases, as
+a separate step, so "Find help" is not delayed. Until they are ready the
+checker runs the link and sender checks, and the result says the
+phrasing check is not ready.
+
+**If the embedding model cannot run in the background:** the automatic
+path uses the link and sender checks only, and the phrasing check runs
+when the user opens the message.
 
 **Stage 2: explanation.** Runs only when the user opens a result.
 
@@ -176,6 +230,9 @@ model.
   from the reasons and the pack facts.
 - **Rules and failure handling:** as in 3.2. The verdict and reasons do
   not depend on it.
+- **Cut rule:** the prompt gets 30 minutes of work. If the Tagalog is
+  still poor on the phone, results show no `AiNote`; the fixed reasons
+  already explain the verdict.
 
 **Manual path.** Three ways in:
 
@@ -191,9 +248,13 @@ model.
 - **Opt-in:** off by default. A setup screen explains what is read and
   that nothing leaves the phone before the user turns it on.
 - **Alerts:** Hudyat posts its own notification only for "Mukhang scam".
+  It is a standard Android notification: the title names the sender, the
+  body is the first reason, and one action, "Tingnan", opens the result.
   "Mag-ingat" results are listed quietly in the app.
-- **Storage:** only flagged messages are kept, on the phone, in a list
-  the user can clear. Everything else is discarded after the check.
+- **Storage:** only "Mukhang scam" and "Mag-ingat" messages are kept, on
+  the phone, in a list the user can clear. This holds for the manual
+  path too, with no Save button. Everything else is discarded after the
+  check.
 - **Limit:** long messages can be cut short in a notification, so the
   check sees only what the notification shows.
 
@@ -203,7 +264,9 @@ explanation in an `AiNote`.
 
 **Before building the automatic path:** a 20-minute throwaway test of
 notification access on the Infinix, since Android adds an "Allow
-restricted settings" step for sideloaded apps.
+restricted settings" step for sideloaded apps. If the test fails, the
+automatic path is dropped: Watcher setup and the alert are hidden, and
+the Flagged list holds manually checked messages only.
 
 ## 4. Data
 
@@ -237,7 +300,7 @@ One SQLite file per pack, built on the laptop by a script.
 | `records_fts` | FTS5 keyword index over `records` |
 | `intents` | Intent id, label, example phrases, linked record kinds |
 | `first_aid_cards` | Title, steps, source name, source link, example phrases |
-| `official_senders` | Name, aliases, kind (agency or company), official domains, official numbers |
+| `official_senders` | Name, aliases, kind (agency or company), official domains, contact numbers to show, source URL |
 | `scam_examples` | Example phrasing, scam type |
 | `scam_reasons` | Reason id, fixed Tagalog text with placeholders |
 
@@ -408,9 +471,11 @@ submission disclosures.
 | Result | Mag-ingat | Outlined verdict, reasons, real contact with Call, `AiNote` | `CheckResultCaution` |
 | Result | Walang nakitang problema | Dashed verdict, "Hindi ito garantiya" Notice, list of checks run | `CheckResultClear` |
 | Result | No official sender matched | No contact section; one line says why | `CheckResultClear` |
+| Result | No sender given | The Sender row reads "Not given / Hindi ibinigay" | Rule only |
+| Result | Scam phrases not ready | The Phrasing row reads "Not ready yet"; the verdict comes from links and sender | Rule only |
 | Result | Message read from a notification | `MessageQuote` says it may be cut short | `CheckResultCaution` |
 | Result | Chat model missing or slow | No `AiNote`; nothing else changes | Rule only |
-| Alert | Mukhang scam on an incoming message | Hudyat notification with the first reason; "Tingnan" opens the result | `ScamAlert` |
+| Alert | Mukhang scam on an incoming message | Standard Android notification: sender in the title, first reason in the body, one "Tingnan" action that opens the result | `ScamAlert` |
 | Flagged | Has messages | Grouped by verdict; each row opens its result; Clear all | `Flagged` |
 | Flagged | Empty | "No flagged messages" and a link to Watcher setup | Rule only |
 | Watcher setup | Off, access not granted | What is read, kept and sent; Notice about Android settings; Turn on | `WatcherSetup` |
@@ -533,7 +598,7 @@ checkpoint.
 | Hotline numbers may be outdated | Show the pack build date on every card |
 | First-aid text accuracy | Builder reviews each card against its cited source |
 | GPS indoors at the venue | Manual city choice |
-| Notification access blocked or awkward on Android 16 | 20-minute test first; manual check is the fallback |
+| Notification access blocked or awkward on Android 16 | 20-minute test first; if it fails the automatic path is dropped and the manual check stands alone |
 | Embedding model killed in the background | Link and sender checks need no model |
 | A real message flagged as a scam | Tests include real agency messages; verdict wording stays cautious |
 | A scam not flagged | The app never says "safe"; say so in the pitch |

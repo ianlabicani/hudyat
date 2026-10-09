@@ -14,6 +14,15 @@ The user types what happened in Taglish. On-device AI decides what they
 need and shows a card: who to call, the nearest place to go, and a fixed
 first-aid card when one applies.
 
+It also checks messages for scams on the phone. Fake relief and "ayuda"
+texts follow disasters, and Hudyat already holds the official agencies,
+numbers and websites to compare them with.
+
+Product line:
+
+> Hudyat is the official information you can trust when you can't get
+> online: who to call, where to go, and whether a message is real.
+
 It is the offline counterpart to Kuya J (chat.bettergov.ph), which needs
 an internet connection. Hudyat is independent of BetterGov and claims no
 affiliation.
@@ -32,6 +41,9 @@ affiliation.
 3. Every phone number, address and first-aid step shown is copied from
    the pack, never generated.
 4. Submitted by 9:30 AM with a demo video, public repo and disclosures.
+5. With airplane mode on, a scam message arriving on the Infinix raises
+   a Hudyat alert with reasons taken from pack data.
+6. No message text leaves the phone, and only flagged messages are kept.
 
 ## 2. Scope
 
@@ -44,6 +56,7 @@ affiliation.
 | Everyday lookup | National agencies, LGU officials and contacts, hotlines, services list |
 | Map | Offline map of Metro Manila with a line and distance to a place |
 | Packs | One downloadable data file per area; Metro Manila is the first |
+| Message check | Scam check by paste, share or text selection, plus automatic checking of incoming messages with alerts |
 
 - Lookup data (hotlines, agencies, LGU contacts) is nationwide.
 - Places and the map are Metro Manila only.
@@ -52,13 +65,19 @@ affiliation.
 
 ### Stretch, in build order
 
-1. Road path drawn on the map (own shortest path over OpenStreetMap roads).
-2. Button that hands off to Google Maps when installed.
-3. Bills in Congress, search by title or topic only.
-4. iPad Air M3 build.
+1. Button that hands off to Google Maps when installed.
+2. Rescue report: the chat model turns the user's message into a short
+   structured report (who, where with coordinates, how many people,
+   injuries, what is needed) that the user edits and sends by SMS.
+3. Road path drawn on the map (own shortest path over OpenStreetMap roads).
+4. Bills in Congress, search by title or topic only.
+5. iPad Air M3 build, without automatic message checking.
 
 ### Out of scope
 
+- Automatic message checking on iOS, which the platform does not allow.
+- Telling the user a message is safe or legitimate.
+- Blocking, deleting or replying to messages.
 - Medical advice beyond the fixed cards.
 - Budget, laws and statistics.
 - Spoken turn-by-turn directions.
@@ -126,6 +145,65 @@ product work.
 - **If the Flutter package fails but the phone is capable:** switch the
   model layer to native Kotlin.
 
+### 3.4 Message check (scam)
+
+One checker serves both the manual and the automatic path.
+
+**Stage 1: instant check.** Runs on every message, without the chat
+model.
+
+| Check | Method | Needs a model |
+|---|---|---|
+| Links | Each link's domain is compared with official websites in the pack | No |
+| Claimed sender | Agency or company names in the text are matched to the pack; the sending number is compared with the official one | No |
+| Phrasing | The text is embedded and compared with scam example phrases | EmbeddingGemma |
+
+- **Output:** a verdict and a list of reason ids. No free text.
+- **Verdicts:** "Mukhang scam", "Mag-ingat", "Walang nakitang problema".
+  The app never says a message is safe or legitimate.
+- **Reasons:** fixed text per reason id, filled with pack data, e.g.
+  "Ang link ay hindi opisyal na website ng gobyerno" or "Hindi ito ang
+  opisyal na numero ng DSWD".
+- **If the embedding model cannot run in the background:** the automatic
+  path uses the link and sender checks only, and the phrasing check runs
+  when the user opens the message.
+
+**Stage 2: explanation.** Runs only when the user opens a result.
+
+- **Model:** Gemma 3 1B.
+- **Job:** one or two Tagalog sentences explaining the verdict, written
+  from the reasons and the pack facts.
+- **Rules and failure handling:** as in 3.2. The verdict and reasons do
+  not depend on it.
+
+**Manual path.** Three ways in:
+
+1. Paste into the Check screen.
+2. The Android share sheet.
+3. "Check with Hudyat" in the text selection menu.
+
+**Automatic path.**
+
+- **Mechanism:** Android notification access.
+- **Apps watched:** SMS apps, Messenger, Viber, WhatsApp and Telegram.
+  Every other notification is ignored.
+- **Opt-in:** off by default. A setup screen explains what is read and
+  that nothing leaves the phone before the user turns it on.
+- **Alerts:** Hudyat posts its own notification only for "Mukhang scam".
+  "Mag-ingat" results are listed quietly in the app.
+- **Storage:** only flagged messages are kept, on the phone, in a list
+  the user can clear. Everything else is discarded after the check.
+- **Limit:** long messages can be cut short in a notification, so the
+  check sees only what the notification shows.
+
+**What a result shows:** the verdict, the reasons, the real contact
+details of whoever the message claims to be with a Call button, and the
+explanation in an `AiNote`.
+
+**Before building the automatic path:** a 20-minute throwaway test of
+notification access on the Infinix, since Android adds an "Allow
+restricted settings" step for sideloaded apps.
+
 ## 4. Data
 
 ### 4.1 Sources
@@ -136,6 +214,12 @@ product work.
 | `bettergovph/hotlines` | Emergency hotlines by city and category | None listed |
 | OpenStreetMap | Hospitals, clinics, pharmacies, police, fire, shelters, roads, map tiles | ODbL, attribution required |
 | DOH, Red Cross, WHO guidance | Text of first-aid cards | Cited per card |
+| `bettergovph/bettergov` websites list | Official websites, emails and contacts of 723 agencies, for the message check | CC0 |
+| Hand-made company list | About 15 commonly impersonated companies (e-wallets, banks, couriers, telcos) with official websites, each verified when added | Own work |
+| Hand-written scam examples | About 40 Taglish scam phrasings (locked e-wallet, fake ayuda, parcel fees, job offers, loans, prizes) | Own work |
+
+BetterGov's own ScamCheck is an online service calling a cloud-hosted
+model, so nothing from it is reused.
 
 Metro Manila counts in OpenStreetMap, checked 2026-10-09: 233 hospitals,
 893 clinics and doctors, 1,598 pharmacies, 605 police and fire stations,
@@ -152,6 +236,12 @@ One SQLite file per pack, built on the laptop by a script.
 | `records_fts` | FTS5 keyword index over `records` |
 | `intents` | Intent id, label, example phrases, linked record kinds |
 | `first_aid_cards` | Title, steps, source name, source link, example phrases |
+| `official_senders` | Name, aliases, kind (agency or company), official domains, official numbers |
+| `scam_examples` | Example phrasing, scam type |
+| `scam_reasons` | Reason id, fixed Tagalog text with placeholders |
+
+Flagged messages are stored in a separate SQLite file in app storage,
+never in the pack.
 
 `records` columns: `id`, `kind`, `name`, `category`, `region`,
 `province`, `city`, `phones`, `address`, `lat`, `lon`, `url`, `source`.
@@ -160,8 +250,8 @@ The map is a separate PMTiles file for Metro Manila.
 
 ### 4.3 Where embeddings are computed
 
-Only intent and first-aid example phrases are embedded, a few hundred
-vectors. They are computed on the phone at first launch and cached, so
+Only intent, first-aid and scam example phrases are embedded, a few
+hundred vectors. They are computed on the phone at first launch and cached, so
 they always match the on-device model. Records are found by intent,
 location and keyword search, not by embeddings.
 
@@ -181,7 +271,11 @@ Flutter, Android first.
 | `Resolver` | Intent plus location to a `Card` | `PackStore` |
 | `Explainer` | Stream the Taglish sentences for a `Card` | `ModelManager` |
 | `MapView` | Offline map, markers, line and distance | `maplibre_gl` |
-| UI screens | Home, Card, Map, Setup | All above |
+| `MessageChecker` | Text and optional sender to a verdict and reason ids | `PackStore`, `IntentMatcher`'s embedder |
+| `ShareEntry` | Receive text from the share sheet and the selection menu | Android intents |
+| `MessageWatcher` | Read notifications from watched apps, run the checker, post alerts | Notification access |
+| `FlaggedStore` | Keep and clear flagged messages | `sqlite3` |
+| UI screens | Home, Card, Map, Setup, Check, Result, Flagged list, Watcher setup | All above |
 
 Backup model runner: `llamadart`.
 
@@ -198,6 +292,15 @@ Backup model runner: `llamadart`.
 6. `Explainer` streams its sentences under the card.
 7. Tapping a place opens the Map screen with a line and distance.
 
+Message check flow:
+
+1. Text arrives from paste, `ShareEntry`, or `MessageWatcher`.
+2. `MessageChecker` returns a verdict and reason ids.
+3. Manual path: the Result screen shows at once.
+4. Automatic path: "Mukhang scam" posts an alert and is saved;
+   "Mag-ingat" is saved quietly; anything else is discarded.
+5. Opening a result runs `Explainer` for the Tagalog explanation.
+
 ### 5.2 Screens
 
 - **Setup:** first run. Downloads models and the pack while online.
@@ -205,6 +308,16 @@ Backup model runner: `llamadart`.
 - **Card:** hotlines with tap-to-call, places list, first-aid card, AI
   sentences, source credits.
 - **Map:** offline map, user position, place markers, line and distance.
+- **Check:** paste box and a Check button.
+- **Result:** verdict, reasons, official contact with Call, AI
+  explanation.
+- **Flagged list:** saved "Mukhang scam" and "Mag-ingat" messages, with
+  Clear all.
+- **Watcher setup:** what is read, what is kept, and the switch that
+  opens Android's notification access setting.
+
+These four screens are not in the wireframe canvas yet. Under the rule in
+5.4, add them to the canvas and the states table before building them.
 
 ### 5.3 Error handling
 
@@ -217,6 +330,11 @@ Backup model runner: `llamadart`.
 | Embedding model missing | Quick buttons and keyword search still work |
 | Map file missing | Places list with distances still works |
 | Message outside all cards | Show the emergency hotline and "call this number" |
+| Notification access not granted | Manual check still works; Watcher setup shows how to grant it |
+| Embedding model unavailable in the background | Link and sender checks only; phrasing check on open |
+| Message cut short in the notification | Check what is visible; the result says the message may be incomplete |
+| No official sender matched | Verdict from links and phrasing only; no contact shown |
+| Shared content has no text | Check screen opens empty with a short notice |
 
 ### 5.4 UI contract
 
@@ -298,6 +416,12 @@ submission disclosures.
 | Map | `maplibre_gl` with PMTiles |
 | Pack builder | Script on the laptop (Bun and TypeScript) |
 | Models | Gemma 3 1B, EmbeddingGemma |
+| Reading notifications | `notification_listener_service` |
+| Posting alerts | `flutter_local_notifications` |
+| Share sheet and selection menu | `receive_sharing_intent`, plus an Android `PROCESS_TEXT` intent filter |
+
+The three message-check packages are untested on the Infinix and on
+Android 16.
 
 Models are about 0.5–1 GB, downloaded on first run. For the demo they
 are copied to the phone over USB beforehand. The builder accepts the
@@ -314,23 +438,38 @@ Gemma terms on Hugging Face personally.
   a regression list and extended to cover every intent.
 - **On device:** a manual pass of every row in the error table with
   airplane mode on.
+- **MessageChecker:** unit tests with a fixture pack and a written list
+  of scam and ordinary messages, covering each check, each verdict and
+  the no-model fallback. Ordinary messages from real agencies must not
+  come out as "Mukhang scam".
+- **Automatic path on device:** send test messages to the Infinix by SMS
+  and Messenger with airplane mode off for delivery, then confirm the
+  check itself makes no network request.
 
 ## 8. Night plan
 
-1. Hour-one model test on the Infinix.
-2. Offline map file test on the Infinix.
-3. Pack builder and Metro Manila pack.
-4. `PackStore`, `Resolver`, Card screen.
-5. `IntentMatcher`, then `Explainer`.
-6. Map screen.
-7. First-aid cards.
-8. Stretch items in order.
+Done or in progress as of 5:10 PM on 2026-10-09: the hour-one test app,
+the pack builder and the Metro Manila pack.
 
-### Cut order if time runs short
+Build order from here:
 
-iPad build, then bills, then the Google Maps handoff, then the road
-path, then first-aid cards, then the map. Hotlines and nearest-facility
-lists are cut last.
+1. Finish the emergency card flow (`PackStore`, `Resolver`, Card screen,
+   `IntentMatcher`, `Explainer`).
+2. Scam checker with paste, share and select.
+3. Automatic reading with alerts, after the notification access test.
+4. Map screen.
+5. First-aid cards.
+6. Google Maps handoff.
+7. Rescue report.
+8. Road path.
+9. Bills search.
+10. iPad build.
+
+### If time runs short
+
+Everything above stays on the list. Cuts are taken from the bottom of
+the build order, and the builder decides when. There is no fixed
+checkpoint.
 
 ### Morning timeline
 
@@ -345,8 +484,10 @@ lists are cut last.
 
 - **Models:** Gemma 3 1B, EmbeddingGemma.
 - **Frameworks and libraries:** Flutter, `flutter_edge_ai`, `sqlite3`,
-  `maplibre_gl`.
-- **Data:** BetterGov open data, OpenStreetMap.
+  `maplibre_gl`, `notification_listener_service`,
+  `flutter_local_notifications`, `receive_sharing_intent`.
+- **Data:** BetterGov open data, OpenStreetMap, own lists of company
+  websites and scam examples.
 - **Cloud use:** first-run download of models and packs only.
 - **AI development tools:** Claude Code.
 - **Existing code:** none; built during the hackathon.
@@ -363,6 +504,11 @@ lists are cut last.
 | Hotline numbers may be outdated | Show the pack build date on every card |
 | First-aid text accuracy | Builder reviews each card against its cited source |
 | GPS indoors at the venue | Manual city choice |
+| Notification access blocked or awkward on Android 16 | 20-minute test first; manual check is the fallback |
+| Embedding model killed in the background | Link and sender checks need no model |
+| A real message flagged as a scam | Tests include real agency messages; verdict wording stays cautious |
+| A scam not flagged | The app never says "safe"; say so in the pitch |
+| Scope is larger than one night | Fixed build order; cuts come from the bottom |
 
 ## 11. Parked
 

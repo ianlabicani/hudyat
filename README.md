@@ -159,7 +159,7 @@ Open Font License. The licence texts are in `assets/fonts/`.
 The scheduled-alarm approach and the coding conventions follow the
 builder's earlier apps, Barya and AfterYou.
 
-**AI development tools.** Claude Code and Devin.
+**AI development tools.** Claude Code, Devin and Codex.
 
 **Affiliation.** Hudyat is independent. It uses BetterGov's open data
 with credit and is not endorsed by BetterGov or any agency.
@@ -246,6 +246,11 @@ the Kotlin tests:
 ```sh
 UPDATE_CASES=1 flutter test test/features/check/checker_cases_test.dart
 ```
+
+## Licence
+
+The code is under the [MIT License](LICENSE). The data, map, models and
+fonts keep their own licences, listed under Disclosures.
 
 ## More detail
 

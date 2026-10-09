@@ -35,7 +35,7 @@ class NoMatchScreen extends StatelessWidget {
               header: true,
               child: Text(
                 'We could not match this to a help card.',
-                style: HudyatText.title.copyWith(fontSize: 26, height: 1.2),
+                style: HudyatText.title.copyWith(fontSize: 24, height: 1.2),
               ),
             ),
             const SizedBox(height: 20),

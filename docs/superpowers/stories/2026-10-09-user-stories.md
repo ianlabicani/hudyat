@@ -58,7 +58,7 @@ calls. Her apo set the phone up.
 3. A notification appears. The title names the sender; the body is the
    first reason, in Tagalog: the link imitates GCash but is not its
    official website.
-4. She taps "View result" and the saved result opens. It reads
+4. She taps "Tingnan" and the saved result opens. It reads
    "Mukhang scam", with each reason in plain English and the real GCash
    contact with a Call button.
 5. She calls the real number or shows her apo. She does not tap the

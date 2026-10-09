@@ -438,12 +438,12 @@ class _Counts extends StatelessWidget {
           else ...[
             Text(
               '${status.scam} Mukhang scam · ${status.caution} Mag-ingat · '
-              '${status.gambling} sugal promo',
+              '${status.gambling} Sugal promo',
               style: HudyatText.body,
             ),
             Text(
               '${status.total} texts checked · last at '
-              '${_two(at.hour)}:${_two(at.minute)}',
+              '${TimeOfDay.fromDateTime(at).format(context)}',
               style: HudyatText.data,
             ),
           ],

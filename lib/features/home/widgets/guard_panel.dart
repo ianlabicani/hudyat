@@ -67,9 +67,9 @@ class GuardPanel extends StatelessWidget {
                 _Count(status.gambling, 'Sugal promo', HudyatColors.ink),
               ],
             ),
-            Text(_checkedLine(status), style: HudyatText.data),
+            Text(_checkedLine(context, status), style: HudyatText.data),
             SecondaryButton(
-              label: 'See flagged messages',
+              label: 'Flagged messages',
               onPressed: onOpenFlagged,
             ),
           ] else ...[
@@ -79,7 +79,7 @@ class GuardPanel extends StatelessWidget {
               style: HudyatText.secondary,
             ),
             SecondaryButton(
-              label: 'See flagged messages',
+              label: 'Flagged messages',
               onPressed: onOpenFlagged,
             ),
           ],
@@ -89,13 +89,13 @@ class GuardPanel extends StatelessWidget {
     );
   }
 
-  static String _checkedLine(TimedStatus status) {
+  /// The time follows the phone's 12 or 24-hour setting, as the widget does.
+  static String _checkedLine(BuildContext context, TimedStatus status) {
     final at = status.checkedAt;
     if (at == null) return 'Last 7 days · not checked yet';
-    final hour = at.hour.toString().padLeft(2, '0');
-    final minute = at.minute.toString().padLeft(2, '0');
+    final time = TimeOfDay.fromDateTime(at).format(context);
     final texts = status.total == 1 ? '1 text' : '${status.total} texts';
-    return 'Last 7 days · $texts checked · $hour:$minute';
+    return 'Last 7 days · $texts checked · $time';
   }
 }
 

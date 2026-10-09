@@ -162,7 +162,7 @@ class _SearchScreenState extends State<SearchScreen> {
       header: true,
       child: Text(
         'No results for "$query"',
-        style: HudyatText.title.copyWith(fontSize: 26, height: 1.2),
+        style: HudyatText.title.copyWith(fontSize: 24, height: 1.2),
       ),
     ),
     const SizedBox(height: 6),

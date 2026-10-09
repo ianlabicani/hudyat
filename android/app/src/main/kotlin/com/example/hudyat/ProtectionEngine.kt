@@ -297,7 +297,7 @@ internal object ProtectionEngine {
             .setStyle(Notification.BigTextStyle().bigText(reason))
             .setCategory(Notification.CATEGORY_MESSAGE)
             .setContentIntent(open)
-            .addAction(Notification.Action.Builder(null, "View result", open).build())
+            .addAction(Notification.Action.Builder(null, "Tingnan", open).build())
             .setAutoCancel(true)
             .build()
         manager(context).notify(id.toInt(), notification)

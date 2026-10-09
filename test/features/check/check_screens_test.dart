@@ -505,7 +505,7 @@ void main() {
       expect(find.textContaining('Android may delay them.'), findsOneWidget);
       expect(find.textContaining('up to 12 hours'), findsNothing);
       expect(
-        find.text('3 Mukhang scam · 1 Mag-ingat · 2 sugal promo'),
+        find.text('3 Mukhang scam · 1 Mag-ingat · 2 Sugal promo'),
         findsOneWidget,
       );
       expect(find.textContaining('124 texts checked'), findsOneWidget);

@@ -540,10 +540,10 @@ void main() {
       expect(find.text('Mag-ingat'), findsOneWidget);
       expect(find.text('Sugal promo'), findsOneWidget);
       expect(
-        find.text('Last 7 days · 124 texts checked · 20:40'),
+        find.text('Last 7 days · 124 texts checked · 8:40 PM'),
         findsOneWidget,
       );
-      await tester.tap(find.text('See flagged messages'));
+      await tester.tap(find.text('Flagged messages'));
       await tester.pumpAndSettle();
       expect(find.text('No flagged messages'), findsOneWidget);
     });

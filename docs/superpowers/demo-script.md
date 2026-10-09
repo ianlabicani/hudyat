@@ -105,7 +105,7 @@ The scam text to send from the second phone:
 | 2 | SMS app, the scam text arriving | Send the text from the second phone | "A text says her GCash is locked, with a link to fix it." |
 | 3 | Recent apps | Swipe Hudyat away, then turn airplane mode on | "Hudyat is closed. The phone is offline." |
 | 4 | The notification arriving within seconds | None | "Nobody opened the app. Hudyat checks the text the moment it arrives, with rules kept on the phone. The warning names the sender and gives the reason." |
-| 5 | The saved result | Tap "View result" | "Mukhang scam. The link is broken up to get past filters, and it is not GCash's website." |
+| 5 | The saved result | Tap "Tingnan" | "Mukhang scam. The link is broken up to get past filters, and it is not GCash's website." |
 | 6 | The contact section with the Call button | Scroll to it | "This is GCash's real contact, from data on the phone. Not from the AI." |
 | 7 | Home screen widget, count gone up, then Hudyat's Home with the "Message guard" panel | Press Home, then open Hudyat | "The widget and the app show counts only. Never a message, never a sender." |
 

@@ -378,7 +378,7 @@ widget. It does not read notifications.
   that nothing leaves the phone before the user turns it on.
 - **Alerts:** one Android notification for each new "Mukhang scam" text:
   the title names the sender, the body is the first reason, and
-  "View result" opens that message's saved result. Texts already in the inbox when the
+  "Tingnan" opens that message's saved result. Texts already in the inbox when the
   check is turned on are counted but not alerted. An alert comes at
   the next check. Checks are scheduled about every 12 hours. Android may
   delay them. Opening Hudyat also checks recent texts.
@@ -670,7 +670,7 @@ submission disclosures.
 | Home | Understood while typing | After a pause in typing, with three words or more, a strip under the box reads "Understood: [intent label]", the first-aid card's title when one matched, and "AI on this phone" with the measured time. Tapping it opens the card. "Find help" reuses the answer | `Main` |
 | Home | Typed message is not an emergency | The strip reads "Will search the directory" and opens keyword search | Rule only |
 | Home | Guard off | "Message guard" panel tagged OFF, one sentence and "Turn on", which opens Automatic checking | `Main` |
-| Home | Guard on | The panel is tagged ON with the widget's three counts, "Last 7 days · n texts checked · time" and "See flagged messages". Counts only, never a message or a sender | `Main` |
+| Home | Guard on | The panel is tagged ON with the widget's three counts, "Last 7 days · n texts checked · time" and "Flagged messages". Counts only, never a message or a sender | `Main` |
 | Home | Guard on, SMS access not given | The panel says Hudyat cannot read texts and offers "Open automatic checking" | Rule only |
 | Card | GPS fix | Hotlines, nearest places with distances | `Card`, `CardFirstAid` |
 | Card | No GPS fix | "chosen manually"; distances hidden; "Try GPS again" | `CardNoGps`, `PickCity` |
@@ -697,7 +697,7 @@ submission disclosures.
 | Result | Scam phrases not ready | The Phrasing row reads "Not ready yet"; the verdict comes from links and sender | Rule only |
 | Result | Chat model missing or slow | No `AiNote`; nothing else changes | Rule only |
 | Result | Note names a number or link that is not in the reasons, or calls the message safe | The `AiNote` is dropped; nothing else changes | Rule only |
-| Alert | A new Mukhang scam text found by the timed check | Standard Android notification: sender in the title, first reason in the body, one "View result" action that opens that message's saved result | `ScamAlert` |
+| Alert | A new Mukhang scam text found by the timed check | Standard Android notification: sender in the title, first reason in the body, one "Tingnan" action that opens that message's saved result | `ScamAlert` |
 | Flagged | Has messages | "n messages kept · m senders" and Clear all, then one row per sender (sender and app together; texts with no sender share "Sender not given"): the worst verdict's tag, the sender, counts per kind ("Mukhang scam", "Mag-ingat", and "Sugal promo" for texts whose only reason is a gambling promo), the newest text on one line and the total. Senders with a "Mukhang scam" text come first, then the newest. A row opens that sender's messages. One line says clearing does not delete anything from the SMS app | `Flagged` |
 | Flagged sender | Has messages | The sender in the top bar and "n messages kept", then three groups, each with its count: "Mukhang scam", "Mag-ingat" and "Sugal promo"; each row opens its result and has a "Remove from this list" icon button. Removing the last one returns to the Flagged list. One line says removing does not delete the text from the SMS app | `Flagged` |
 | Flagged | Empty | "No flagged messages" and a link to Automatic checking | Rule only |

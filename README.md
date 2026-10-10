@@ -12,6 +12,7 @@ emergency, and warn you when a message looks like a scam.
 - **Test phone:** Infinix X6876 (Dimensity 7400, 8 GB RAM), Android 16
 - **Demo video:** [YouTube](https://youtu.be/9C22Za7qfuY) ·
   [LinkedIn post](https://lnkd.in/p/g9Qu9EmB)
+- **Promotional video:** [YouTube Shorts](https://www.youtube.com/shorts/iGo4yqNbMuU)
 
 ## What it does
 

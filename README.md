@@ -10,7 +10,8 @@ emergency, and warn you when a message looks like a scam.
 - **Event:** [AppBuildersPH Hackathon 2026](https://appbuildersph.com/hackathon/), theme "Local AI"
 - **Team:** Ian Labicani (solo)
 - **Test phone:** Infinix X6876 (Dimensity 7400, 8 GB RAM), Android 16
-- **Demo video:** to be linked here before submission
+- **Demo video:** [YouTube](https://youtu.be/9C22Za7qfuY) ·
+  [LinkedIn post](https://lnkd.in/p/g9Qu9EmB)
 
 ## What it does
 

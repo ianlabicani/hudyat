@@ -243,6 +243,7 @@ fonts keep their own licences.
 Guides:
 
 - [Building and installing](docs/BUILD.md)
+- [Sample messages to try](docs/SAMPLES.md)
 - [How the components work](docs/ARCHITECTURE.md)
 - [How the AI works](docs/AI.md)
 - [Where the data comes from](docs/DATA.md)

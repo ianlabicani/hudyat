@@ -52,6 +52,42 @@ Two reasons, and they hold separately:
 
 Hudyat has no server of its own and calls no cloud AI service.
 
+## How it works
+
+Two paths on one phone, with no network in either.
+
+```mermaid
+flowchart LR
+  subgraph Help["Ask for help"]
+    direction LR
+    A1["1 · You type<br/>Taglish, in airplane mode"] --> A2["2 · AI picks<br/>EmbeddingGemma: a need and a score"]
+    A2 --> A3["3 · Pack answers<br/>City, then province, then national"]
+    A3 --> A4["4 · Help card<br/>Call, map, first-aid steps"]
+  end
+  PACK[("Data pack on the phone<br/>Hotlines · places · official senders · first aid")]
+  NOTE["Gemma 3 1B<br/>Optional labelled note"]
+  subgraph Check["Check a message"]
+    direction LR
+    B1["1 · Text arrives<br/>SMS, notification, paste or share"] --> B2["2 · Rules check<br/>The link and the sender"]
+    B2 --> B3["3 · AI compares<br/>Wording against known scams, in the app"]
+    B3 --> B4["4 · Verdict<br/>Reasons and the real contact"]
+  end
+  PACK --> A3
+  PACK --> B2
+  NOTE -.-> A4
+  NOTE -.-> B4
+  classDef ai fill:#B93A0B,color:#FBFAF6,stroke:#B93A0B
+  classDef data fill:#1B1B19,color:#F2F1EC,stroke:#1B1B19
+  classDef optional stroke-dasharray:6 4
+  class A2,B3 ai
+  class PACK data
+  class NOTE optional
+```
+
+Orange is where a model runs, dark is fixed data, and dashed is optional.
+A text that arrives while the app is closed is checked by the rules
+alone; the wording check runs inside the app.
+
 ## How the AI is used
 
 Two open models run on the phone. Neither was trained by us.
